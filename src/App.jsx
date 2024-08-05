@@ -4,20 +4,25 @@ import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-do
 import Pclient from './clients/pages/Pclient';
 import Pmaterial from './materials/pages/Pmaterial';
 import MaterialsProvider from './general/MaterialsContext';
+import ClientPage from './clients/pages/client/Client'
 import './index.css'
 function App() {
   return (
     <MaterialsProvider>
+      
     <Router>
       <Routes>
         <Route path="/clients" element={<Pclient />} />
         <Route path="/materials" element={<Pmaterial />} />
+        <Route path="/client/:id" element={<ClientPage />} />
+
         <Route path="/" element={<Navigate to="/clients" />} />
+        
         <Route path="*" element={<div>Página no encontrada (404)</div>} />
       </Routes>
     </Router>
   </MaterialsProvider>
   );
-}
+} 
 
 export default App;

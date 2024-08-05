@@ -1,11 +1,15 @@
-// src/pages/Pmaterial.js
 import React, { useState } from 'react';
 import { useMaterials } from '../../general/MaterialsContext';
+import Sidebar from '../../general/Sidebar';
+import Header from '../../general/Header';
 
 const Pmaterial = () => {
   const [newMaterial, setNewMaterial] = useState({ group: '', description: '', value: 0 });
-  const [editMaterial, setEditMaterial] = useState(null); // Estado para el material en edición
+  const [editMaterial, setEditMaterial] = useState(null);
   const [materials, setMaterials] = useMaterials();
+  const [isSidebarVisible, setSidebarVisible] = useState(true);
+
+  const groups = [...new Set(materials.map(material => material.group))];
 
   const handleAddMaterial = () => {
     if (!newMaterial.group || !newMaterial.description || newMaterial.value <= 0) {
@@ -28,6 +32,10 @@ const Pmaterial = () => {
     setEditMaterial(null);
   };
 
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
+
   const handleDeleteMaterial = (index) => {
     const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este material?");
     if (confirmed) {
@@ -36,84 +44,119 @@ const Pmaterial = () => {
   };
 
   return (
-    <div>
-      <h1>Gestión de Materiales</h1>
-      <div>
-        <h2>{editMaterial ? "Editar Material" : "Añadir Material"}</h2>
-        <input
-          type="text"
-          placeholder="Grupo"
-          value={editMaterial ? editMaterial.group : newMaterial.group}
-          onChange={(e) =>
-            editMaterial
-              ? setEditMaterial({ ...editMaterial, group: e.target.value })
-              : setNewMaterial({ ...newMaterial, group: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Descripción"
-          value={editMaterial ? editMaterial.description : newMaterial.description}
-          onChange={(e) =>
-            editMaterial
-              ? setEditMaterial({ ...editMaterial, description: e.target.value })
-              : setNewMaterial({ ...newMaterial, description: e.target.value })
-          }
-        />
-        <input
-          type="number"
-          placeholder="Valor"
-          value={editMaterial ? editMaterial.value : newMaterial.value}
-          onChange={(e) =>
-            editMaterial
-              ? setEditMaterial({ ...editMaterial, value: Number(e.target.value) })
-              : setNewMaterial({ ...newMaterial, value: Number(e.target.value) })
-          }
-        />
-        {editMaterial ? (
-          <button onClick={() => handleEditMaterial(editMaterial.index)}>Guardar Cambios</button>
-        ) : (
-          <button onClick={handleAddMaterial}>Añadir</button>
-        )}
-        {editMaterial && <button onClick={() => setEditMaterial(null)}>Cancelar</button>}
+    <div className="flex h-screen">
+      {isSidebarVisible && <Sidebar className="w-1/4" />}
+      <div className={`flex-1 ${isSidebarVisible ? '' : ''}`}>
+        <Header toggleSidebar={toggleSidebar} />
+        <div className="p-6 max-w-1xl mx-auto bg-white shadow-md rounded-lg">
+          <h1 className="text-2xl font-bold mb-6">Gestión de Materiales</h1>
+          <div className="mb-6 p-4 bg-gray-100 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">{editMaterial ? "Editar Material" : "Añadir Material"}</h2>
+            <div className="space-y-4">
+              <select
+                value={editMaterial ? editMaterial.group : newMaterial.group}
+                onChange={(e) =>
+                  editMaterial
+                    ? setEditMaterial({ ...editMaterial, group: e.target.value })
+                    : setNewMaterial({ ...newMaterial, group: e.target.value })
+                }
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Seleccionar Grupo</option>
+                {groups.map((group, index) => (
+                  <option key={index} value={group}>{group}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Descripción"
+                value={editMaterial ? editMaterial.description : newMaterial.description}
+                onChange={(e) =>
+                  editMaterial
+                    ? setEditMaterial({ ...editMaterial, description: e.target.value })
+                    : setNewMaterial({ ...newMaterial, description: e.target.value })
+                }
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Valor"
+                value={editMaterial ? editMaterial.value : newMaterial.value}
+                onChange={(e) =>
+                  editMaterial
+                    ? setEditMaterial({ ...editMaterial, value: Number(e.target.value) })
+                    : setNewMaterial({ ...newMaterial, value: Number(e.target.value) })
+                }
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="flex space-x-4">
+                {editMaterial ? (
+                  <>
+                    <button
+                      onClick={() => handleEditMaterial(editMaterial.index)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    >
+                      Guardar Cambios
+                    </button>
+                    <button
+                      onClick={() => setEditMaterial(null)}
+                      className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
+                    >
+                      Cancelar
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleAddMaterial}
+                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                  >
+                    Añadir
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          <h2 className="text-xl font-semibold mb-4">Lista de Materiales</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+              <thead className="bg-gray-200 text-left">
+                <tr>
+                  <th className="px-6 py-3 text-gray-600 font-semibold">Grupo</th>
+                  <th className="px-6 py-3 text-gray-600 font-semibold">Descripción</th>
+                  <th className="px-6 py-3 text-gray-600 font-semibold">Valor</th>
+                  <th className="px-6 py-3 text-gray-600 font-semibold">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {materials.map((material, index) => (
+                  <tr key={index} className="hover:bg-gray-100">
+                    <td className="px-6 py-4 text-gray-700">{material.group}</td>
+                    <td className="px-6 py-4 text-gray-700">{material.description}</td>
+                    <td className="px-6 py-4 text-gray-700">${material.value}</td>
+                    <td className="px-6 py-4 text-gray-700">
+                      <button
+                        onClick={() => setEditMaterial({ ...material, index })}
+                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDeleteMaterial(index)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-
-      <h2>Lista de Materiales</h2>
-      <ul>
-        {materials.map((material, index) => (
-          <li key={index}>
-            {editMaterial && editMaterial.index === index ? (
-              <div>
-                <input
-                  type="text"
-                  value={editMaterial.group}
-                  onChange={(e) => setEditMaterial({ ...editMaterial, group: e.target.value })}
-                />
-                <input
-                  type="text"
-                  value={editMaterial.description}
-                  onChange={(e) => setEditMaterial({ ...editMaterial, description: e.target.value })}
-                />
-                <input
-                  type="number"
-                  value={editMaterial.value}
-                  onChange={(e) => setEditMaterial({ ...editMaterial, value: Number(e.target.value) })}
-                />
-                <button onClick={() => handleEditMaterial(index)}>Guardar</button>
-                <button onClick={() => setEditMaterial(null)}>Cancelar</button>
-              </div>
-            ) : (
-              <div>
-                <span>{material.group} - {material.description} - ${material.value}</span>
-                <button onClick={() => setEditMaterial({ ...material, index })}>Editar</button>
-                <button onClick={() => handleDeleteMaterial(index)}>Eliminar</button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
 
 export default Pmaterial;
+  
