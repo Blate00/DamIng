@@ -1,57 +1,87 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { HomeIcon, UsersIcon, ClipboardListIcon, OfficeBuildingIcon, UserCircleIcon } from '@heroicons/react/outline';
 import damLogo from '../assets/dam.jpg';
 
-const Sidebar = () => {
-  return (
-    <div className="Sidebar h-full w-64 bg-gray-100 shadow-md">
-      <div className="flex items-center justify-center py-6">
-        <img src={damLogo} alt="Dam Ingenieria" className="h-16" />
-      </div>
-      <div className="text-center text-xl font-bold py-4">Dam Ingenieria</div>
-      <ul className="mt-10">
-        <li className="py-2">
-          <Link to="/home" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-            <HomeIcon className="h-5 w-5" />
-            <span>Home</span>
-          </Link>
-        </li>
-        <li className="py-2">
-          <Link to="/clients" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-            <UsersIcon className="h-5 w-5" />
-            <span>Clientes</span>
-          </Link>
-        </li>
-        <li className="py-2">
-          <Link to="/materials" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-            <ClipboardListIcon className="h-5 w-5" />
-            <span>Materiales</span>
-          </Link>
-        </li>
-        <li className="py-2">
-          <Link to="/company" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-            <OfficeBuildingIcon className="h-5 w-5" />
-            <span>Empresa</span>
-          </Link>
-        </li>
-        <li className="py-2">
-          <Link to="/account" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-            <UserCircleIcon className="h-5 w-5" />
-            <span>Cuenta</span>
-          </Link>
-        </li>
-        <li className="py-2">
-          <Link to="/account" className="flex items-center space-x-2 px-4 hover:bg-gray-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
-</svg>
+const Sidebar = ({ isVisible, closeSidebar }) => {
+  const location = useLocation();
 
-            <span>Tareas</span>
-          </Link>
-        </li>
-      </ul>
-    </div>
+  const navItems = [
+    { name: 'Home', path: '/home', icon: HomeIcon },
+    { name: 'Clientes', path: '/clients', icon: UsersIcon },
+    { name: 'Materiales', path: '/materials', icon: ClipboardListIcon },
+    { name: 'Empresa', path: '/company', icon: OfficeBuildingIcon },
+    { name: 'Cuenta', path: '/account', icon: UserCircleIcon },
+    { name: 'Tareas', path: '/tasks', icon: ClipboardListIcon },
+  ];
+
+  return (
+    <>
+      {/* Sidebar visible siempre en pantallas medianas y grandes */}
+      <div className="hidden md:flex md:flex-col md:w-70 mt-10 ">
+        <div className="flex items-center px-4 py-6 ml-4 ">
+          <img src={damLogo} alt="Dam Ingenieria" className="h-10 w-10 mr-2 " />
+          <div className="text-lg font-bold">Dam Ingenieria</div>
+        </div>
+        <ul className="mt-2">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <li key={item.name} className="py-1">
+                <Link
+                  to={item.path}
+                  className={`flex items-center space-x-3 px-4 py-2 rounded-md ${
+                    isActive ? 'bg-red-100 text-black' : 'hover:bg-red-200'
+                  }`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Sidebar para pantallas pequeñas */}
+      <div
+        className={`md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity z-50 ${
+          isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeSidebar}
+      >
+        <div
+          className={`h-full w-80 bg-white shadow-md transform transition-transform ${
+            isVisible ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center px-4 py-6 ">
+            <img src={damLogo} alt="Dam Ingenieria" className="h-8 w-8 mr-3" />
+            <div className="text-lg font-bold">Dam Ingenieria</div>
+          </div>
+          <ul className="mt-2">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.name} className="py-2">
+                  <Link
+                    to={item.path}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-md ${
+                      isActive ? 'bg-gray-300 text-gray-900' : 'hover:bg-gray-200'
+                    }`}
+                    onClick={closeSidebar} // Cierra el Sidebar al hacer clic
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </>
   );
 };
 

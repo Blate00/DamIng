@@ -16,7 +16,6 @@ const ClientList = ({ clients, onDeleteClient }) => {
   };
 
   const handleDownloadFiles = (index) => {
-    // Implementar la lógica para descargar archivos
     alert(`Descargar archivos para el cliente ${clients[index].name}`);
     setOpenIndex(null);
   };
@@ -35,19 +34,15 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="bg-gray-100 p-6 rounded-md shadow-md">
-      <h2 className="text-lg font-semibold mb-4">Clientes</h2>
-      <ul className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="bg- p-8 rounded-lg ">
+      <h2 className="text-xl font-semibold mb-4">Clientes</h2>
+      <ul className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {clients.map((client, index) => (
-          <li key={index} className="bg-white p-4 rounded-md shadow-md flex items-center justify-between relative">
-            <Link to={`/client/${index}`}>
-              <div className="flex items-center">
-                <FolderIcon className="h-8 w-8 text-gray-500 mr-4" />
-                <div>
-                  <h3 className="font-semibold">{client.name}</h3>
-                  <p className="text-sm text-gray-600">{client.email}</p>
-                  <p className="text-sm text-gray-600">{client.phone}</p>
-                </div>
+          <li key={index} className="bg-gray-50 p-2 rounded-lg flex items-center justify-between relative">
+            <Link to={`/trabajos/${index}`} className="flex items-center">
+              <FolderIcon className="h-8 w-8 text-gray-500 mr-4" />
+              <div>
+                <h3 className="font-semibold">{client.name}</h3>
               </div>
             </Link>
             <DotsVerticalIcon 
@@ -55,7 +50,7 @@ const ClientList = ({ clients, onDeleteClient }) => {
               onClick={() => handleDotsClick(index)} 
             />
             {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg">
+              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                 <button 
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => handleDeleteClient(index)}

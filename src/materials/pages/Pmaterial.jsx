@@ -7,7 +7,6 @@ const Pmaterial = () => {
   const [newMaterial, setNewMaterial] = useState({ group: '', description: '', value: 0 });
   const [editMaterial, setEditMaterial] = useState(null);
   const [materials, setMaterials] = useMaterials();
-  const [isSidebarVisible, setSidebarVisible] = useState(true);
 
   const groups = [...new Set(materials.map(material => material.group))];
 
@@ -32,9 +31,7 @@ const Pmaterial = () => {
     setEditMaterial(null);
   };
 
-  const toggleSidebar = () => {
-    setSidebarVisible(!isSidebarVisible);
-  };
+
 
   const handleDeleteMaterial = (index) => {
     const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este material?");
@@ -45,9 +42,7 @@ const Pmaterial = () => {
 
   return (
     <div className="flex h-screen">
-      {isSidebarVisible && <Sidebar className="w-1/4" />}
-      <div className={`flex-1 ${isSidebarVisible ? '' : ''}`}>
-        <Header toggleSidebar={toggleSidebar} />
+    
         <div className="p-6 max-w-1xl mx-auto bg-white shadow-md rounded-lg">
           <h1 className="text-2xl font-bold mb-6">Gestión de Materiales</h1>
           <div className="mb-6 p-4 bg-gray-100 rounded-lg shadow-sm">
@@ -154,7 +149,7 @@ const Pmaterial = () => {
           </div>
         </div>
       </div>
-    </div>
+
   );
 };
 
