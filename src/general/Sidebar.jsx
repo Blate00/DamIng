@@ -77,10 +77,11 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
     <>
       {/* Sidebar visible siempre en pantallas medianas y grandes */}
       <div className="hidden bg-gray-100 md:flex md:flex-col md:w-70  ">
-        <div className="flex items-center px-4 py-6 ml-2 mt-10 ">
-          <img src={damLogo} alt="Dam Ingenieria" className="h-10 w-10 mr-2 " />
-          <div className="text-lg font-bold">Dam Ingenieria</div>
-        </div>
+      <div className="flex items-center px-4 py-6 ml-1 mt-10">
+      <img src={damLogo} alt="Dam Ingenieria" className="h-10 w-10 mr-2 rounded-full object-cover" />
+      <div className="text-lg font-bold">Dam Ingenieria</div>
+</div>
+
         <ul className="mt-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
