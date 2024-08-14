@@ -10,11 +10,14 @@ import RendicionPage from './clients/pages/client/Rendicion'
 import ListadoTrabajos from './clients/pages/client/ListadoTrabajos';
 import Layout from './general/layout';
 import Ptasks from './tasks/Ptasks';
+import { SearchProvider } from './general/SearchContext'; // Asegúrate de importar el contexto
+
 import './index.css';
 
 function App() {
   return (
     <MaterialsProvider>
+       <SearchProvider>
       <Router>
         <Layout>
           <Routes>
@@ -31,7 +34,7 @@ function App() {
             <Route path="*" element={<div>Página no encontrada (404)</div>} />
           </Routes>
         </Layout>
-      </Router>
+      </Router></SearchProvider>
     </MaterialsProvider>
   );
 }

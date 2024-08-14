@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 
 function Layout({ children }) {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [filteredClients, setFilteredClients] = useState([]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
@@ -14,18 +15,21 @@ function Layout({ children }) {
     setSidebarVisible(false);
   };
 
+  const handleSearch = (nameQuery, phoneQuery, emailQuery) => {
+    // Aquí puedes manejar la búsqueda o pasarla a un componente descendiente
+    if (children && React.isValidElement(children)) {
+      return React.cloneElement(children, { onSearch: handleSearch, filteredClients });
+    }
+    return children;
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar visible en pantallas grandes y como drawer en pequeñas */}
       <Sidebar isVisible={isSidebarVisible} closeSidebar={closeSidebar} />
-
-      <div className="flex flex-col flex-grow ">
-        {/* Header siempre visible */}
-        <Header toggleSidebar={toggleSidebar} />
-
-        {/* Contenido principal */}
-        <main className="flex-grow overflow-y-auto">
-          {children}
+      <div className="flex flex-col flex-grow">
+        <Header toggleSidebar={toggleSidebar} onSearch={handleSearch} />
+        <main className="flex-grow overflow-y-auto rounded-lg">
+          {handleSearch(children)}
         </main>
       </div>
     </div>

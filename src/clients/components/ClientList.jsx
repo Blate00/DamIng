@@ -34,30 +34,36 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="bg- p-8 rounded-lg ">
-      <h2 className="text-xl font-semibold mb-4">Clientes</h2>
-      <ul className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="rounder-lg  p-1 rounded-lg mt-4">
+      <h2 className="text-xl font-semibold mb-4"></h2>
+      <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
         {clients.map((client, index) => (
           <li key={index} className="bg-gray-50 p-2 rounded-lg flex items-center justify-between relative">
-            <Link to={`/trabajos/${index}`} className="flex items-center">
-              <FolderIcon className="h-8 w-8 text-gray-500 mr-4" />
+            <Link to={`/trabajos/${index}`} className="flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <FolderIcon className="h-8 w-8 text-gray-500 mr-2" />
+                <div>
+                  <h3 className="font-semibold">{client.name}</h3>
+                </div>
+              </div>
               <div>
-                <h3 className="font-semibold">{client.name}</h3>
+                <h3 className="ultmod opacity-25">{`modificado ${client.jobDate}`}</h3>
               </div>
             </Link>
-            <DotsVerticalIcon 
-              className="h-6 w-6 text-gray-500 cursor-pointer" 
-              onClick={() => handleDotsClick(index)} 
+
+            <DotsVerticalIcon
+              className="h-6 w-6 text-gray-500 cursor-pointer"
+              onClick={() => handleDotsClick(index)}
             />
             {openIndex === index && (
               <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
-                <button 
+                <button
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => handleDeleteClient(index)}
                 >
                   Eliminar
                 </button>
-                <button 
+                <button
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => handleDownloadFiles(index)}
                 >

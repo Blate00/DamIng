@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { DownloadIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, DownloadIcon } from '@heroicons/react/outline';
 
 const Archives = () => {
   const { id } = useParams();
@@ -12,60 +12,78 @@ const Archives = () => {
   }
 
   const handleDownload = (filename) => {
-    // Implementa la lógica de descarga del archivo
     alert(`Descargando archivo: ${filename}`);
   };
 
   return (
-    <main className="flex-1 p-4 overflow-y-auto ">
-      <div className="bg-white  rounded-lg p-4">
+    <main className="flex-1 p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg p-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">{client.name}</h2>
 
-        <div className="space-y-4">
-          <Link to={`/Presupuesto/${id}`}>
-            <div className="bg-red-50 p-4 rounded-lg shadow-md hover:bg-red-200 transition-colors cursor-pointer flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Presupuesto</h3>
-                <p className="text-sm text-gray-500">Modificado: {client.jobDate}</p>
+        <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
+          <li>
+            <Link to={`/Presupuesto/${id}`} className="flex items-center justify-between w-full bg-gray-50 p-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">
+              <div className="flex items-center">
+                <DocumentTextIcon className="h-8 w-8 text-gray-500 mr-2" />
+                <div>
+                  <h3 className="font-semibold text-gray-800">Presupuesto</h3>
+                  <p className="text-sm text-gray-500">{`Modificado: ${client.jobDate}`}</p>
+                </div>
               </div>
               <button
-                onClick={() => handleDownload('presupuesto.pdf')}
-                className="ml-4 p-2 bg-black text-white rounded-full "
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  handleDownload('presupuesto.pdf'); 
+                }}
+                className="p-2 bg-black text-white rounded-full"
               >
                 <DownloadIcon className="h-4 w-4" />
               </button>
-            </div>
-          </Link>
-          
-          <Link to={`/Rendicion/${id}`}>
-            <div className="bg-red-100 p-4 rounded-lg shadow-md hover:bg-red-300 transition-colors cursor-pointer flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Rendición</h3>
-                <p className="text-sm text-gray-500">Modificado: {client.jobDate}</p>
+            </Link>
+          </li>
+
+          <li>
+            <Link to={`/Rendicion/${id}`} className="flex items-center justify-between w-full bg-gray-50 p-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">
+              <div className="flex items-center">
+                <DocumentTextIcon className="h-8 w-8 text-gray-500 mr-2" />
+                <div>
+                  <h3 className="font-semibold text-gray-800">Rendición</h3>
+                  <p className="text-sm text-gray-500">{`Modificado: ${client.jobDate}`}</p>
+                </div>
               </div>
               <button
-                onClick={() => handleDownload('listado.pdf')}
-                className="ml-4 p-2 bg-black text-white rounded-full "
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  handleDownload('rendicion.pdf'); 
+                }}
+                className="p-2 bg-black text-white rounded-full"
               >
                 <DownloadIcon className="h-4 w-4" />
               </button>
-            </div>
-          </Link>
-          <Link to={`/Materiales/${id}`}>
-            <div className="bg-red-50 p-4 rounded-lg shadow-md hover:bg-red-200 transition-colors cursor-pointer flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Listado</h3>
-                <p className="text-sm text-gray-500">Modificado: {client.jobDate}</p>
+            </Link>
+          </li>
+
+          <li>
+            <Link to={`/Materiales/${id}`} className="flex items-center justify-between w-full bg-gray-50 p-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">
+              <div className="flex items-center">
+                <DocumentTextIcon className="h-8 w-8 text-gray-500 mr-2" />
+                <div>
+                  <h3 className="font-semibold text-gray-800">Listado</h3>
+                  <p className="text-sm text-gray-500">{`Modificado: ${client.jobDate}`}</p>
+                </div>
               </div>
               <button
-                onClick={() => handleDownload('listado.pdf')}
-                className="ml-4 p-2 bg-black text-white rounded-full "
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  handleDownload('listado.pdf'); 
+                }}
+                className="p-2 bg-black text-white rounded-full"
               >
                 <DownloadIcon className="h-4 w-4" />
               </button>
-            </div>
-          </Link>
-        </div>
+            </Link>
+          </li>
+        </ul>
       </div>
     </main>
   );

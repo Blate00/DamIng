@@ -41,66 +41,92 @@ const ClientForm = ({ clients, addClient, materials }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg">
+    <div className="bg-white p- rounded-lg">
       <h2 className="text-xl font-semibold mb-4 flex items-center">
         <UserIcon className="h-6 w-6 text-gray-700 mr-2" />
         Nuevo Proyecto
       </h2>
-      <div className="relative">
+      <div className="mb-4">
+        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
+          Nombre del Cliente
+        </label>
         <input
           type="text"
-          placeholder="Nombre del Cliente"
-          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          id="clientName"
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
         />
         {clientMatches.length > 0 && (
-          <ul className="absolute bg-white border border-gray-300 rounded mt-1 w-full max-h-60 overflow-auto z-10">
+          <ul className="border border-gray-300 rounded-md mt-2">
             {clientMatches.map((client, index) => (
               <li
                 key={index}
-                className="p-2 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleClientSelect(client)}
+                className="cursor-pointer hover:bg-gray-200 p-2"
               >
                 {client.name}
               </li>
             ))}
           </ul>
-        )}   <input
-        type="email"
-        placeholder="Correo Electrónico"
-        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 mt-4"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Dirección"
-        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 mt-4"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Teléfono"
-        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 mt-4"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      <input
-        placeholder="Trabajo"
-        className="p-2 border border-gray-300 rounded w- focus:outline-none focus:border-blue-500 mt-2"
-        value={jobType}
-        onChange={(e) => setJobType(e.target.value)}
-      />
-      </div>  <button
-        className="bg-red-800 text-white p-2 rounded  hover:bg-red-900 mt-4"
-        onClick={handleAddClient}
-      >
-        Añadir Cliente
-      </button>
-   
-    
+        )}
+      </div>
+      <div className="mb-4">
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+          Dirección
+        </label>
+        <input
+          type="text"
+          id="address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          Teléfono
+        </label>
+        <input
+          type="text"
+          id="phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="jobType" className="block text-sm font-medium text-gray-700">
+          Tipo de Proyecto
+        </label>
+        <input
+          type="text"
+          id="jobType"
+          value={jobType}
+          onChange={(e) => setJobType(e.target.value)}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
+        />
+      </div>
+      <div className="flex justify-end">
+        <button
+          onClick={handleAddClient}
+          className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
+        >
+          Guardar Proyecto
+        </button>
+      </div>
     </div>
   );
 };
