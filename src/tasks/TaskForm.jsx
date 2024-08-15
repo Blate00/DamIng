@@ -16,9 +16,9 @@ const TaskForm = ({ clients, addTask }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 rounded-md shadow-md mb-4 sm:mb-4">
-      <h2 className="text-lg font-semibold mb-4">Añadir Tarea</h2>
-      <div className="grid grid-cols-1 gap-4">
+    <div className="p-4 rounded-md  mb-4 sm:mb-4">
+      <h2 className="text-lg font-semibold mb-2">Añadir Tarea</h2>
+      <div className="grid grid-cols-4 gap-4">
         <select
           value={selectedClient}
           onChange={(e) => setSelectedClient(e.target.value)}

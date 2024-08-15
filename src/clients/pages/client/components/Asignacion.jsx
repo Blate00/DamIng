@@ -4,15 +4,16 @@ const Asignacion = ({
   asignacion,
   setAsignacion,
   abonosAsignacion,
-  fechaAsignacion,
-  setFechaAsignacion,
   nuevoAbonoAsignacion,
   setNuevoAbonoAsignacion,
-  fechaNuevoAbonoAsignacion,
-  setFechaNuevoAbonoAsignacion,
   handleGuardarAbonoAsignacion,
-  handleGuardarAsignacion, // Nueva prop
+  handleGuardarAsignacion,
 }) => {
+  const obtenerFechaActual = () => {
+    const hoy = new Date();
+    return hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  };
+
   return (
     <div className="mb-4">
       <label className="block text-sm font-medium text-gray-700">Total de Asignación</label>
@@ -37,15 +38,8 @@ const Asignacion = ({
           onChange={(e) => setNuevoAbonoAsignacion(parseFloat(e.target.value) || 0)}
           className="mt-1 p-2 border rounded-md w-full"
         />
-        <label className="block text-sm font-medium text-gray-700 mt-2">Fecha del Abono</label>
-        <input
-          type="date"
-          value={fechaNuevoAbonoAsignacion}
-          onChange={(e) => setFechaNuevoAbonoAsignacion(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-        />
         <button
-          onClick={handleGuardarAbonoAsignacion}
+          onClick={() => handleGuardarAbonoAsignacion(obtenerFechaActual())}
           className="mt-2 p-2 bg-red-800 text-white rounded-md hover:bg-red-900"
         >
           Guardar Abono de Asignación

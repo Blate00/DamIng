@@ -8,8 +8,11 @@ import MaterialesPage from './clients/pages/client/Materiales';
 import PresupuestoPage from './clients/pages/client/Presupuesto';
 import RendicionPage from './clients/pages/client/Rendicion'
 import ListadoTrabajos from './clients/pages/client/ListadoTrabajos';
+import Pempresa from './empresa/pages/Pempresa'
 import Layout from './general/layout';
 import Ptasks from './tasks/Ptasks';
+import Phome from './home/Phome'
+
 import { SearchProvider } from './general/SearchContext'; // Asegúrate de importar el contexto
 
 import './index.css';
@@ -29,8 +32,10 @@ function App() {
             <Route path="/Presupuesto/:id" element={<PresupuestoPage />} />
             <Route path="/Rendicion/:id" element={<RendicionPage />} />
             <Route path="/archives/:id" element={<Archives />} />
+            <Route path="/home" element={<Phome />} />
             <Route path="/" element={<Navigate to="/clients" />} /> 
              <Route path="/tasks" element={<Ptasks />} />
+             <Route path="/empresa" element={<Pempresa />}/>
             <Route path="*" element={<div>Página no encontrada (404)</div>} />
           </Routes>
         </Layout>

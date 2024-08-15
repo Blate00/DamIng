@@ -41,9 +41,9 @@ const Pmaterial = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="uwu p-3 flex h-screen">
     
-        <div className="p-6 max-w-1xl mx-auto bg-white shadow-md rounded-lg">
+        <div className="uwu2 p-5 w-full rounded-lg">
           <h1 className="text-2xl font-bold mb-6">Gestión de Materiales</h1>
           <div className="mb-6 p-4 bg-gray-100 rounded-lg shadow-sm">
             <h2 className="text-xl font-semibold mb-4">{editMaterial ? "Editar Material" : "Añadir Material"}</h2>
@@ -103,7 +103,7 @@ const Pmaterial = () => {
                 ) : (
                   <button
                     onClick={handleAddMaterial}
-                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                    className="bg-red-800 text-white px-4 py-2 rounded-md hover:bg-red-900"
                   >
                     Añadir
                   </button>
@@ -112,14 +112,14 @@ const Pmaterial = () => {
             </div>
           </div>
           <h2 className="text-xl font-semibold mb-4">Lista de Materiales</h2>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full divide-y divide-gray-200 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
-              <thead className="bg-gray-200 text-left">
+              <thead className="bg-red-800 text-left">
                 <tr>
-                  <th className="px-6 py-3 text-gray-600 font-semibold">Grupo</th>
-                  <th className="px-6 py-3 text-gray-600 font-semibold">Descripción</th>
-                  <th className="px-6 py-3 text-gray-600 font-semibold">Valor</th>
-                  <th className="px-6 py-3 text-gray-600 font-semibold">Acciones</th>
+                  <th className="px-6 py-3 text-white font-semibold">Grupo</th>
+                  <th className="px-6 py-3 text-white font-semibold">Descripción</th>
+                  <th className="px-6 py-3 text-white font-semibold">Valor</th>
+                  <th className="px-6 py-3 text-white font-semibold">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -131,13 +131,13 @@ const Pmaterial = () => {
                     <td className="px-6 py-4 text-gray-700">
                       <button
                         onClick={() => setEditMaterial({ ...material, index })}
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        className="bg-red-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-blue-600"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => handleDeleteMaterial(index)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                        className="bg-red-800 text-white px-3 py-1 rounded-md hover:bg-red-600"
                       >
                         Eliminar
                       </button>

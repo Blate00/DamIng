@@ -6,21 +6,17 @@ import TablaRendicion from './components/TablaRendicion';
 const RendicionFondos = () => {
   const [asignacion, setAsignacion] = useState(0);
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
-  const [fechaAsignacion, setFechaAsignacion] = useState('');
   const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
-  const [fechaNuevoAbonoAsignacion, setFechaNuevoAbonoAsignacion] = useState('');
 
   const [manoObra, setManoObra] = useState(0);
   const [abonosManoObra, setAbonosManoObra] = useState([]);
   const [nuevoAbonoManoObra, setNuevoAbonoManoObra] = useState(0);
-  const [fechaNuevoAbonoManoObra, setFechaNuevoAbonoManoObra] = useState('');
 
   const [items, setItems] = useState([
     { fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' },
   ]);
 
   useEffect(() => {
-    // Carga el monto de asignación y mano de obra desde localStorage al montar el componente
     const storedAsignacion = localStorage.getItem('asignacion');
     if (storedAsignacion) {
       setAsignacion(parseFloat(storedAsignacion) || 0);
@@ -32,22 +28,31 @@ const RendicionFondos = () => {
     }
   }, []);
 
+  const obtenerFechaActual = () => {
+    const hoy = new Date();
+    return hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  };
+
   const handleGuardarAsignacion = () => {
     localStorage.setItem('asignacion', asignacion);
   };
 
   const handleGuardarAbonoAsignacion = () => {
-    const nuevoAbono = { monto: nuevoAbonoAsignacion, fecha: fechaNuevoAbonoAsignacion };
+    const nuevoAbono = {
+      monto: nuevoAbonoAsignacion,
+      fecha: obtenerFechaActual(),
+    };
     setAbonosAsignacion([...abonosAsignacion, nuevoAbono]);
     setNuevoAbonoAsignacion(0);
-    setFechaNuevoAbonoAsignacion('');
   };
 
   const handleGuardarAbonoManoObra = () => {
-    const nuevoAbono = { monto: nuevoAbonoManoObra, fecha: fechaNuevoAbonoManoObra };
+    const nuevoAbono = {
+      monto: nuevoAbonoManoObra,
+      fecha: obtenerFechaActual(),
+    };
     setAbonosManoObra([...abonosManoObra, nuevoAbono]);
     setNuevoAbonoManoObra(0);
-    setFechaNuevoAbonoManoObra('');
   };
 
   const handleGuardarManoObra = () => {
@@ -59,6 +64,7 @@ const RendicionFondos = () => {
     newItems[index][field] = value;
     setItems(newItems);
   };
+
   const agregarFila = () => {
     setItems([
       ...items,
@@ -66,11 +72,10 @@ const RendicionFondos = () => {
     ]);
   };
 
-  // Calcula el total de rendición
-  const totalRendicion = items.reduce((total, item) => total + parseFloat(item.total) || 0, 0);
-  // Calcula el saldo actual de la asignación incluyendo los abonos
+  const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
+
   const saldoActualAsignacion = asignacion + abonosAsignacion.reduce((total, abono) => total + abono.monto, 0);
-  // Calcula el saldo final de la asignación después de restar la rendición
+
   const saldoFinalAsignacion = saldoActualAsignacion - totalRendicion;
 
   return (
@@ -81,12 +86,8 @@ const RendicionFondos = () => {
         asignacion={asignacion}
         setAsignacion={setAsignacion}
         abonosAsignacion={abonosAsignacion}
-        fechaAsignacion={fechaAsignacion}
-        setFechaAsignacion={setFechaAsignacion}
         nuevoAbonoAsignacion={nuevoAbonoAsignacion}
         setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
-        fechaNuevoAbonoAsignacion={fechaNuevoAbonoAsignacion}
-        setFechaNuevoAbonoAsignacion={setFechaNuevoAbonoAsignacion}
         handleGuardarAbonoAsignacion={handleGuardarAbonoAsignacion}
         handleGuardarAsignacion={handleGuardarAsignacion}
       />
@@ -96,8 +97,6 @@ const RendicionFondos = () => {
         abonosManoObra={abonosManoObra}
         nuevoAbonoManoObra={nuevoAbonoManoObra}
         setNuevoAbonoManoObra={setNuevoAbonoManoObra}
-        fechaNuevoAbonoManoObra={fechaNuevoAbonoManoObra}
-        setFechaNuevoAbonoManoObra={setFechaNuevoAbonoManoObra}
         handleGuardarAbonoManoObra={handleGuardarAbonoManoObra}
         handleGuardarManoObra={handleGuardarManoObra}
       />
@@ -106,7 +105,6 @@ const RendicionFondos = () => {
       
       <TablaRendicion items={items} handleChange={handleChange} agregarFila={agregarFila} />
      
-
       <h4 className="text-lg font-bold text-gray-800 mt-8 mb-4">Resumen</h4>
       <div className="mb-4">
         <h5 className="text-sm font-medium text-gray-700">Total de Rendición</h5>

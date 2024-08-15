@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+.uwu{
+
+    border-radius: 10px;
+    background-color: #700F23;
+}
+.uwu2{
+
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+}
+
+.sidebar {
+    width: 220px;
+}

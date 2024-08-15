@@ -42,7 +42,9 @@ const ListadoTrabajos = () => {
   }, []);
 
   return (
-    <div className="bg- p-8 rounded-lg">
+
+    <div className="uwu p-3">
+    <div className=" uwu2 p-5 rounded-lg h-screen">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">{client.name}</h2>
       <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
         {client.jobs.map((job, index) => (
@@ -82,7 +84,7 @@ const ListadoTrabajos = () => {
           </li>
         ))}
       </ul>
-    </div>
+    </div></div>
   );
 };
 

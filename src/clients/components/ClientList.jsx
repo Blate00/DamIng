@@ -34,9 +34,9 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="rounder-lg  p-1 rounded-lg mt-4">
+    <div className="rounder-lg  p-1 rounded-lg mt-3">
       <h2 className="text-xl font-semibold mb-4"></h2>
-      <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
+      <ul className="grid grid-cols-1 md:grid-cols-1 gap-1">
         {clients.map((client, index) => (
           <li key={index} className="bg-gray-50 p-2 rounded-lg flex items-center justify-between relative">
             <Link to={`/trabajos/${index}`} className="flex items-center justify-between w-full">

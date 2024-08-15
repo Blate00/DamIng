@@ -16,8 +16,8 @@ const Archives = () => {
   };
 
   return (
-    <main className="flex-1 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg p-4">
+    <main className=" uwu flex-1 p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg p-4 h-screen">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">{client.name}</h2>
 
         <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">

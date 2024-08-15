@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
-import damLogo from '../../../assets/dam.jpg';
+import damLogo from '../../../assets/dam.png';
 
 const Presupuesto = () => {
   const { id, jobId } = useParams();

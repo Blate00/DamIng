@@ -6,23 +6,23 @@ const ManoObra = ({
   abonosManoObra,
   nuevoAbonoManoObra,
   setNuevoAbonoManoObra,
-  fechaNuevoAbonoManoObra,
-  setFechaNuevoAbonoManoObra,
   handleGuardarAbonoManoObra,
-  handleGuardarManoObra, // Nueva función para guardar en localStorage
+  handleGuardarManoObra,
 }) => {
-  // Calcula el total de abonos
   const totalAbonos = abonosManoObra.reduce((total, abono) => total + abono.monto, 0);
-  // Calcula el saldo actual
   const saldoActual = manoObra - totalAbonos;
 
   useEffect(() => {
-    // Carga el monto de mano de obra desde localStorage al montar el componente
     const storedManoObra = localStorage.getItem('manoObra');
     if (storedManoObra) {
       setManoObra(parseFloat(storedManoObra) || 0);
     }
   }, [setManoObra]);
+
+  const obtenerFechaActual = () => {
+    const hoy = new Date();
+    return hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  };
 
   const handleGuardarManoObraClick = () => {
     localStorage.setItem('manoObra', manoObra);
@@ -53,15 +53,8 @@ const ManoObra = ({
           onChange={(e) => setNuevoAbonoManoObra(parseFloat(e.target.value) || 0)}
           className="mt-1 p-2 border rounded-md w-full"
         />
-        <label className="block text-sm font-medium text-gray-700 mt-2">Fecha del Abono</label>
-        <input
-          type="date"
-          value={fechaNuevoAbonoManoObra}
-          onChange={(e) => setFechaNuevoAbonoManoObra(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-        />
         <button
-          onClick={handleGuardarAbonoManoObra}
+          onClick={() => handleGuardarAbonoManoObra(obtenerFechaActual())}
           className="mt-2 p-2 bg-red-800 text-white rounded-md hover:bg-red-900"
         >
           Guardar Abono de Mano de Obra

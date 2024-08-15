@@ -39,9 +39,9 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
   }, []);
 
   return (
-    <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <table className="w-full  border border-gray-200 rounded-lg overflow-hidden">
       <thead>
-        <tr className="bg-gray-200 text-gray-700">
+        <tr className="bg-red-800 text-white">
           <th className="py-3 px-4 border-b text-left">Cliente</th>
           <th className="py-3 px-4 border-b text-left">Tarea</th>
           <th className="py-3 px-4 border-b text-left">Responsable</th>
@@ -51,7 +51,7 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
       </thead>
       <tbody>
         {tasks.map((task, index) => (
-          <tr key={index} className="hover:bg-gray-50 relative">
+          <tr key={index} className="bg-gray-100  hover:bg-gray-50 relative">
             <td className="py-3 px-4 border-b text-gray-800">{task.clientName}</td>
             <td className="py-3 px-4 border-b text-gray-800">{task.taskName}</td>
             <td className="py-3 px-4 border-b text-gray-800">{task.responsible}</td>
