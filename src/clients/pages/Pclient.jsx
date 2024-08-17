@@ -47,8 +47,7 @@ const Pclient = () => {
 
   return (
     <div className="uwu  flex flex-col bg-white p-3 ">
-      <div className="uwu2 h-screen p-4">
-      <h1 className="text-2xl font-semibold mb-0">Listado de Proyectos</h1>
+      <div className="uwu2 h-screen p-1">
       <ClientList clients={filteredClients} onDeleteClient={handleDeleteClient} /> 
     </div>
 </div>  );

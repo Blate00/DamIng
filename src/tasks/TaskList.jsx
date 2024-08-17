@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon, XCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
 
 const TaskList = ({ tasks, updateTaskStatus }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -38,35 +39,64 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
     };
   }, []);
 
+  const renderStatusIcon = (status) => {
+    switch (status) {
+      case 'Iniciado':
+        return <ExclamationCircleIcon className="h-5 w-5 text-yellow-500 inline-block" />;
+      case 'En Progreso':
+        return <CheckCircleIcon className="h-5 w-5 text-green-500 inline-block" />;
+      case 'Finalizado':
+        return <XCircleIcon className="h-5 w-5 text-red-500 inline-block" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <table className="w-full  border border-gray-200 rounded-lg overflow-hidden">
+    <table className="w-full border-collapse">
+      
       <thead>
-        <tr className="bg-red-800 text-white">
-          <th className="py-3 px-4 border-b text-left">Cliente</th>
-          <th className="py-3 px-4 border-b text-left">Tarea</th>
-          <th className="py-3 px-4 border-b text-left">Responsable</th>
-          <th className="py-3 px-4 border-b text-left">Estado</th>
-          <th className="py-3 px-4 border-b"></th>
+        <tr className="text-gray-500 text-sm leading-normal">
+          <th className="py-3 px-6 text-left">Cliente</th>
+          <th className="py-3 px-6 text-left">Tarea</th>
+          <th className="py-3 px-6 text-left">Responsable</th>
+          <th className="py-3 px-6 text-left">Estado</th>
+          <th className="py-3 px-6 text-center"></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="text-gray-600 text-sm font-light">
         {tasks.map((task, index) => (
-          <tr key={index} className="bg-gray-100  hover:bg-gray-50 relative">
-            <td className="py-3 px-4 border-b text-gray-800">{task.clientName}</td>
-            <td className="py-3 px-4 border-b text-gray-800">{task.taskName}</td>
-            <td className="py-3 px-4 border-b text-gray-800">{task.responsible}</td>
-            <td className="py-3 px-4 border-b">
-              <select
-                value={task.taskStatus}
-                onChange={(e) => handleStatusChange(index, e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Iniciado">Iniciado</option>
-                <option value="En Progreso">En Progreso</option>
-                <option value="Finalizado">Finalizado</option>
-              </select>
+          <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+            <td className="py-3 px-6 text-left whitespace-nowrap">
+              <div className="flex items-center">
+                <span className="font-medium">{task.clientName}</span>
+              </div>
             </td>
-            <td className="py-3 px-4 border-b text-center">
+            <td className="py-3 px-6 text-left">
+              <div className="flex items-center">
+                <span>{task.taskName}</span>
+              </div>
+            </td>
+            <td className="py-3 px-6 text-left">
+              <div className="flex items-center">
+                <span>{task.responsible}</span>
+              </div>
+            </td>
+            <td className="py-3 px-6 text-left">
+              <div className="flex items-center">
+                {renderStatusIcon(task.taskStatus)}
+                <select
+                  value={task.taskStatus}
+                  onChange={(e) => handleStatusChange(index, e.target.value)}
+                  className="ml-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-600 cursor-pointer"
+                >
+                  <option value="Iniciado">Iniciado</option>
+                  <option value="En Progreso">En Progreso</option>
+                  <option value="Finalizado">Finalizado</option>
+                </select>
+              </div>
+            </td>
+            <td className="py-3 px-6 text-center">
               <DotsVerticalIcon 
                 className="h-6 w-6 text-gray-500 cursor-pointer" 
                 onClick={() => handleDotsClick(index)} 

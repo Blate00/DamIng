@@ -4,10 +4,10 @@
 
 
 
+body{background-color: rgb(233, 244, 244);}
 .uwu{
 
     border-radius: 10px;
-    background-color: #700F23;
 }
 .uwu2{
 
@@ -17,4 +17,56 @@
 
 .sidebar {
     width: 220px;
+    background: linear-gradient(170deg, #4C0A18, #700F23, #8D172E, #751d2d);
+}
+
+
+
+
+.but{
+    background:  #700F23;
+    border: 1px solid rgba(255, 255, 255, 0.295);
+
+}
+
+
+.but:hover{
+    background: linear-gradient(110deg, #4C0A18, #700F23, #8D172E, #751d2d);
+
+}
+
+.cuadro1 {
+    
+ 
+    background: linear-gradient(10deg,rgb(198, 184, 184), #075e7d, #8D172E, #751d2d);
+    background-size: 300% 300%;
+    border: 1px solid white;
+}
+
+
+
+.cuadro2 {
+    
+
+    background: linear-gradient(10deg,rgb(215, 206, 206), #e1ecf0, #fcfbfb, #a95665);
+    background-size: 300% 300%;
+    border: 1px solid white;
+    animation: moverFondo 3s infinite alternate;
+}
+
+@keyframes moverFondo {
+   
+    100% {
+        background-position: 0% 10%;
+    }
+}
+
+.iconh{
+    
+    align-items: center;
+    background: rgb(127, 17, 17);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.486);
+    width: 30px;
+    height: 30px;
 }

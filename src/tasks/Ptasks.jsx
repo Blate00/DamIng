@@ -24,9 +24,11 @@ const Ptasks = () => {
 
   return (
     <div className="uwu p-3">
-    <div className=" uwu2 flex flex-col p-5 h-screen">
+    <div className=" uwu2 flex flex-col p-5 ">
       <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Gestión de Tareas</h1>
       <TaskForm clients={clients} addTask={addTask} />
+      <h2 className="text-xl font-semibold mb-4">Lista de Tareas</h2>
+
       <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} />
     </div></div>
   );

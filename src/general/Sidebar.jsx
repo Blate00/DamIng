@@ -10,26 +10,23 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
   const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
-  const [materials] = useMaterials(); // Asegúrate de tener acceso a `materials`
+  const [materials] = useMaterials();
 
-  // Guardar en localStorage cuando los clientes cambian
   useEffect(() => {
     localStorage.setItem('clients', JSON.stringify(clients));
   }, [clients]);
 
-  const handleAddClient  = (name, email, address, phone, jobType) => {
+  const handleAddClient = (name, email, address, phone, jobType) => {
     const existingClientIndex = clients.findIndex(client => client.name.toLowerCase() === name.toLowerCase());
     const newJob = { name: jobType, date: new Date().toLocaleDateString() };
-  
+
     let updatedClients;
-  
+
     if (existingClientIndex !== -1) {
-      // Si el cliente ya existe, se agrega el nuevo trabajo a su lista de trabajos
       updatedClients = [...clients];
       updatedClients[existingClientIndex].jobs.push(newJob);
       updatedClients[existingClientIndex].jobDate = new Date().toLocaleDateString();
     } else {
-      // Si el cliente no existe, se crea uno nuevo con su primer trabajo
       const materialsForJob = materials.filter(material => material.group === jobType);
       const newClient = {
         name,
@@ -43,12 +40,11 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
       };
       updatedClients = [...clients, newClient];
     }
-  
-    // Actualizamos el estado y el localStorage
+
     setClients(updatedClients);
-    setFilteredClients(updatedClients);
     localStorage.setItem('clients', JSON.stringify(updatedClients));
   };
+
   const navItems = [
     { name: 'Inicio', path: '/home', icon: HomeIcon },
     { name: 'Clientes', path: '/clients', icon: UsersIcon },
@@ -75,25 +71,24 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
 
   return (
     <>
-      {/* Sidebar visible siempre en pantallas medianas y grandes */}
-      <div className="hidden bg-white md:flex md:flex-col sidebar   ">
-      <div className="flex items-center px-2 py-6 ml-2 mt-5">
-      <img src={damLogo} alt="Dam Ingenieria" className="h-10 w-10 p-1 mr-1 rounded-full object-cover" />
-      <div className="text-md font-bold">Administración</div>
-</div>
+      {/* Sidebar for medium and large screens */}
+      <div className="hidden md:flex flex-col w-64 h-full bg-gradient-to-b from-[#700F23] to-[#350A12] text-white">
+        <div className="flex items-center px-6 py-8">
+        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="40px" fill="#e8eaed"><path d="M720-360v-80h80q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360h-80Zm0 160v-80h80q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200h-80Zm-160 40q-33 0-56.5-23.5T480-240h-80v-160h80q0-33 23.5-56.5T560-480h120v320H560ZM280-280q-66 0-113-47t-47-113q0-66 47-113t113-47h60q25 0 42.5-17.5T400-660q0-25-17.5-42.5T340-720H200q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h140q58 0 99 41t41 99q0 58-41 99t-99 41h-60q-33 0-56.5 23.5T200-440q0 33 23.5 56.5T280-360h80v80h-80Z"/></svg>          <div className="ml-4 text-xl font-bold">Dam Administración</div>
+        </div>
 
-        <ul className="mt-2 ml-4 mr-4">
+        <ul className="mt-8">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <li key={item.name} className="mt-1 font-semibold">
+              <li key={item.name} className="mb-4">
                 <Link
                   to={item.path}
-                  className={`flex items-center space-x-3 px-4 mt-3 p-1 rounded-md ${
-                    isActive ? 'bg-red-500 text-black' : 'hover:bg-red-400'
+                  className={`flex items-center space-x-3 px-12 py-3 rounded-md transition-colors ${
+                    isActive ? 'bg-[#700F23] text-white border-l-4 border-[#700F23]' : 'hover:bg-[#8B1D34]'
                   }`}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-6 w-6" />
                   <span>{item.name}</span>
                 </Link>
               </li>
@@ -101,53 +96,53 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
           })}
         </ul>
 
-        {/* Botón para abrir el modal de añadir proyecto */}
         <button
-          className="bg-red-800 text-white p-2 rounded-lg mt-4 ml-3 mr-4 hover:bg-red-900 transition"
+          className="bg-[#700F23] text-[white] p-3 rounded-lg mx-6 mt-8 hover:bg-[black] transition"
           onClick={() => setIsModalOpen(true)}
         >
           Añadir Proyecto
         </button>
       </div>
 
-      {/* Sidebar para pantallas pequeñas */}
+      {/* Sidebar for small screens */}
       <div
-        className={`md:hidden fixed inset-0 bg-gray-900 bg-opacity-50  transition-opacity z-50 ${
+        className={`md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 transition-opacity ${
           isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeSidebar}
       >
         <div
-          className={`h-full w-60 bg-white shadow-md transform transition-transform ${
+          className={`w-64 bg-gradient-to-b from-[#700F23] to-[#350A12] text-white h-full shadow-lg transition-transform ${
             isVisible ? 'translate-x-0' : '-translate-x-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center px-4 py-6 ">
-            <img src={damLogo} alt="Dam Ingenieria" className="h-8 w-8 mr-3" />
-            <div className="text-lg font-bold">Dam Ingenieria</div>
+          <div className="flex items-center px-6 py-8">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M720-360v-80h80q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360h-80Zm0 160v-80h80q17 0 28.5 11.5T840-240q0 17-11.5 28.5T800-200h-80Zm-160 40q-33 0-56.5-23.5T480-240h-80v-160h80q0-33 23.5-56.5T560-480h120v320H560ZM280-280q-66 0-113-47t-47-113q0-66 47-113t113-47h60q25 0 42.5-17.5T400-660q0-25-17.5-42.5T340-720H200q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h140q58 0 99 41t41 99q0 58-41 99t-99 41h-60q-33 0-56.5 23.5T200-440q0 33 23.5 56.5T280-360h80v80h-80Z"/></svg>            <div className="ml-4 text-xl font-bold">Dam Administración</div>
           </div>
-          <ul className="mt-2">
+
+          <ul className="mt-8">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
-                <li key={item.name} className="py-2">
+                <li key={item.name} className="mb-4">
                   <Link
                     to={item.path}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-md ${
-                      isActive ? 'bg-gray-300 text-gray-900' : 'hover:bg-gray-200'
+                    className={`flex items-center space-x-3 px-6 py-3 rounded-md transition-colors ${
+                      isActive ? 'bg-[#89203F] text-white border-l-4 border-[#FFC107]' : 'hover:bg-[#8B1D34]'
                     }`}
-                    onClick={closeSidebar} // Cierra el Sidebar al hacer clic
+                    onClick={closeSidebar}
                   >
-                    <item.icon className="h-5 w-5" />
+                    <item.icon className="h-6 w-6" />
                     <span>{item.name}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
+
           <button
-            className="bg-red-800 text-white p-3 items-center rounded-lg mt-4 hover:bg-red-900 transition"
+            className="bg-[#FFC107] text-[#700F23] p-3 rounded-lg mx-6 mt-8 hover:bg-[#FFB300] transition"
             onClick={() => setIsModalOpen(true)}
           >
             Añadir Proyecto
@@ -155,16 +150,16 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
         </div>
       </div>
 
-      {/* Modal para añadir proyecto */}
+      {/* Modal for adding project */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div
             ref={modalRef}
-            className="bg-white p-8 rounded-lg shadow-lg w-full md:w-3/4 lg:w-2/2"
+            className="bg-white p-8 rounded-lg shadow-lg w-full md:w-3/4 lg:w-2/3"
           >
             <ClientForm clients={clients} addClient={handleAddClient} materials={materials} />
             <button
-              className="mt-0 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
+              className="mt-4 bg-[#700F23] text-white p-3 rounded-lg hover:bg-[#8B1D34] transition"
               onClick={() => setIsModalOpen(false)}
             >
               Cerrar
