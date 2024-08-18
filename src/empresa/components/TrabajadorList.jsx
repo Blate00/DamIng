@@ -33,7 +33,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
           <li key={index} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">
             <div className="flex items-center">
               <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
-                {trabajador.image}
+                {trabajador.nombre.charAt(0).toUpperCase()}
               </div>
               <div>
                 <h3 className="font-semibold">{trabajador.nombre}</h3>
@@ -41,6 +41,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
                 <p className="text-sm text-gray-500">{trabajador.correo}</p>
               </div>
             </div>
+
             <DotsVerticalIcon
               className="h-6 w-6 text-gray-500 cursor-pointer"
               onClick={() => handleDotsClick(index)}

@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TrabajadorForm from '../components/TrabajadorForm';
 import TrabajadoresList from '../components/TrabajadorList';
 
 const Trabajadores = () => {
-  const [trabajadores, setTrabajadores] = useState([]);
+  const [trabajadores, setTrabajadores] = useState(JSON.parse(localStorage.getItem('trabajadores')) || []);
+  const [filteredTrabajadores, setFilteredTrabajadores] = useState(trabajadores);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef();
 
-  // Cargar los trabajadores del local storage al montar el componente
-  useEffect(() => {
-    const storedTrabajadores = JSON.parse(localStorage.getItem('trabajadores')) || [];
-    setTrabajadores(storedTrabajadores);
-  }, []);
-
-  // Actualizar el local storage cada vez que cambia el estado de trabajadores
   useEffect(() => {
     localStorage.setItem('trabajadores', JSON.stringify(trabajadores));
+    setFilteredTrabajadores(trabajadores);
   }, [trabajadores]);
-
-  const handleAddTrabajador = (nombre, telefono, correo) => {
-    const nuevoTrabajador = { nombre, telefono, correo, image: nombre.charAt(0).toUpperCase() };
-    setTrabajadores(prevTrabajadores => [...prevTrabajadores, nuevoTrabajador]);
-  };
 
   const handleDeleteTrabajador = (index) => {
     const updatedTrabajadores = trabajadores.filter((_, i) => i !== index);
     setTrabajadores(updatedTrabajadores);
   };
 
+  const handleAddTrabajador = (nombre, telefono, correo) => {
+    const nuevoTrabajador = { nombre, telefono, correo };
+    setTrabajadores(prevTrabajadores => [...prevTrabajadores, nuevoTrabajador]);
+  };
+
   return (
-    <div>
-      <TrabajadorForm addTrabajador={handleAddTrabajador} />
-      <TrabajadoresList trabajadores={trabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
+    <div className="flex flex-col p-3">
+      <div className="w-full rounded-lg p-5">
+        <TrabajadorForm trabajadores={filteredTrabajadores} addTrabajador={handleAddTrabajador} />
+        <TrabajadoresList trabajadores={filteredTrabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
+      </div>
     </div>
   );
 };
