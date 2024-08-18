@@ -8,7 +8,7 @@ const ClientForm = ({ clients, addClient }) => {
     address: '',
     phone: '',
     jobType: '',
-    clientImage: null
+    clientImage: ''
   });
   const [clientMatches, setClientMatches] = useState([]);
 
@@ -27,15 +27,6 @@ const ClientForm = ({ clients, addClient }) => {
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData(prevState => ({ ...prevState, [id]: value }));
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setFormData(prevState => ({ ...prevState, clientImage: reader.result }));
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleClientSelect = (client) => {
@@ -60,7 +51,7 @@ const ClientForm = ({ clients, addClient }) => {
         address: '',
         phone: '',
         jobType: '',
-        clientImage: null
+        clientImage: ''
       });
     }
   };
@@ -95,18 +86,6 @@ const ClientForm = ({ clients, addClient }) => {
             ))}
           </ul>
         )}
-      </div>
-      <div className="mb-4">
-        <label htmlFor="clientImage" className="block text-sm font-medium text-gray-700">
-          Imagen del Cliente
-        </label>
-        <input
-          type="file"
-          id="clientImage"
-          onChange={handleImageUpload}
-          className="mt-1 block w-full text-sm text-gray-500"
-          accept="image/*"
-        />
       </div>
       {['email', 'address', 'phone', 'jobType'].map(field => (
         <div key={field} className="mb-4">

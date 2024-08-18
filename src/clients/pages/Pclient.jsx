@@ -46,8 +46,8 @@ const Pclient = () => {
   }, [isModalOpen]);
 
   return (
-    <div className="uwu  flex flex-col bg-white p-3 ">
-      <div className="uwu2 h-screen p-1">
+    <div className="flex flex-col p-3 ">
+      <div className="uwu2 w-full rounded-lg p-5">
       <ClientList clients={filteredClients} onDeleteClient={handleDeleteClient} /> 
     </div>
 </div>  );

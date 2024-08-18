@@ -43,7 +43,7 @@ const ClientList = ({ clients, onDeleteClient }) => {
                   <img src={client.image} alt={client.name} className="h-8 w-8 rounded-full mr-2" />
                 ) : (
                   <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2 ">
-                    {client.image}
+                    {client.image || client.name.charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div>

@@ -42,11 +42,13 @@ const ListadoTrabajos = () => {
   }, []);
 
   return (
-    <div className="bg- p-8 rounded-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">{client.name}</h2>
-      <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
+    <div className="flex flex-col p-3">
+  
+      <ul className="uwu2 w-full rounded-lg p-5">   
+      <h2 className="text-2xl font-bold text-gray-800 mb-1">Trabajos Registrados</h2> 
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4 opacity-30">{client.name}</h2>
         {client.jobs.map((job, index) => (
-          <li key={index} className="bg-gray-50 p-2 rounded-lg flex items-center justify-between relative">
+          <li key={index} className="bg-gray-50 p-2 rounded-lg flex mb-1 items-center justify-between relative">
             <Link to={`/archives/${id}`} className="flex items-center justify-between w-full">
               <div className="flex items-center">
                 <FolderIcon className="h-8 w-8 text-gray-500 mr-2" />

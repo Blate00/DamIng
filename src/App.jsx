@@ -8,7 +8,7 @@ import MaterialesPage from './clients/pages/client/Materiales';
 import PresupuestoPage from './clients/pages/client/Presupuesto';
 import RendicionPage from './clients/pages/client/Rendicion'
 import ListadoTrabajos from './clients/pages/client/ListadoTrabajos';
-import Pempresa from './empresa/pages/Pempresa'
+import Pempresa from './empresa/pages/Trabajadores'
 import Layout from './general/layout';
 import Ptasks from './tasks/Ptasks';
 import Phome from './home/Phome'

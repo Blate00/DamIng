@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import damLogo from '../../../assets/dam.png';
+import ClientInfo from './components/ClientInfo';
+import ItemsTable from './components/ItemsTable';
+import Summary from './components/Summary';
+import TablaRendicion from './components/TablaRendicion';
+import ExportButtons from './components/ExportButtons';
+import Asignacion from './components/Asignacion'; // Importar Asignacion
+import ManoObra from './components/ManoObra'; // Importar ManoObra
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 
 const Presupuesto = () => {
   const { id, jobId } = useParams();
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
 
-  const [items, setItems] = useState([
-    { description: '', quantity: '', unitValue: '', total: '' }
-  ]);
+  const [items, setItems] = useState([{ description: '', quantity: '', unitValue: '', total: '' }]);
+  const [ggPercentage, setGgPercentage] = useState(20);
+  const [gestionPercentage, setGestionPercentage] = useState(8);
+  const [asignacion, setAsignacion] = useState(0); // Nuevo estado para Asignación
+  const [abonosAsignacion, setAbonosAsignacion] = useState([]);
+  const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
+  const [manoObra, setManoObra] = useState(0);
+  const [isSectionVisible, setIsSectionVisible] = useState(true);
+  const [desplegado, setDesplegado] = useState(false);
+  const [desplegado1, setDesplegado1] = useState(false);
+
+
+
+  useEffect(() => {
+    const savedItems = JSON.parse(localStorage.getItem('items'));
+    const savedGgPercentage = localStorage.getItem('ggPercentage');
+    const savedGestionPercentage = localStorage.getItem('gestionPercentage');
+    const storedAsignacion = localStorage.getItem('asignacion');
+    const storedManoObra = localStorage.getItem('manoObra');
+
+    if (savedItems) setItems(savedItems);
+    if (savedGgPercentage) setGgPercentage(parseFloat(savedGgPercentage));
+    if (savedGestionPercentage) setGestionPercentage(parseFloat(savedGestionPercentage));
+    if (storedAsignacion) setAsignacion(parseFloat(storedAsignacion) || 0);
+    if (storedManoObra) setManoObra(parseFloat(storedManoObra) || 0);
+  }, []);
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
@@ -22,7 +53,6 @@ const Presupuesto = () => {
     }
     setItems(updatedItems);
 
-    // Agregar una nueva fila si la actual está completa
     if (
       updatedItems[index].description &&
       updatedItems[index].quantity &&
@@ -31,20 +61,51 @@ const Presupuesto = () => {
     ) {
       setItems([...updatedItems, { description: '', quantity: '', unitValue: '', total: '' }]);
     }
+  };  const totalRecibidoAsignacion = abonosAsignacion.reduce((total, abono) => total + abono.monto, 0);
+  const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
+  const saldoActualAsignacion = totalRecibidoAsignacion;
+  const saldoFinalAsignacion = totalRecibidoAsignacion - totalRendicion;
+
+
+  const handleGuardarAsignacion = () => {
+    localStorage.setItem('asignacion', asignacion);
   };
 
-  const formatCLP = (value) => {
-    return parseFloat(value).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+  const handleGuardarAbonoAsignacion = (fecha, tipoTransaccion, monto) => {
+    const nuevoAbono = {
+      fecha,
+      tipoTransaccion,
+      monto
+    };
+    setAbonosAsignacion([...abonosAsignacion, nuevoAbono]);
   };
 
-  const calculateNetTotal = () => {
-    return items.reduce((acc, item) => acc + parseFloat(item.total || 0), 0);
+  const handleGuardarManoObra = () => {
+    localStorage.setItem('manoObra', manoObra);
   };
+
+  const formatCLP = (value) => parseFloat(value).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+
+  const calculateNetTotal = () => items.reduce((acc, item) => acc + parseFloat(item.total || 0), 0);
 
   const netTotal = calculateNetTotal();
-  const gg = (netTotal * 0.20).toFixed(2);
-  const gestion = (netTotal * 0.08).toFixed(2);
-  const totalNet = (parseFloat(netTotal) + parseFloat(gg) + parseFloat(gestion)).toFixed(2);
+  const gg = ((netTotal * ggPercentage) / 100).toFixed(2);
+  const gestion = ((netTotal * gestionPercentage) / 100).toFixed(2);
+  const totalGgGestion = (parseFloat(gg) + parseFloat(gestion)).toFixed(2);
+  const totalNet = (parseFloat(netTotal) + parseFloat(totalGgGestion)).toFixed(2);
+
+  useEffect(() => {
+    localStorage.setItem('netTotal', netTotal);
+    setManoObra(netTotal); // Actualizar manoObra con netTotal
+  }, [netTotal]);
+
+  const handleGuardarDatos = () => {
+    localStorage.setItem('items', JSON.stringify(items));
+    localStorage.setItem('ggPercentage', ggPercentage);
+    localStorage.setItem('gestionPercentage', gestionPercentage);
+    localStorage.setItem('netTotal', netTotal);
+    alert('Datos guardados con éxito');
+  };
 
   const exportToPDF = () => {
     const input = document.getElementById('presupuesto-content');
@@ -56,7 +117,6 @@ const Presupuesto = () => {
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        // Añadiendo el logo y ajustando el contenido
         pdf.addImage(damLogo, 'JPEG', 20, 20, 20, 20);
         pdf.addImage(imgData, 'PNG', 0, 40, pdfWidth, pdfHeight);
         pdf.save('presupuesto.pdf');
@@ -73,7 +133,7 @@ const Presupuesto = () => {
       ["", "", "", "", ""],
       ["", "", client.name, "", job.date],
       ["", "", , "",],
-      ["ITEM", "DESCRIPCIÓN", "cantidad", "VALOR UNIT", "TOTAL"],
+      ["ITEM", "DESCRIPCIÓN", "CANTIDAD", "VALOR UNIT", "TOTAL"],
       ...filteredItems.map((item, index) => [
         index + 1,
         item.description,
@@ -83,11 +143,11 @@ const Presupuesto = () => {
       ]),
       ["OBS:", "Documento: Boleta Honorario (+ Impto)"],
       ["", "Condición de pago por estado de avance"],
-      ["", `inversión $ ${formatCLP(netTotal)}`],
+      ["", `Inversión $ ${formatCLP(netTotal)}`],
       ["", "COTIZACIÓN VALIDA POR 20 DÍAS"],
       ["", "", "", "NETO", formatCLP(netTotal)],
       ["", "", "", "GG", formatCLP(gg)],
-      ["", "", "", "Gestion", formatCLP(gestion)],
+      ["", "", "", "Gestión", formatCLP(gestion)],
       ["", "", "", "TOTAL NETO", formatCLP(totalNet)]
     ];
 
@@ -98,101 +158,114 @@ const Presupuesto = () => {
     XLSX.writeFile(wb, 'presupuesto.xlsx');
   };
 
-  if (!client) {
-    return <div>Cliente no encontrado</div>;
-  }
+  if (!client) return <div>Cliente no encontrado</div>;
 
   const job = client.jobs.find(job => job.id === jobId);
-
-  if (!job) {
-    return <div>Trabajo no encontrado</div>;
-  }
+  if (!job) return <div>Trabajo no encontrado</div>;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-  <div className="p-4 flex-grow">
-    <div id="presupuesto-content" className="bg-white p-6 md:p-8 rounded-md shadow-md">
-    <div className="mb-6 text-left">
-        <h2 className="text-lg md:text-2xl font-semibold">{client.name}</h2>
+    <div className="flex flex-col min-h-screen ">
+      <div className="p-3 flex-grow">
+        <div id="presupuesto-content" className="bg-white p-6 md:p-8 rounded-md shadow-md">
+          <ClientInfo client={client} job={job} />
+          <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
+            <h4 className="text-center text-xl font-bold mb-4">Presupuesto</h4>
+            {desplegado ? (
+              <ChevronUpIcon className="w-6 h-6 text-gray-700" />
+            ) : (
+              <ChevronDownIcon className="w-6 h-6 text-gray-700" />
+            )}
+          </div>
+
+          {desplegado && (
+            <div className="mt">
+              <ItemsTable items={items} handleChange={handleChange} formatCLP={formatCLP} />
+              <Summary 
+                netTotal={netTotal} 
+                ggPercentage={ggPercentage} 
+                gestionPercentage={gestionPercentage}
+                gg={gg}
+                gestion={gestion}
+                totalGgGestion={totalGgGestion}
+                totalNet={totalNet}
+                setGgPercentage={setGgPercentage}
+                setGestionPercentage={setGestionPercentage}
+                formatCLP={formatCLP}
+              />
+              <button
+                onClick={handleGuardarDatos}
+                className="mt-4 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Guardar datos
+              </button>
+            </div>
+          )}
+ <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado1(!desplegado1)}>
+            <h4 className="text-center text-xl font-bold mt-10">Rendición</h4>
+            {desplegado1 ? (
+              <ChevronUpIcon className="w-6 h-6 text-gray-700 mt-10" />
+            ) : (
+              <ChevronDownIcon className="w-6 h-6 text-gray-700 mt-10" />
+            )}
+          </div>
+
+          {desplegado1 && (
+            <div className="mt-10 bg-red-100">
+             <Asignacion
+          asignacion={asignacion}
+          setAsignacion={setAsignacion}
+          abonosAsignacion={abonosAsignacion}
+          setAbonosAsignacion={setAbonosAsignacion}
+          nuevoAbonoAsignacion={nuevoAbonoAsignacion}
+          setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
+          handleGuardarAsignacion={handleGuardarAsignacion}
+          handleGuardarAbonoAsignacion={handleGuardarAbonoAsignacion}
+          />    <ManoObra 
+            manoObra={manoObra}
+            setManoObra={setManoObra}
+            handleGuardarManoObra={handleGuardarManoObra}
+          />
+
+            <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">Detalle de Rendición</h3>
+          <TablaRendicion
+            items={items}
+            handleChange={handleChange}
+            agregarFila={() => setItems([...items, { fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }])}
+          />
+
+          <h4 className="text-lg font-bold text-gray-800 mt-8 mb-4">Resumen</h4>
+          <div className="mb-4">
+            <h5 className="text-sm font-medium text-gray-700">Total de Rendición</h5>
+            <p className="text-sm text-gray-600">
+              {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+            </p>
+          </div>
+          <div className="mb-4">
+            <h5 className="text-sm font-medium text-gray-700">Saldo Actual de Asignación</h5>
+            <p className="text-sm text-gray-600">
+              {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+            </p>
+          </div>
+          <div className="mb-4">
+            <h5 className="text-sm font-medium text-gray-700">Saldo Final de Asignación</h5>
+            <p className="text-sm text-gray-600">
+              {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+            </p>
+          </div>
+            </div>
+            
+          )}
+          
         
-        <p className="mt-2 text-gray-500 text-xs md:text-sm">Dirección: {client.address}</p>
-        <p className="text-gray-500 text-xs md:text-sm">Tipo de Trabajo: {job.name}</p>
-        <p className="text-gray-500 text-xs md:text-sm">Fecha del Trabajo: {job.date}</p>
-      </div>
-      
-      
-      <h4 className="text-base md:text-xl font-semibold mt-4 mb-4">Servicios Eléctricos</h4>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead className="bg-red-900 text-white">
-            <tr>
-              <th className="py-2 px-2 md:px-4 border text-xs md:text-base">ITEM</th>
-              <th className="py-2 px-2 md:px-4 border text-xs md:text-base">DESCRIPCIÓN</th>
-              <th className="py-2 px-2 md:px-4 border text-xs md:text-base">CANTIDAD</th>
-              <th className="py-2 px-2 md:px-4 border text-xs md:text-base">VALOR UNIT</th>
-              <th className="py-2 px-2 md:px-4 border text-xs md:text-base">TOTAL</th>
-            </tr>
-          </thead>
-          <tbody className="text-center">
-            {items.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-100">
-                <td className="py-2 px-2 md:px-4 border text-xs md:text-base">{index + 1}</td>
-                <td className="py-2 px-2 md:px-4 border">
-                <input
-  type="text"
-  value={item.description}
-  onChange={(e) => handleChange(index, 'description', e.target.value)}
-  className="p-1 w-full text-left text-xs md:text-base border-none"
-/>
+ 
+        
 
-                </td>
-                <td className="py-2 px-2 md:px-4 border">
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-                    className="p-1 w-full text-left text-xs md:text-base border-none"
-                  />
-                </td>
-                <td className="py-2 px-2 md:px-4 border">
-                  <input
-                    type="number"
-                    value={item.unitValue}
-                    onChange={(e) => handleChange(index, 'unitValue', e.target.value)}
-                    className="p-1 w-full text-left text-xs md:text-base border-none"
-                  />
-                </td>
-                <td className="py-2 px-2 md:px-4 border text-xs md:text-base">{formatCLP(item.total)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+     
+        </div>
       </div>
-      
-      <div className="mt-4 text-right">
-        <p className="text-sm md:text-lg text-gray-600">Neto <span className="font-bold">{formatCLP(netTotal)}</span></p>
-        <p className="text-sm md:text-lg text-gray-600">GG  <span className="font-bold">{formatCLP(gg)}</span></p>
-        <p className="text-sm md:text-lg text-gray-600">Gestión <span className="font-bold">{formatCLP(gestion)}</span></p>
-        <p className="text-sm md:text-lg text-gray-700">Total Neto <span className="font-bold">{formatCLP(totalNet)}</span></p>
-      </div>
+
+      <ExportButtons exportToPDF={exportToPDF} exportToExcel={exportToExcel} />
     </div>
-
-    <div className="mt-4 flex flex-col md:flex-row gap-4">
-      <button 
-        onClick={exportToPDF} 
-        className="bg-red-700 text-white p-2 rounded-md hover:bg-red-800 text-sm md:text-base">
-        Exportar a PDF
-      </button>
-      <button 
-        onClick={exportToExcel} 
-        className="bg-red-700 text-white p-2 rounded-md hover:bg-red-800 text-sm md:text-base">
-        Exportar a Excel
-      </button>
-    </div>
-  </div>
-</div>
-
   );
 };
 
