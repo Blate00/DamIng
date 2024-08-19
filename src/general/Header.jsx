@@ -7,16 +7,14 @@ const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
 
   return (
-    <header className="text-gray-700 bg-white p-2 flex items-center shadow-lg ">
-      <button onClick={() => navigate(-1)} className="text-gray-700 hover:text-gray-900 p-2">
-        <ArrowSmLeftIcon className="h-6 w-6" />
-      </button>
+    <header className="text-gray-700 bg-[#700F23] h-16 p-2 flex items-center shadow-lg ">
+
       {/* Aquí colocamos el ClientSearch */}
       <div className="flex-grow">
         <ClientSearch />
       </div>
       <div className="ml-auto p-2">
-        <button onClick={toggleSidebar} className="text-gray-700 hover:text-gray-900">
+        <button onClick={toggleSidebar} className="text-white hover:text-white">
           <MenuIcon className="h-6 w-6" />
         </button>
       </div>
