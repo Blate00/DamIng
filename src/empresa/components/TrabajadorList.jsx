@@ -27,7 +27,6 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
 
   return (
     <div className="rounded-lg p-3">
-      <h2 className="text-xl font-semibold mb-4">Lista de Trabajadores</h2>
       <ul className="grid grid-cols-1 gap-1">
         {trabajadores.map((trabajador, index) => (
           <li key={index} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">

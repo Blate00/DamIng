@@ -24,9 +24,13 @@ const Trabajadores = () => {
   };
 
   return (
-    <div className="flex flex-col p-3">
-      <div className="w-full rounded-lg p-5">
+    <div className="uwu p-3 ">
+      <div className="uwu2 flex flex-col p-5">
+      <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Empresa</h1>
+
         <TrabajadorForm trabajadores={filteredTrabajadores} addTrabajador={handleAddTrabajador} />
+        <h2 className="text-xl font-semibold mb-4">Lista de Trabajadores</h2>
+
         <TrabajadoresList trabajadores={filteredTrabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
       </div>
     </div>

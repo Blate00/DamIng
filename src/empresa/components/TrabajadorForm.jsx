@@ -47,21 +47,19 @@ const TrabajadorForm = ({ trabajadores, addTrabajador }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Agregar Trabajador</h2>
-      <div className="mb-4">
-        <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-          Nombre del Trabajador
-        </label>
+    <div className="p-4 rounded-md  mb-4 sm:mb-4">
+      <h2 className="text-lg font-semibold mb-2">Añadir Trabajador</h2>
+      <div className="grid grid-cols-4 gap-4">
         <input
           type="text"
           id="nombre"
+          placeholder="Nombre del Trabajador"
           value={formData.nombre}
           onChange={handleInputChange}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          className="w-full p-2 border border-gray-300 rounded"
         />
         {trabajadorMatches.length > 0 && (
-          <ul className="border border-gray-300 rounded-md mt-2">
+          <ul className="col-span-4 border border-gray-300 rounded mt-2">
             {trabajadorMatches.map((trabajador, index) => (
               <li
                 key={index}
@@ -73,25 +71,25 @@ const TrabajadorForm = ({ trabajadores, addTrabajador }) => {
             ))}
           </ul>
         )}
-      </div>
-      {['telefono', 'correo'].map(field => (
-        <div key={field} className="mb-4">
-          <label htmlFor={field} className="block text-sm font-medium text-gray-700">
-            {field.charAt(0).toUpperCase() + field.slice(1)}
-          </label>
-          <input
-            type={field === 'correo' ? 'email' : 'text'}
-            id={field}
-            value={formData[field]}
-            onChange={handleInputChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-          />
-        </div>
-      ))}
-      <div className="flex justify-end">
+        <input
+          type="text"
+          id="telefono"
+          placeholder="Teléfono"
+          value={formData.telefono}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+        <input
+          type="email"
+          id="correo"
+          placeholder="Correo"
+          value={formData.correo}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
         <button
+          className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900"
           onClick={handleAddTrabajador}
-          className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
         >
           Guardar Trabajador
         </button>

@@ -115,6 +115,10 @@ const Presupuesto = () => {
     setItems(updatedItems);
     localStorage.setItem('items', JSON.stringify(updatedItems));
   };
+
+  const formatCLP = (value) => {
+    return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+  };
   return (
     <div className="flex flex-col min-h-screen ">
       <div className="p-3 flex-grow">
@@ -131,7 +135,8 @@ const Presupuesto = () => {
 
           {desplegado && (
             <div className="mt">
-              <ItemsTable items={items} handleChange={handleChange} />
+              <ItemsTable items={items} handleChange={handleChange}                                  formatCLP={formatCLP}  // Pasa la función como prop
+              />
               <Summary 
                 netTotal={netTotal} 
                 ggPercentage={ggPercentage} 
@@ -142,6 +147,8 @@ const Presupuesto = () => {
                 totalNet={totalNet}
                 setGgPercentage={setGgPercentage}
                 setGestionPercentage={setGestionPercentage}
+                                formatCLP={formatCLP}  // Pasa la función como prop
+
               />
               <button
                 onClick={handleGuardarDatos}
