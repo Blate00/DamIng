@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
-import damLogo from '../../../assets/dam.png';
 import ClientInfo from './components/ClientInfo';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
@@ -11,7 +10,7 @@ import TablaRendicion from './components/TablaRendicion';
 import ExportButtons from './components/ExportButtons';
 import Asignacion from './components/Asignacion'; 
 import ManoObra from './components/ManoObra'; 
-import TrabajadoresList from '../../../empresa/components/TrabajadorList'; // Importa el componente TrabajadoresList
+import AccesoPago from './components/ListaTrabajador'; // Importa el componente TrabajadoresList
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 
 const Presupuesto = () => {
@@ -223,7 +222,7 @@ const Presupuesto = () => {
             <div className="mt-10">
               <h2>Dinero Disponible:  {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h2>
               {/* Aquí es donde se integra el componente TrabajadoresList */}
-              <TrabajadoresList 
+              <AccesoPago 
                 trabajadores={trabajadores}
                 onDeleteTrabajador={handleDeleteTrabajador}
               />

@@ -15,7 +15,7 @@ body{background-color: rgb(233, 244, 244);}
 .uwu2{
 
     border-radius: 10px;
-    background-color: rgb(255, 255, 255);
+    background: linear-gradient(10deg,#fcfbfb, #ffffff, #f5efef, #e5a6b2);
 }
 
 .sidebar {

@@ -66,16 +66,16 @@ const Materiales = () => {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="uwu p-3">
     
-        <div className="p-6">
-          <div className="bg-gray-100 p-6 rounded-md shadow-md">
+        <div className="uwu2 flex flex-col p-5">
             <h2 className="text-lg font-semibold mb-4">{client.name}</h2>
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <p className="text-sm text-gray-600">Correo Electrónico: {client.email}</p>
+            <p className="text-sm text-gray-600">Correo Electrónico: {client.email}</p>
               <p className="text-sm text-gray-600">Dirección: {client.address}</p>
               <p className="text-sm text-gray-600">Teléfono: {client.phone}</p>
               <p className="text-sm text-gray-600">Tipo de Trabajo: {client.jobType}</p>
+            <div className="bg-white p-4 rounded-md shadow-md">
+              
               <h4 className="font-semibold mt-4">Materiales</h4>
               <MaterialList materials={materials} onUpdateQuantity={updateMaterialQuantity} onDelete={deleteMaterial} />
               <AddMaterialForm onAdd={addMaterial} />
@@ -83,7 +83,7 @@ const Materiales = () => {
             </div>
           </div>
       </div>
-    </div>
+    
   );
 };
 
@@ -119,7 +119,7 @@ const MaterialList = ({ materials, onUpdateQuantity, onDelete }) => (
           </button>
         </div>
       </li>
-    ))} <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+    ))} <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded">
         Añadir
       </button>
   </ul>

@@ -1,8 +1,9 @@
+// AccesoPago.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
+import { useNavigate } from 'react-router-dom';
 
-const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
+const AccesoPago = ({ trabajadores, onDeleteTrabajador }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -16,8 +17,8 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
     setOpenIndex(null);
   };
 
-  const handleViewPayments = (trabajador) => {
-    navigate('/pagos', { state: { trabajador } });
+  const handlePagoClick = (trabajador) => {
+    navigate('/pago', { state: { trabajador } });
   };
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
     <div className="rounded-lg p-3">
       <ul className="grid grid-cols-1 gap-1">
         {trabajadores.map((trabajador, index) => (
-          <li key={index} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">
+          <li key={index}   onClick={() => handlePagoClick(trabajador)} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">
             <div className="flex items-center">
               <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
                 {trabajador.nombre.charAt(0).toUpperCase()}
@@ -46,27 +47,8 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
                 <p className="text-sm text-gray-500">{trabajador.correo}</p>
               </div>
             </div>
-
-            <DotsVerticalIcon
-              className="h-6 w-6 text-gray-500 cursor-pointer"
-              onClick={() => handleDotsClick(index)}
-            />
-            {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                <button
-                  className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-blue-100"
-                  onClick={() => handleViewPayments(trabajador)}
-                >
-                  Ver Pagos
-                </button>
-                <button
-                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-                  onClick={() => handleDeleteTrabajador(index)}
-                >
-                  Eliminar Trabajador
-                </button>
-              </div>
-            )}
+         
+           
           </li>
         ))}
       </ul>
@@ -74,4 +56,4 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   );
 };
 
-export default TrabajadoresList;
+export default AccesoPago;
