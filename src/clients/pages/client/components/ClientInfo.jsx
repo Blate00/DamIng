@@ -1,11 +1,17 @@
 import React from 'react';
 
 const ClientInfo = ({ client, job }) => (
-  <div className="mb-6 text-left">
-    <h2 className="text-lg md:text-2xl font-semibold">{client.name}</h2>
-    <p className="mt-2 text-gray-500 text-xs md:text-sm">Dirección: {client.address}</p>
-    <p className="text-gray-500 text-xs md:text-sm">Tipo de Trabajo: {job.name}</p>
-    <p className="text-gray-500 text-xs md:text-sm">Fecha del Trabajo: {job.date}</p>
+  <div className="mb-8 ">
+    <h2 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">{client.name}</h2>
+    <p className="mt-2 text-gray-900 text-sm md:text-base">
+      <span className="font-semibold">Dirección:</span> {client.address}
+    </p>
+    <p className="mt-2 text-gray-900 text-sm md:text-base">
+      <span className="font-semibold">Tipo de Trabajo:</span> {job.name}
+    </p>
+    <p className="mt-2 text-gray-900 text-sm md:text-base">
+      <span className="font-semibold">Fecha del Trabajo:</span> {job.date}
+    </p>
   </div>
 );
 

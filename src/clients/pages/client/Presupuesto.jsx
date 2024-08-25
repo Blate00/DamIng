@@ -8,8 +8,8 @@ import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import TablaRendicion from './components/TablaRendicion';
 import ExportButtons from './components/ExportButtons';
-import Asignacion from './components/Asignacion'; 
-import ManoObra from './components/ManoObra'; 
+import Asignacion from './components/Asignacion';
+import ManoObra from './components/ManoObra';
 import AccesoPago from './components/ListaTrabajador'; // Importa el componente TrabajadoresList
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 
@@ -18,7 +18,6 @@ const Presupuesto = () => {
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
   const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
-
   const [items, setItems] = useState([{ description: '', quantity: '', unitValue: '', total: '' }]);
   const [ggPercentage, setGgPercentage] = useState(20);
   const [gestionPercentage, setGestionPercentage] = useState(8);
@@ -26,10 +25,7 @@ const Presupuesto = () => {
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
   const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
   const [manoObra, setManoObra] = useState(0);
-  const [isSectionVisible, setIsSectionVisible] = useState(true);
-  const [desplegado, setDesplegado] = useState(false);
-  const [desplegado1, setDesplegado1] = useState(false);
-  const [desplegado2, setDesplegado2] = useState(false);
+  const [activeSection, setActiveSection] = useState(null); // Estado para manejar la sección activa
 
   // Estado para los trabajadores
   const [trabajadores, setTrabajadores] = useState([]);
@@ -118,70 +114,61 @@ const Presupuesto = () => {
   const formatCLP = (value) => {
     return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   };
+
+  // Manejar el despliegue de las secciones
+  const handleSectionToggle = (section) => {
+    setActiveSection(activeSection === section ? null : section);
+  };
+
   return (
-    <div className="flex flex-col min-h-screen ">
-      <div className="p-3 flex-grow">
-        <div id="presupuesto-content" className="bg-white p-6 md:p-8 rounded-md shadow-md">
-          <ClientInfo client={client} job={job} />
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
-            <h4 className="text-center text-xl font-bold ">Presupuesto</h4>
-            {desplegado ? (
-              <ChevronUpIcon className="w-6 h-6 text-gray-700" />
-            ) : (
-              <ChevronDownIcon className="w-6 h-6 text-gray-700" />
-            )}
-          </div>
+    <div className="flex flex-col p-3">
+      <div id="presupuesto-content" className="uwu2 w-full rounded-lg p-5 bg-gray-100 shadow-lg">
+        <ClientInfo client={client} job={job} />
 
-          {desplegado && (
-            <div className="mt">
-              <ItemsTable items={items} handleChange={handleChange}                                  formatCLP={formatCLP}  // Pasa la función como prop
-              />
-              <Summary 
-                netTotal={netTotal} 
-                ggPercentage={ggPercentage} 
-                gestionPercentage={gestionPercentage}
-                gg={gg}
-                gestion={gestion}
-                totalGgGestion={totalGgGestion}
-                totalNet={totalNet}
-                setGgPercentage={setGgPercentage}
-                setGestionPercentage={setGestionPercentage}
-                                formatCLP={formatCLP}  // Pasa la función como prop
+        <Section
+          title="Presupuesto"
+          isVisible={activeSection === 'presupuesto'}
+          onToggle={() => handleSectionToggle('presupuesto')}
+        >
+          <ItemsTable items={items} handleChange={handleChange} formatCLP={formatCLP} />
+          <Summary
+            netTotal={netTotal}
+            ggPercentage={ggPercentage}
+            gestionPercentage={gestionPercentage}
+            gg={gg}
+            gestion={gestion}
+            totalGgGestion={totalGgGestion}
+            totalNet={totalNet}
+            setGgPercentage={setGgPercentage}
+            setGestionPercentage={setGestionPercentage}
+            formatCLP={formatCLP}
+          />
+          <button
+            onClick={handleGuardarDatos}
+            className="mt-4 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Guardar datos
+          </button>
+        </Section>
 
-              />
-              <button
-                onClick={handleGuardarDatos}
-                className="mt-4 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Guardar datos
-              </button>
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado1(!desplegado1)}>
-            <h4 className="text-center text-xl font-bold mt-10">Rendición</h4>
-            {desplegado1 ? (
-              <ChevronUpIcon className="w-6 h-6 text-gray-700 mt-10" />
-            ) : (
-              <ChevronDownIcon className="w-6 h-6 text-gray-700 mt-10" />
-            )}
-          </div>
-
-          {desplegado1 && (
-            <div className="mt-10 ">
-              <Asignacion
-                asignacion={asignacion}
-                setAsignacion={setAsignacion}
-                abonosAsignacion={abonosAsignacion}
-                setAbonosAsignacion={setAbonosAsignacion}
-                nuevoAbonoAsignacion={nuevoAbonoAsignacion}
-                setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
-              />
-              <ManoObra 
-                manoObra={manoObra}
-                setManoObra={setManoObra}
-              />
- <TablaRendicion
+        <Section
+          title="Rendición"
+          isVisible={activeSection === 'rendicion'}
+          onToggle={() => handleSectionToggle('rendicion')}
+        >
+          <Asignacion
+            asignacion={asignacion}
+            setAsignacion={setAsignacion}
+            abonosAsignacion={abonosAsignacion}
+            setAbonosAsignacion={setAbonosAsignacion}
+            nuevoAbonoAsignacion={nuevoAbonoAsignacion}
+            setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
+          />
+          <ManoObra
+            manoObra={manoObra}
+            setManoObra={setManoObra}
+          />
+          <TablaRendicion
             items={items}
             handleChange={handleChange}
             deleteItem={deleteItem}
@@ -206,38 +193,43 @@ const Presupuesto = () => {
             <p className="text-sm text-gray-600">
               {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
             </p>
-          </div>            </div>
-          )}
-
-          <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado2(!desplegado2)}>
-          <h4 className="text-center text-xl font-bold mt-10">Flujo de Caja</h4>
-            {desplegado2 ? (
-              <ChevronUpIcon className="w-6 h-6 text-gray-700 mt-10" />
-            ) : (
-              <ChevronDownIcon className="w-6 h-6 text-gray-700 mt-10" />
-            )}
           </div>
+        </Section>
 
-          {desplegado2 && (
-            <div className="mt-10">
-              <h2>Dinero Disponible:  {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h2>
-              {/* Aquí es donde se integra el componente TrabajadoresList */}
-              <AccesoPago 
-                trabajadores={trabajadores}
-                onDeleteTrabajador={handleDeleteTrabajador}
-              />
-              {/* Otros elementos del flujo de caja pueden ir aquí */}
-            </div>
-          )}
-
-          <ExportButtons 
-            exportToPDF={exportToPDF} 
-            exportToExcel={exportToExcel} 
+        <Section
+          title="Flujo de Caja"
+          isVisible={activeSection === 'flujoCaja'}
+          onToggle={() => handleSectionToggle('flujoCaja')}
+        >
+          <h2 className="text-lg font-bold">Dinero Disponible: {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h2>
+          <AccesoPago
+            trabajadores={trabajadores}
+            onDeleteTrabajador={handleDeleteTrabajador}
           />
-        </div>
+          {/* Otros elementos del flujo de caja pueden ir aquí */}
+        </Section>
+
+      
       </div>
     </div>
   );
 };
+
+const Section = ({ title, isVisible, onToggle, children }) => (
+  <div className="mt-8">
+    <div
+      className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md"
+      onClick={onToggle}
+    >
+      <h4 className="text-center text-xl font-bold text-white">{title}</h4>
+      {isVisible ? (
+        <ChevronUpIcon className="w-6 h-6 text-white" />
+      ) : (
+        <ChevronDownIcon className="w-6 h-6 text-white" />
+      )}
+    </div>
+    {isVisible && <div className="mt-4">{children}</div>}
+  </div>
+);
 
 export default Presupuesto;

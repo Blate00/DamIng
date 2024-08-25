@@ -42,9 +42,9 @@ const ManoObra = ({
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-6">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
-        <h4 className="text-center font-bold mb-4">Resumen Mano de Obra</h4>
+        <h4 className="text-xl font-bold text-gray-800">Resumen Mano de Obra</h4>
         {desplegado ? (
           <ChevronUpIcon className="w-6 h-6 text-gray-700" />
         ) : (
@@ -54,83 +54,83 @@ const ManoObra = ({
 
       {desplegado && (
         <>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Total de Mano de Obra</label>
+          <div className="mt-4 mb-6">
+            <label className="block text-sm font-medium text-gray-800">Total de Mano de Obra</label>
             <input
               type="number"
               value={manoObra}
               onChange={(e) => setManoObra(parseFloat(e.target.value) || 0)}
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
             />
             <button
               onClick={handleGuardarManoObra}
-              className="mt-2 p-2 bg-red-800 text-white rounded-md hover:bg-red-900"
+              className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               Guardar Mano de Obra
             </button>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Tipo de Transacción</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-800">Tipo de Transacción</label>
             <select
               value={tipoTransaccion}
               onChange={(e) => setTipoTransaccion(e.target.value)}
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
             >
               <option value="Transferencia">Transferencia</option>
               <option value="Efectivo">Efectivo</option>
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Nuevo Abono para Mano de Obra</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-800">Nuevo Abono para Mano de Obra</label>
             <input
               type="number"
               value={nuevoAbonoManoObra}
               onChange={(e) => setNuevoAbonoManoObra(parseFloat(e.target.value) || 0)}
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
             />
             <button
               onClick={handleGuardarAbono}
-              className="mt-2 p-2 bg-red-800 text-white rounded-md hover:bg-red-900"
+              className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               Guardar Abono de Mano de Obra
             </button>
           </div>
 
-          <table className="min-w-full bg-white border border-black">
-            <thead>
+          <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
+            <thead className="bg-gray-100 border-b border-gray-300">
               <tr>
-                <th className="border border-black p-2 text-left">Fecha</th>
-                <th className="border border-black p-2 text-left">Tipo de transacción</th>
-                <th className="border border-black p-2 text-right">Ingreso</th>
+                <th className="py-3 px-6 text-left text-gray-800">Fecha</th>
+                <th className="py-3 px-6 text-left text-gray-800">Tipo de Transacción</th>
+                <th className="py-3 px-6 text-right text-gray-800">Ingreso</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-gray-700">
               {abonosManoObra.map((abono, index) => (
-                <tr key={index}>
-                  <td className="border border-black p-2">{abono.fecha}</td>
-                  <td className="border border-black p-2">{abono.tipoTransaccion}</td>
-                  <td className="border border-black p-2 text-right">
+                <tr key={index} className={`border-b ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`}>
+                  <td className="py-3 px-6">{abono.fecha}</td>
+                  <td className="py-3 px-6">{abono.tipoTransaccion}</td>
+                  <td className="py-3 px-6 text-right">
                     {abono.monto.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                   </td>
                 </tr>
               ))}
-              <tr>
-                <td colSpan="2" className="border border-black p-2 font-bold text-left">Total Recibido</td>
-                <td className="border border-black p-2 text-right">
+              <tr className="bg-gray-100 font-bold">
+                <td colSpan="2" className="py-3 px-6 text-left">Total Recibido</td>
+                <td className="py-3 px-6 text-right">
                   {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>
-              <tr>
-                <td colSpan="2" className="border border-black p-2 font-bold text-left">Total Mano de Obra</td>
-                <td className="border border-black p-2 text-right">
+              <tr className="bg-gray-100 font-bold">
+                <td colSpan="2" className="py-3 px-6 text-left">Total Mano de Obra</td>
+                <td className="py-3 px-6 text-right">
                   {manoObra.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>
-              <tr>
-                <td colSpan="2" className="border border-black p-2 font-bold text-left">Saldo Actual</td>
-                <td className="border border-black p-2 text-right">
+              <tr className="bg-gray-100 font-bold">
+                <td colSpan="2" className="py-3 px-6 text-left">Saldo Actual</td>
+                <td className="py-3 px-6 text-right">
                   {saldoActual.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>

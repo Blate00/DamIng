@@ -155,15 +155,10 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div
             ref={modalRef}
-            className="bg-white p-8 rounded-lg shadow-lg w-full md:w-3/4 lg:w-2/3"
+            className="p-8 rounded-lg  w-full md:w-3/4 lg:w-2/3"
           >
             <ClientForm clients={clients} addClient={handleAddClient} materials={materials} />
-            <button
-              className="mt-4 bg-[#700F23] text-white p-3 rounded-lg hover:bg-[#8B1D34] transition"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Cerrar
-            </button>
+           
           </div>
         </div>
       )}

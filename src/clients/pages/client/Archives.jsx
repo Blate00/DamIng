@@ -16,9 +16,9 @@ const Archives = () => {
   };
 
   return (
-    <main className=" uwu flex-1 p-3 overflow-y-auto">
-      <div className="bg-white rounded-lg p-4 h-screen">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Documentos</h2>
+<div className="flex flex-col p-3">
+      <div className="uwu2 bg-white rounded-lg p-4 ">
+        <h2 className="text-xl font-semibold mb-4">Documentos</h2>
 
         <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">
           <li>
@@ -51,8 +51,8 @@ const Archives = () => {
             </Link>
           </li>  
         </ul>
-      </div>
-    </main>
+      </div></div>
+
   );
 };
 

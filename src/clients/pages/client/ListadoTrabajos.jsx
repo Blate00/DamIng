@@ -8,7 +8,8 @@ const ListadoTrabajos = () => {
   const client = clients[id];
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
-
+  const [selectedPeriod, setSelectedPeriod] = useState('2024');
+  const [selectedFilter, setSelectedFilter] = useState('Estado');
   if (!client) {
     return <div className="p-6">Cliente no encontrado</div>;
   }
@@ -43,12 +44,46 @@ const ListadoTrabajos = () => {
 
   return (
     <div className="flex flex-col p-3">
-  
+
       <ul className="uwu2 w-full rounded-lg p-5">   
-      <h2 className="text-2xl font-bold text-gray-800 mb-1">Trabajos Registrados</h2> 
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4 opacity-30">{client.name}</h2>
+           <div className="flex flex-row items-center space-x-3 mb-4 p-">
+        <input 
+          type="text" 
+          placeholder="Buscar Cliente" 
+          className="p-2 border rounded-lg flex-grow"
+        />
+
+        {/* Filtro de Períodos */}
+        <select 
+          value={selectedPeriod} 
+          onChange={(e) => setSelectedPeriod(e.target.value)}
+          className="p-2 border rounded-lg"
+          placeholder="Buscar Cliente" 
+
+        >
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          {/* Agrega más períodos según sea necesario */}
+        </select>
+
+        {/* Filtro de Cursos */}
+        <select 
+          value={selectedFilter} 
+          onChange={(e) => setSelectedFilter(e.target.value)}
+          className="p-2 border rounded-lg"
+        >
+          <option value=" Mes">Estado</option>
+          <option value="Iniciado">Iniciado</option>
+          <option value="No Iniciado">No Iniciado</option>
+          <option value="Finalizado">Finalizado</option>
+          {/* Agrega más filtros según sea necesario */}
+        </select>
+      </div>
+      <div className="">
+   
+      <h2 className="text-xl font-semibold mb-4">Trabajos Registrados</h2> 
         {client.jobs.map((job, index) => (
-          <li key={index} className="bg-gray-50 p-2 rounded-lg flex mb-1 items-center justify-between relative">
+          <li key={index} className="bg-gray-50 p-3 rounded-lg flex mb-1 items-center justify-between relative ">
             <Link to={`/archives/${id}`} className="flex items-center justify-between w-full">
               <div className="flex items-center">
                 <FolderIcon className="h-8 w-8 text-gray-500 mr-2" />
@@ -82,7 +117,7 @@ const ListadoTrabajos = () => {
               </div>
             )}
           </li>
-        ))}
+        ))}</div>
       </ul>
     </div>
   );
