@@ -32,26 +32,22 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="rounded-lg p-3">
-      <h2 className="text-xl font-semibold mb-4">Lista de Clientes</h2>
-      <ul className="grid grid-cols-1 gap-1">
+    <div className="rounded-lg p-4 100 ">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Clientes</h2>
+      <ul className="space-y-4">
         {clients.map((client, index) => (
-          <li key={index} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">
-            <Link to={`/trabajos/${index}`} className="flex items-center justify-between w-full">
-              <div className="flex items-center">
-                {typeof client.image === 'string' && client.image.startsWith('data:image') ? (
-                  <img src={client.image} alt={client.name} className="h-8 w-8 rounded-full mr-2" />
-                ) : (
-                  <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2 ">
-                    {client.image || client.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div>
-                  <h3 className="font-semibold">{client.name}</h3>
+          <li key={index} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between relative border  border-black">
+            <Link to={`/trabajos/${index}`} className="flex items-center w-full space-x-4">
+              {typeof client.image === 'string' && client.image.startsWith('data:image') ? (
+                <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center text-lg font-medium">
+                  {client.image || client.name.charAt(0).toUpperCase()}
                 </div>
-              </div>
-              <div>
-                <h3 className="text-sm text-gray-500">Modificado {client.jobDate}</h3>
+              )}
+              <div className="flex-1">
+                <h3 className="text-md font-semibold text-gray-800">{client.name}</h3>
+                <p className="text-sm text-gray-500">Modificado {client.jobDate}</p>
               </div>
             </Link>
 
@@ -60,15 +56,15 @@ const ClientList = ({ clients, onDeleteClient }) => {
               onClick={() => handleDotsClick(index)}
             />
             {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+              <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
                 <button
-                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  className="block w-full text-left px-3 py-1 text-gray-700 hover:bg-gray-100 text-sm"
                   onClick={() => handleDownloadFiles(index)}
                 >
                   Descargar Archivos
                 </button>
                 <button
-                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
+                  className="block w-full text-left px-3 py-1 text-red-600 hover:bg-red-100 text-sm"
                   onClick={() => handleDeleteClient(index)}
                 >
                   Eliminar Cliente

@@ -54,7 +54,6 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
 
   return (
     <table className="w-full border-collapse">
-      
       <thead>
         <tr className="text-gray-500 text-sm leading-normal">
           <th className="py-3 px-6 text-left">Cliente</th>

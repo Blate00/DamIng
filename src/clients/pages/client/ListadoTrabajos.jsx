@@ -4,14 +4,28 @@ import { FolderIcon, DotsVerticalIcon } from '@heroicons/react/outline';
 
 const ListadoTrabajos = () => {
   const { id } = useParams();
-  const clients = JSON.parse(localStorage.getItem('clients')) || [];
-  const client = clients[id];
+  const [client, setClient] = useState(JSON.parse(localStorage.getItem('clients'))[id] || {});
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
   const [selectedPeriod, setSelectedPeriod] = useState('2024');
   const [selectedFilter, setSelectedFilter] = useState('Estado');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const updatedClients = JSON.parse(localStorage.getItem('clients')) || [];
+    setClient(updatedClients[id]);
+  }, [id]);
+
+  useEffect(() => {
+    if (client) {
+      const updatedClients = JSON.parse(localStorage.getItem('clients')) || [];
+      updatedClients[id] = client;
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+    }
+  }, [client, id]);
+
   if (!client) {
-    return <div className="p-6">Cliente no encontrado</div>;
+    return <div className="p-4">Cliente no encontrado</div>;
   }
 
   const handleDotsClick = (index) => {
@@ -19,8 +33,8 @@ const ListadoTrabajos = () => {
   };
 
   const handleDelete = (jobIndex) => {
-    client.jobs.splice(jobIndex, 1);
-    localStorage.setItem('clients', JSON.stringify(clients));
+    const updatedJobs = client.jobs.filter((_, index) => index !== jobIndex);
+    setClient(prevClient => ({ ...prevClient, jobs: updatedJobs }));
     setOpenIndex(null);
   };
 
@@ -42,74 +56,86 @@ const ListadoTrabajos = () => {
     };
   }, []);
 
+  const handleStatusChange = (jobIndex, newStatus) => {
+    const updatedJobs = client.jobs.map((job, index) =>
+      index === jobIndex ? { ...job, status: newStatus } : job
+    );
+    setClient(prevClient => ({ ...prevClient, jobs: updatedJobs }));
+  };
+
+  const filteredJobs = client.jobs
+    .filter(job => job.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(job => selectedFilter === 'Estado' || job.status === selectedFilter);
+
   return (
     <div className="flex flex-col p-3">
+    <div className="bg-white rounded-lg p-4 100">
+      <div className=" p-5  ">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+          <input
+            type="text"
+            placeholder="Buscar Trabajo"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow mb-3 md:mb-0"
+          />
 
-      <ul className="uwu2 w-full rounded-lg p-5">   
-           <div className="flex flex-row items-center space-x-3 mb-4 p-">
-        <input 
-          type="text" 
-          placeholder="Buscar Cliente" 
-          className="p-2 border rounded-lg flex-grow"
-        />
+          <select
+            value={selectedPeriod}
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+            className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mb-3 md:mb-0"
+          >
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+          </select>
 
-        {/* Filtro de Períodos */}
-        <select 
-          value={selectedPeriod} 
-          onChange={(e) => setSelectedPeriod(e.target.value)}
-          className="p-2 border rounded-lg"
-          placeholder="Buscar Cliente" 
-
-        >
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-          {/* Agrega más períodos según sea necesario */}
-        </select>
-
-        {/* Filtro de Cursos */}
-        <select 
-          value={selectedFilter} 
-          onChange={(e) => setSelectedFilter(e.target.value)}
-          className="p-2 border rounded-lg"
-        >
-          <option value=" Mes">Estado</option>
-          <option value="Iniciado">Iniciado</option>
-          <option value="No Iniciado">No Iniciado</option>
-          <option value="Finalizado">Finalizado</option>
-          {/* Agrega más filtros según sea necesario */}
-        </select>
+          <select
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+            className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm"
+          >
+            <option value="Estado">Estado</option>
+            <option value="Iniciado">Iniciado</option>
+            <option value="No Iniciado">No Iniciado</option>
+            <option value="Finalizado">Finalizado</option>
+          </select>
+        </div>
       </div>
-      <div className="">
-   
-      <h2 className="text-xl font-semibold mb-4">Trabajos Registrados</h2> 
-        {client.jobs.map((job, index) => (
-          <li key={index} className="bg-gray-50 p-3 rounded-lg flex mb-1 items-center justify-between relative ">
-            <Link to={`/archives/${id}`} className="flex items-center justify-between w-full">
-              <div className="flex items-center">
-                <FolderIcon className="h-8 w-8 text-gray-500 mr-2" />
-                <div>
-                  <h3 className="font-semibold">{job.name}</h3>
-                </div>
-              </div>
-              <div>
-                <h3 className="ultmod opacity-25">{`Modificado: ${job.date}`}</h3>
+<div  className="rounded-lg p-4 100">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Trabajos Registrados</h2>
+      <ul className="space-y-4">
+        {filteredJobs.map((job, index) => (
+          <li key={index} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between relative border border-gray-200">
+            <Link to={`/archives/${id}`} className="flex items-center flex-grow space-x-4">
+              <FolderIcon className="h-6 w-6 text-gray-600" />
+              <div className="flex-1">
+                <h3 className="text-md font-semibold text-gray-800 mb-1">{job.name}</h3>
+                <p className="text-xs text-gray-600">{`Modificado: ${job.date}`}</p>
               </div>
             </Link>
-
+            <select
+              value={job.status}
+              onChange={(e) => handleStatusChange(index, e.target.value)}
+              className="p-1 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mr-9"
+            >
+              <option value="Iniciado">Iniciado</option>
+              <option value="No Iniciado">No Iniciado</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
             <DotsVerticalIcon
-              className="h-6 w-6 text-gray-500 cursor-pointer"
+              className="h-6 w-6 text-gray-600 cursor-pointer absolute top-6 right-2"
               onClick={() => handleDotsClick(index)}
             />
             {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+              <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
                 <button
-                  className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                  className="block w-full text-left px-3 py-1 text-xs text-red-600 hover:bg-red-50"
                   onClick={() => handleDelete(index)}
                 >
                   Eliminar
                 </button>
                 <button
-                  className="block w-full text-left px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
+                  className="block w-full text-left px-3 py-1 text-xs text-blue-600 hover:bg-blue-50"
                   onClick={() => handleDownload(index)}
                 >
                   Descargar Archivos
@@ -117,9 +143,9 @@ const ListadoTrabajos = () => {
               </div>
             )}
           </li>
-        ))}</div>
+        ))}
       </ul>
-    </div>
+    </div></div></div>
   );
 };
 

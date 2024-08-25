@@ -38,7 +38,7 @@ const Pmaterial = () => {
 
   return (
     <div className="flex flex-col p-3">
-      <div className="uwu2 p-5 w-full rounded-lg">
+      <div className="bg-white rounded-lg p-4 100">
         <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Gestión de Materiales</h1>
 
         <div className="p-4 rounded-md  mb-4 sm:mb-4">

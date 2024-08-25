@@ -122,7 +122,7 @@ const Presupuesto = () => {
 
   return (
     <div className="flex flex-col p-3">
-      <div id="presupuesto-content" className="uwu2 w-full rounded-lg p-5 bg-gray-100 shadow-lg">
+      <div id="presupuesto-content" className="w-full rounded-lg p-5 bg-gray-100 shadow-lg">
         <ClientInfo client={client} job={job} />
 
         <Section

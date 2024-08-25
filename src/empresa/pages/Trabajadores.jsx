@@ -25,7 +25,7 @@ const Trabajadores = () => {
 
   return (
     <div className="uwu p-3 ">
-      <div className="uwu2 flex flex-col p-5">
+      <div className="bg-white rounded-lg p-4 100">
       <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Empresa</h1>
 
         <TrabajadorForm trabajadores={filteredTrabajadores} addTrabajador={handleAddTrabajador} />

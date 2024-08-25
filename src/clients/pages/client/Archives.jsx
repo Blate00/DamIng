@@ -17,7 +17,7 @@ const Archives = () => {
 
   return (
 <div className="flex flex-col p-3">
-      <div className="uwu2 bg-white rounded-lg p-4 ">
+      <div className="bg-white rounded-lg p-4 ">
         <h2 className="text-xl font-semibold mb-4">Documentos</h2>
 
         <ul className="grid grid-cols-1 md:grid-cols-1 gap-2">

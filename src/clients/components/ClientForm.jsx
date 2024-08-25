@@ -67,7 +67,7 @@ const ClientForm = ({ clients, addClient }) => {
     <div className="uwu2 bg-gray-50 p-6 rounded-lg shadow-md max-w-lg mx-auto">
       <h2 className="text-xl font-semibold mb-6 flex items-center text-gray-800">
         <UserIcon className="h-6 w-6 text-red-800 mr-2" />
-        Nuevo Cliente
+      Nuevo Proyecto
       </h2>
       <div className="mb-4">
         <input
