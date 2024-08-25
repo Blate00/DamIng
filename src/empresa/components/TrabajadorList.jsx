@@ -8,7 +8,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   const navigate = useNavigate();
 
   const handleDotsClick = (index) => {
-    setOpenIndex(prevIndex => prevIndex === index ? null : index);
+    setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
   const handleDeleteTrabajador = (index) => {
@@ -17,7 +17,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   };
 
   const handleViewPayments = (trabajador) => {
-    navigate('/pagos', { state: { trabajador } });
+    navigate('/pagos', { state: { trabajadorId: trabajador.id } });
   };
 
   useEffect(() => {

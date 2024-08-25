@@ -1,35 +1,34 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 
-const RegistroPago = () => {
+const RegistroPagos = () => {
+  const location = useLocation();
+  const trabajadorId = location.state?.trabajadorId;
   const [pagos, setPagos] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     const pagosGuardados = JSON.parse(localStorage.getItem('pagos')) || [];
-    setPagos(pagosGuardados);
-  }, []);
+    const pagosFiltrados = pagosGuardados.find(p => p.trabajadorId === trabajadorId)?.pagos || [];
+    setPagos(pagosFiltrados);
+  }, [trabajadorId]);
 
   const handleDotsClick = (index) => {
-    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
+    setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
   const handleDeletePago = (index) => {
     const updatedPagos = pagos.filter((_, i) => i !== index);
-    setPagos(updatedPagos);
-    localStorage.setItem('pagos', JSON.stringify(updatedPagos));
-    setOpenIndex(null);
-  };
+    const pagosGuardados = JSON.parse(localStorage.getItem('pagos')) || [];
+    const trabajadorIndex = pagosGuardados.findIndex(p => p.trabajadorId === trabajadorId);
 
-  const handleDownloadPago = (pago) => {
-    const blob = new Blob([JSON.stringify(pago, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${pago.trabajador}_pago.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    if (trabajadorIndex >= 0) {
+      pagosGuardados[trabajadorIndex].pagos = updatedPagos;
+      localStorage.setItem('pagos', JSON.stringify(pagosGuardados));
+      setPagos(updatedPagos);
+    }
   };
 
   useEffect(() => {
@@ -44,78 +43,40 @@ const RegistroPago = () => {
   }, []);
 
   return (
-    <div className="uwu p-3 ">
-    <div className="uwu2 flex flex-col p-5">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Registro de Pagos</h2>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Registro de Pagos</h2>
+      
       {pagos.length === 0 ? (
-        <p className="text-gray-600">No hay pagos registrados.</p>
+        <div className="p-4 bg-white rounded-lg shadow-md border border-gray-200 text-center text-gray-600">
+          No hay pagos registrados para este trabajador.
+        </div>
       ) : (
-        <table className="w-full border-collapse bg-gray-50 shadow-md rounded-lg">
-          <thead>
-            <tr className="text-black text-sm leading-normal">
-              <th className="py-3 px-6 text-left">Trabajador</th>
-              <th className="py-3 px-6 text-left">Fecha</th>
-              <th className="py-3 px-6 text-left">Día</th>
-              <th className="py-3 px-6 text-left">Colación</th>
-              <th className="py-3 px-6 text-left">Gestión</th>
-              <th className="py-3 px-6 text-left">Extra</th>
-              <th className="py-3 px-6 text-center"></th>
-            </tr>
-          </thead>
-          <tbody className="text-black text-sm font-xl">
-            {pagos.map((pago, index) => (
-              <React.Fragment key={index}>
-                {pago.pagos.map((p, i) => (
-                  <tr key={i} className="border-b border-gray-200 hover:bg-gray-100">
-                    <td className="py-3 px-6 text-left whitespace-nowrap">
-                      {pago.trabajador}
-                    </td>
-                    <td className="py-3 px-6 text-left whitespace-nowrap">
-                      Día {i + 1}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {p.dia}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {p.colacion}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {p.gestion}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {p.extra}
-                    </td>
-                    <td className="py-3 px-6 text-center relative">
-                      <DotsVerticalIcon
-                        className="h-6 w-6 text-gray-500 cursor-pointer"
-                        onClick={() => handleDotsClick(index)}
-                      />
-                      {openIndex === index && (
-                        <div ref={dropdownRef} className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                          <button
-                            className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-blue-100"
-                            onClick={() => handleDownloadPago(pago)}
-                          >
-                            Descargar
-                          </button>
-                          <button
-                            className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-                            onClick={() => handleDeletePago(index)}
-                          >
-                            Eliminar
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-gray-100 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-2 text-left text-gray-600">Día</th>
+                <th className="px-4 py-2 text-left text-gray-600">Colación</th>
+                <th className="px-4 py-2 text-left text-gray-600">Gestión</th>
+                <th className="px-4 py-2 text-left text-gray-600">Extra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagos.map((pago, index) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="px-4 py-2 text-gray-800">Día {index + 1}</td>
+                  <td className="px-4 py-2 text-gray-800">{pago.colacion}</td>
+                  <td className="px-4 py-2 text-gray-800">{pago.gestion}</td>
+                  <td className="px-4 py-2 text-gray-800">{pago.extra}</td>
+                  
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </div></div>
+    </div>
   );
 };
 
-export default RegistroPago;
+export default RegistroPagos;

@@ -85,7 +85,7 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
                 <Link
                   to={item.path}
                   className={`flex items-center space-x-3 px-12 py-3 rounded-md transition-colors ${
-                    isActive ? 'bg-[#700F23] text-white border-l-4 border-[#700F23]' : 'hover:bg-[#8B1D34]'
+                    isActive ? 'bg-[#700F23] text-white border-l-4 border-[white]' : 'hover:bg-[#8B1D34]'
                   }`}
                 >
                   <item.icon className="h-6 w-6" />
