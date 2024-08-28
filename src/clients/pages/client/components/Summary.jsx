@@ -1,31 +1,48 @@
 import React from 'react';
 
 const Summary = ({ netTotal, ggPercentage, gestionPercentage, gg, gestion, totalGgGestion, totalNet, setGgPercentage, setGestionPercentage, formatCLP }) => (
-  <div className="mt-4 text-right">
-    <p className="text-sm md:text-lg text-gray-600">Neto <span className="font-bold">{formatCLP(netTotal)}</span></p>
-    <p className="text-sm md:text-lg text-gray-600">
-      GG (%)
-      <input
-        type="number"
-        value={ggPercentage}
-        onChange={(e) => setGgPercentage(e.target.value)}
-        className="w-16 ml-2 border rounded p-1 text-xs md:text-base"
-      />
-      <span className="font-bold ml-2">{formatCLP(gg)}</span>
-    </p>
-    <p className="text-sm md:text-lg text-gray-600">
-      Gestión (%)
-      <input
-        type="number"
-        value={gestionPercentage}
-        onChange={(e) => setGestionPercentage(e.target.value)}
-        className="w-16 ml-2 border rounded p-1 text-xs md:text-base"
-      />
-      <span className="font-bold ml-2">{formatCLP(gestion)}</span>
-    </p>
-    <p className="text-sm md:text-lg text-gray-700">Total GG + Gestión <span className="font-bold">{formatCLP(totalGgGestion)}</span></p>
-    <p className="text-sm md:text-lg text-gray-700">Total Neto <span className="font-bold">{formatCLP(totalNet)}</span></p>
+<div className="flex flex-col bg-white p-5 mt-10 rounded-lg shadow-md space-y-3">
+  <h4 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Resumen Financiero</h4>
+  <div className="flex flex-col space-y-2">
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-700">Neto:</span>
+      <p className="text-sm text-gray-600 font-semibold">{formatCLP(netTotal)}</p>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-700">GG (%):</span>
+      <div className="flex items-center">
+        <input
+          type="number"
+          value={ggPercentage}
+          onChange={(e) => setGgPercentage(e.target.value)}
+          className="w-16 ml-2 border rounded p-1 text-xs md:text-base"
+        />
+        <span className="text-sm text-gray-600 font-semibold ml-2">{formatCLP(gg)}</span>
+      </div>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-700">Gestión (%):</span>
+      <div className="flex items-center">
+        <input
+          type="number"
+          value={gestionPercentage}
+          onChange={(e) => setGestionPercentage(e.target.value)}
+          className="w-16 ml-2 border rounded p-1 text-xs md:text-base"
+        />
+        <span className="text-sm text-gray-600 font-semibold ml-2">{formatCLP(gestion)}</span>
+      </div>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-700">Total GG + Gestión:</span>
+      <p className="text-sm text-gray-600 font-semibold">{formatCLP(totalGgGestion)}</p>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-700">Total Neto:</span>
+      <p className="text-sm text-gray-700 font-bold">{formatCLP(totalNet)}</p>
+    </div>
   </div>
+</div>
+
 );
 
 export default Summary;

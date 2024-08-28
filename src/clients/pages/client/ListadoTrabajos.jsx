@@ -68,10 +68,10 @@ const ListadoTrabajos = () => {
     .filter(job => selectedFilter === 'Estado' || job.status === selectedFilter);
 
   return (
-    <div className="flex flex-col p-3">
-    <div className="bg-white rounded-lg p-4 100">
-      <div className=" p-5  ">
-        <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+    <div className="uwu3 flex flex-col p-3 bg-white h-full">
+    <div className="bg-white  rounded-lg">
+      <div className=" p-5   ">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 ">
           <input
             type="text"
             placeholder="Buscar Trabajo"
@@ -103,9 +103,9 @@ const ListadoTrabajos = () => {
       </div>
 <div  className="rounded-lg p-4 100">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Trabajos Registrados</h2>
-      <ul className="space-y-4">
+      <ul className="space-y-2">
         {filteredJobs.map((job, index) => (
-          <li key={index} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between relative border border-gray-200">
+          <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
             <Link to={`/archives/${id}`} className="flex items-center flex-grow space-x-4">
               <FolderIcon className="h-6 w-6 text-gray-600" />
               <div className="flex-1">
@@ -123,7 +123,7 @@ const ListadoTrabajos = () => {
               <option value="Finalizado">Finalizado</option>
             </select>
             <DotsVerticalIcon
-              className="h-6 w-6 text-gray-600 cursor-pointer absolute top-6 right-2"
+              className="h-6 w-6 text-gray-600 cursor-pointer absolute  right-9"
               onClick={() => handleDotsClick(index)}
             />
             {openIndex === index && (

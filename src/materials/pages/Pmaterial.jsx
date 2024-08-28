@@ -37,8 +37,9 @@ const Pmaterial = () => {
   };
 
   return (
-    <div className="flex flex-col p-3">
-      <div className="bg-white rounded-lg p-4 100">
+    <div className=" uwu3 flex flex-col p-3 bg-white h-full">
+    <div className="bg-white  rounded-lg p- 100">
+      <div className=" p-5">
         <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Gestión de Materiales</h1>
 
         <div className="p-4 rounded-md  mb-4 sm:mb-4">
@@ -141,6 +142,8 @@ const Pmaterial = () => {
         </div>
       </div>
     </div>
+    </div>
+    
   );
 };
 

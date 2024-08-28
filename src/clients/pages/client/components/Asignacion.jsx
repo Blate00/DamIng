@@ -34,36 +34,20 @@ const Asignacion = ({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
-        <h4 className="text-xl font-bold text-gray-800">Resumen Asignación</h4>
+      <div className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md" onClick={() => setDesplegado(!desplegado)}>
+        <h4 className="text-xl font-bold text-gray-100">Resumen Asignación</h4>
         {desplegado ? (
-          <ChevronUpIcon className="w-6 h-6 text-gray-700" />
+          <ChevronUpIcon className="w-6 h-6 text-gray-100" />
         ) : (
-          <ChevronDownIcon className="w-6 h-6 text-gray-700" />
+          <ChevronDownIcon className="w-6 h-6 text-gray-100" />
         )}
       </div>
 
       {desplegado && (
         <>
-          <div className="mt-4 mb-6 flex items-center space-x-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-800">Total de Asignación</label>
-              <input
-                type="number"
-                value={asignacion}
-                onChange={(e) => setAsignacion(parseFloat(e.target.value) || 0)}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
-              />
-            </div>
-            <button
-              onClick={handleGuardarAsignacion}
-              className="px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              Guardar Asignación
-            </button>
-          </div>
+         
 
-          <div className="mb-6">
+          <div className="mb-6 mt-6">
             <label className="block text-sm font-medium text-gray-800">Tipo de Transacción</label>
             <select
               value={tipoTransaccion}

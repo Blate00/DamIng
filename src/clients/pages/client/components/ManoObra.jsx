@@ -43,12 +43,12 @@ const ManoObra = ({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
-        <h4 className="text-xl font-bold text-gray-800">Resumen Mano de Obra</h4>
+      <div className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md" onClick={() => setDesplegado(!desplegado)}>
+        <h4 className="text-xl font-bold text-gray-100">Resumen Mano de Obra</h4>
         {desplegado ? (
-          <ChevronUpIcon className="w-6 h-6 text-gray-700" />
+          <ChevronUpIcon className="w-6 h-6 text-gray-100" />
         ) : (
-          <ChevronDownIcon className="w-6 h-6 text-gray-700" />
+          <ChevronDownIcon className="w-6 h-6 text-gray-100" />
         )}
       </div>
 

@@ -34,10 +34,10 @@ const ClientList = ({ clients, onDeleteClient }) => {
   return (
     <div className="rounded-lg p-4 100 ">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Clientes</h2>
-      <ul className="space-y-4">
+      <ul className="space-y-2">
         {clients.map((client, index) => (
-          <li key={index} className="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between relative border  border-black">
-            <Link to={`/trabajos/${index}`} className="flex items-center w-full space-x-4">
+          <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer ">
+            <Link to={`/trabajos/${index}`} className="flex items-center w-full space-x-3">
               {typeof client.image === 'string' && client.image.startsWith('data:image') ? (
                 <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
               ) : (

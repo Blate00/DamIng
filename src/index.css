@@ -4,30 +4,47 @@
 
 
 
-body{background-color: rgb(233, 244, 244);}
+body{    background: linear-gradient(170deg, #4C0A18, #700F23, #8D172E, #751d2d);
+}
 
 
 
 .uwu{
 
-    border-radius: 10px;
 }
 .uwu2{
 
     border-radius: 10px;
-    background: linear-gradient(10deg,#fcfbfb, #ffffff, #f5efef, #e5a6b2);
+    background: linear-gradient(10deg,#fcfbfb, #ffffff, #f5efef, #733c46); 
+       animation: moverFondo 3s infinite alternate;
+
+}
+
+.uwu3{
+    background-color: white;
+    border-top-left-radius: 10px;
+}
+
+.content{
+    margin-top: 60px;
+      margin-left: 260px;
+      margin-bottom:0;
+  
+}
+.header{
+    position: fixed;
+    right: 0;
 }
 
 .sidebar {
-    width: 220px;
-    background: linear-gradient(170deg, #4C0A18, #700F23, #8D172E, #751d2d);
+    width: 260px;
+    position: fixed;
 }
 
 
 
 
 .but{
-    background:  #700F23;
     border: 1px solid rgba(255, 255, 255, 0.295);
 
 }

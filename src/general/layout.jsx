@@ -28,7 +28,7 @@ function Layout({ children }) {
       <Sidebar isVisible={isSidebarVisible} closeSidebar={closeSidebar} />
       <div className="flex flex-col flex-grow">
         <Header toggleSidebar={toggleSidebar} onSearch={handleSearch} />
-        <main className="flex-grow overflow-y-auto rounded-lg">
+        <main className="content flex-grow overflow-y-auto ">
           {handleSearch(children)}
         </main>
       </div>

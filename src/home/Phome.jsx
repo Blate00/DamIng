@@ -26,7 +26,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col p-7">
+    <div className="uwu3 flex flex-col p-7  h-full">
       <div className="grid grid-cols-4 gap-2 mb-10">
         
         <div className="cuadro1  p-4 h-32 rounded-lg shadow-md flex items-center">

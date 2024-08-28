@@ -40,12 +40,13 @@ const PagoTrabajador = () => {
   };
 
   return (
-    <div className="p-5 bg-gray-100 rounded-lg shadow-md">
+    <div className="uwu3 flex flex-col p-3 bg-white h-full">
+      <div className="bg-white rounded-lg"><div className="p-5">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">Rendición de {trabajador.nombre}</h2>
       {pagos.map((pago, index) => (
-        <div key={index} className="mb-6">
+        <div key={index} className="mb-2">
           <div
-            className="flex items-center justify-between cursor-pointer p-4 bg-white rounded-lg shadow-sm border border-gray-200"
+            className="flex items-center justify-between cursor-pointer p-3 bg-white rounded-lg shadow-sm border border-gray-200"
             onClick={() => setDesplegadoIndex(desplegadoIndex === index ? null : index)}
           >
             <h3 className="text-lg font-semibold text-gray-800">Día {index + 1}</h3>
@@ -56,39 +57,39 @@ const PagoTrabajador = () => {
             )}
           </div>
           {desplegadoIndex === index && (
-            <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="mt- p-4 bg-white    grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-gray-700 font-medium mb-1">Día (CLP)</label>
                 <input
                   type="number"
                   value={pago.dia}
+                  placeholder='Pago Día'
                   onChange={(e) => handleInputChange(index, 'dia', e.target.value)}
                   className="p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-1">Colación (CLP)</label>
                 <input
                   type="number"
                   value={pago.colacion}
+                  placeholder='Colación'
                   onChange={(e) => handleInputChange(index, 'colacion', e.target.value)}
                   className="p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-1">Gestión (CLP)</label>
                 <input
                   type="number"
                   value={pago.gestion}
+                  placeholder='Gestión'
                   onChange={(e) => handleInputChange(index, 'gestion', e.target.value)}
                   className="p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-1">Extra (CLP)</label>
                 <input
                   type="number"
                   value={pago.extra}
+                  placeholder='Extra'
                   onChange={(e) => handleInputChange(index, 'extra', e.target.value)}
                   className="p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -103,7 +104,7 @@ const PagoTrabajador = () => {
       >
         Guardar Pago
       </button>
-    </div>
+    </div></div></div>
   );
 };
 

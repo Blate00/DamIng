@@ -3,7 +3,7 @@ import React from 'react';
 const ItemsTable = ({ items, handleChange, formatCLP }) => (
   <div className="overflow-x-auto">
     <table className="min-w-full table-auto">
-      <thead className="bg-red-900 text-white">
+      <thead className="bg-red-800 text-white">
         <tr>
           <th className="py-2 px-2 md:px-4 border text-xs md:text-base">ITEM</th>
           <th className="py-2 px-2 md:px-4 border text-xs md:text-base">DESCRIPCIÓN</th>

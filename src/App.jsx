@@ -6,6 +6,8 @@ import MaterialsProvider from './general/MaterialsContext';
 import Archives from './clients/pages/client/Archives';
 import MaterialesPage from './clients/pages/client/Materiales';
 import PresupuestoPage from './clients/pages/client/Presupuesto';
+import RendicionPage from './clients/pages/client/Rendicion';
+import FlujoPage from './clients/pages/client/FlujoCaja';
 import ListadoTrabajos from './clients/pages/client/ListadoTrabajos';
 import Pempresa from './empresa/pages/Trabajadores';
 import Layout from './general/layout';
@@ -29,10 +31,13 @@ function App() {
               <Route path="/trabajos/:id" element={<ListadoTrabajos />} />
               <Route path="/Materiales/:id" element={<MaterialesPage />} />
               <Route path="/Presupuesto/:id" element={<PresupuestoPage />} />
+              <Route path="/rendicion/:id" element={<RendicionPage />} />
+              <Route path="/flujo/:id" element={<FlujoPage />} />
+
               <Route path="/archives/:id" element={<Archives />} />
 
               <Route path="/home" element={<Phome />} />
-              <Route path="/" element={<Navigate to="/clients" />} /> 
+              <Route path="/" element={<Navigate to="/home" />} /> 
               <Route path="/tasks" element={<Ptasks />} />
               <Route path="/empresa" element={<Pempresa />} />
               <Route path="*" element={<div>Página no encontrada (404)</div>} />

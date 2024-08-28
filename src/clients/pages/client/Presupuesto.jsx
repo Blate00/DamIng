@@ -121,15 +121,11 @@ const Presupuesto = () => {
   };
 
   return (
-    <div className="flex flex-col p-3">
-      <div id="presupuesto-content" className="w-full rounded-lg p-5 bg-gray-100 shadow-lg">
+    <div className="flex flex-col p-3 bg-white h-full">
+      <div id="presupuesto-content" className="w-full rounded-lg p-5 ">
         <ClientInfo client={client} job={job} />
 
-        <Section
-          title="Presupuesto"
-          isVisible={activeSection === 'presupuesto'}
-          onToggle={() => handleSectionToggle('presupuesto')}
-        >
+       
           <ItemsTable items={items} handleChange={handleChange} formatCLP={formatCLP} />
           <Summary
             netTotal={netTotal}
@@ -149,66 +145,8 @@ const Presupuesto = () => {
           >
             Guardar datos
           </button>
-        </Section>
 
-        <Section
-          title="Rendición"
-          isVisible={activeSection === 'rendicion'}
-          onToggle={() => handleSectionToggle('rendicion')}
-        >
-          <Asignacion
-            asignacion={asignacion}
-            setAsignacion={setAsignacion}
-            abonosAsignacion={abonosAsignacion}
-            setAbonosAsignacion={setAbonosAsignacion}
-            nuevoAbonoAsignacion={nuevoAbonoAsignacion}
-            setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
-          />
-          <ManoObra
-            manoObra={manoObra}
-            setManoObra={setManoObra}
-          />
-          <TablaRendicion
-            items={items}
-            handleChange={handleChange}
-            deleteItem={deleteItem}
-            agregarFila={() => setItems([...items, { fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }])}
-          />
-
-          <h4 className="text-lg font-bold text-gray-800 mt-8 mb-4">Resumen</h4>
-          <div className="mb-4">
-            <h5 className="text-sm font-medium text-gray-700">Total de Rendición</h5>
-            <p className="text-sm text-gray-600">
-              {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-            </p>
-          </div>
-          <div className="mb-4">
-            <h5 className="text-sm font-medium text-gray-700">Saldo Actual de Asignación</h5>
-            <p className="text-sm text-gray-600">
-              {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-            </p>
-          </div>
-          <div className="mb-4">
-            <h5 className="text-sm font-medium text-gray-700">Saldo Final de Asignación</h5>
-            <p className="text-sm text-gray-600">
-              {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-            </p>
-          </div>
-        </Section>
-
-        <Section
-          title="Flujo de Caja"
-          isVisible={activeSection === 'flujoCaja'}
-          onToggle={() => handleSectionToggle('flujoCaja')}
-        >
-          <h2 className="text-lg font-bold">Dinero Disponible: {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h2>
-          <AccesoPago
-            trabajadores={trabajadores}
-            onDeleteTrabajador={handleDeleteTrabajador}
-          />
-          {/* Otros elementos del flujo de caja pueden ir aquí */}
-        </Section>
-
+     
       
       </div>
     </div>

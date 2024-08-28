@@ -48,8 +48,8 @@ const Pclient = () => {
   }, [isModalOpen]);
 
   return (
-    <div className="flex flex-col p-3">
-    <div className="bg-white border  border-black rounded-lg p-4 100">
+    <div className=" uwu3 flex flex-col p-3 bg-white h-full">
+    <div className="bg-white  rounded-lg p- 100">
       <div className=" p-5">
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
           <input
