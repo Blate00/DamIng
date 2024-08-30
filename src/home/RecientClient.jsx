@@ -32,7 +32,7 @@ const RecientClient = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md w-full">
+    <div className="p-4  w-full">
       <h2 className="text-xl font-semibold mb-4">Proyectos Recientes</h2>
       <ul className="grid grid-cols-1 gap-1">
         {clients.map((client, index) => (

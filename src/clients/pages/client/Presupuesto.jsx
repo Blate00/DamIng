@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import * as XLSX from 'xlsx';
 import ClientInfo from './components/ClientInfo';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
-import TablaRendicion from './components/TablaRendicion';
-import ExportButtons from './components/ExportButtons';
-import Asignacion from './components/Asignacion';
-import ManoObra from './components/ManoObra';
-import AccesoPago from './components/ListaTrabajador'; // Importa el componente TrabajadoresList
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const Presupuesto = () => {
   const { id, jobId } = useParams();
@@ -122,7 +115,8 @@ const Presupuesto = () => {
 
   return (
     <div className="flex flex-col p-3 bg-white h-full">
-      <div id="presupuesto-content" className="w-full rounded-lg p-5 ">
+      <div id="presupuesto-content" className="w-full  p-5 bg-white rounded-lg ">
+       <Breadcrumb/>
         <ClientInfo client={client} job={job} />
 
        
@@ -153,21 +147,6 @@ const Presupuesto = () => {
   );
 };
 
-const Section = ({ title, isVisible, onToggle, children }) => (
-  <div className="mt-8">
-    <div
-      className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md"
-      onClick={onToggle}
-    >
-      <h4 className="text-center text-xl font-bold text-white">{title}</h4>
-      {isVisible ? (
-        <ChevronUpIcon className="w-6 h-6 text-white" />
-      ) : (
-        <ChevronDownIcon className="w-6 h-6 text-white" />
-      )}
-    </div>
-    {isVisible && <div className="mt-4">{children}</div>}
-  </div>
-);
+
 
 export default Presupuesto;

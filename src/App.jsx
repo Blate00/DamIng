@@ -16,28 +16,27 @@ import Phome from './home/Phome';
 import Pagos from './clients/pages/client/components/PagoTrabajador';
 import RegistroPagos from './clients/pages/client/components/RegistroPagos';
 import { SearchProvider } from './general/SearchContext';
+import { DarkModeProvider } from './general/DarkModeContext';
 
 import './index.css';
 
 function App() {
   return (
     <MaterialsProvider>
-      <SearchProvider>
+      <DarkModeProvider>
         <Router>
           <Layout>
             <Routes>
               <Route path="/clients" element={<Pclient />} />
               <Route path="/materials" element={<Pmaterial />} />
-              <Route path="/trabajos/:id" element={<ListadoTrabajos />} />
-              <Route path="/Materiales/:id" element={<MaterialesPage />} />
-              <Route path="/Presupuesto/:id" element={<PresupuestoPage />} />
-              <Route path="/rendicion/:id" element={<RendicionPage />} />
-              <Route path="/flujo/:id" element={<FlujoPage />} />
-
-              <Route path="/archives/:id" element={<Archives />} />
-
+              <Route path="/clients/trabajos/:id" element={<ListadoTrabajos />} />
+              <Route path="/clients/Materiales/:id" element={<MaterialesPage />} />
+              <Route path="/clients/Presupuesto/:id" element={<PresupuestoPage />} />
+              <Route path="/clients/rendicion/:id" element={<RendicionPage />} />
+              <Route path="/clients/flujo/:id" element={<FlujoPage />} />
+              <Route path="/clients/archives/:id" element={<Archives />} />
               <Route path="/home" element={<Phome />} />
-              <Route path="/" element={<Navigate to="/home" />} /> 
+              <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/tasks" element={<Ptasks />} />
               <Route path="/empresa" element={<Pempresa />} />
               <Route path="*" element={<div>Página no encontrada (404)</div>} />
@@ -46,7 +45,7 @@ function App() {
             </Routes>
           </Layout>
         </Router>
-      </SearchProvider>
+      </DarkModeProvider>
     </MaterialsProvider>
   );
 }

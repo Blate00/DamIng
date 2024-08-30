@@ -16,7 +16,6 @@ function Layout({ children }) {
   };
 
   const handleSearch = (nameQuery, phoneQuery, emailQuery) => {
-    // Aquí puedes manejar la búsqueda o pasarla a un componente descendiente
     if (children && React.isValidElement(children)) {
       return React.cloneElement(children, { onSearch: handleSearch, filteredClients });
     }
@@ -24,11 +23,10 @@ function Layout({ children }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex flex-grow full-height">
       <Sidebar isVisible={isSidebarVisible} closeSidebar={closeSidebar} />
-      <div className="flex flex-col flex-grow">
-        <Header toggleSidebar={toggleSidebar} onSearch={handleSearch} />
-        <main className="content flex-grow overflow-y-auto ">
+      <div className="flex flex-col flex-grow ml-64 bg-white full-height">
+        <main className="flex-grow overflow-y-auto">
           {handleSearch(children)}
         </main>
       </div>

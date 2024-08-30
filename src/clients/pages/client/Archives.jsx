@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DocumentTextIcon, DownloadIcon } from '@heroicons/react/outline';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const Archives = () => {
   const { id } = useParams();
@@ -16,14 +17,15 @@ const Archives = () => {
   };
 
   return (
-    <div className="uwu3 flex flex-col p-3 bg-white h-full">
-      <div className="bg-white  rounded-lg">
+    <div className="flex flex-col p-3 bg-white h-full">
+      <div className="bg-white h-full rounded-lg">
         <div className="p-5">
+          <Breadcrumb/>
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Documentos</h2>
 
         <ul className="space-y-2">
           <li>
-            <Link to={`/Presupuesto/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <Link to={`/clients/Presupuesto/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center">
                 <DocumentTextIcon className="h-8 w-8 text-red-600 mr-4" />
                 <div>
@@ -39,7 +41,7 @@ const Archives = () => {
           </li>
 
           <li>
-            <Link to={`/rendicion/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <Link to={`/clients/rendicion/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center">
                 <DocumentTextIcon className="h-8 w-8 text-red-600 mr-4" />
                 <div>
@@ -55,7 +57,7 @@ const Archives = () => {
           </li>  
           
           <li>
-            <Link to={`/flujo/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <Link to={`/clients/flujo/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center">
                 <DocumentTextIcon className="h-8 w-8 text-red-600 mr-4" />
                 <div>
@@ -71,7 +73,7 @@ const Archives = () => {
           </li>  
           
           <li>
-            <Link to={`/Materiales/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <Link to={`/clients/Materiales/${id}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center">
                 <DocumentTextIcon className="h-8 w-8 text-red-600 mr-4" />
                 <div>

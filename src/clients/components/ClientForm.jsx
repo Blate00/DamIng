@@ -64,7 +64,7 @@ const ClientForm = ({ clients, addClient }) => {
   const closeModal = () => setShowModal(false);
 
   return (
-    <div className="uwu2 bg-gray-50 p-6 rounded-lg shadow-md max-w-lg mx-auto">
+    <div className=" bg-gray-50 p-6 rounded-lg shadow-md max-w-lg mx-auto">
       <h2 className="text-xl font-semibold mb-6 flex items-center text-gray-800">
         <UserIcon className="h-6 w-6 text-red-800 mr-2" />
       Nuevo Proyecto
@@ -137,7 +137,7 @@ const ClientForm = ({ clients, addClient }) => {
           onClick={handleAddClient}
           className="bg-red-800 text-white py-2 px-4 rounded-lg hover:bg-red-900 transition"
         >
-          Guardar Cliente
+          Guardar Proyecto
         </button>
       </div>
 

@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ClientList from '../components/ClientList';
-import { useSearch } from '../../general/SearchContext';
 import { useMaterials } from '../../general/MaterialsContext';
+import Breadcrumb from '../../general/Breadcrumb'; 
 
 const Pclient = () => {
   const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
   const [filteredClients, setFilteredClients] = useState(clients);
   const [materials] = useMaterials();
-  const { searchQuery } = useSearch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
   const [selectedPeriod, setSelectedPeriod] = useState('2024');
@@ -18,15 +17,7 @@ const Pclient = () => {
     setFilteredClients(clients);
   }, [clients]);
 
-  useEffect(() => {
-    const filtered = clients.filter(client =>
-      (searchQuery.name === '' || client.name.toLowerCase().includes(searchQuery.name.toLowerCase())) &&
-      (searchQuery.phone === '' || client.phone.includes(searchQuery.phone)) &&
-      (searchQuery.email === '' || client.email.toLowerCase().includes(searchQuery.email.toLowerCase()))
-    );
-    setFilteredClients(filtered);
-  }, [searchQuery, clients]);
-
+  
   const handleDeleteClient = (index) => {
     const updatedClients = clients.filter((_, i) => i !== index);
     setClients(updatedClients);
@@ -48,9 +39,10 @@ const Pclient = () => {
   }, [isModalOpen]);
 
   return (
-    <div className=" uwu3 flex flex-col p-3 bg-white h-full">
-    <div className="bg-white  rounded-lg p- 100">
+    <div className=" flex flex-col p-3 bg-white h-full">
+    <div className="bg-white h-full  rounded-lg p- 100">
       <div className=" p-5">
+      <Breadcrumb />
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
           <input
             type="text"

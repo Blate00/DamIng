@@ -4,14 +4,36 @@
 
 
 
-body{    background: linear-gradient(170deg, #4C0A18, #700F23, #8D172E, #751d2d);
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.flex {
+    display: flex;
+}
+
+.full-height {
+    height: 100%;
 }
 
 
 
-.uwu{
 
-}
+
 .uwu2{
 
     border-radius: 10px;
@@ -22,23 +44,6 @@ body{    background: linear-gradient(170deg, #4C0A18, #700F23, #8D172E, #751d2d)
 
 .uwu3{
     background-color: white;
-    border-top-left-radius: 10px;
-}
-
-.content{
-    margin-top: 60px;
-      margin-left: 260px;
-      margin-bottom:0;
-  
-}
-.header{
-    position: fixed;
-    right: 0;
-}
-
-.sidebar {
-    width: 260px;
-    position: fixed;
 }
 
 

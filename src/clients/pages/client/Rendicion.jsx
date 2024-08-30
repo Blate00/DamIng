@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import TablaRendicion from './components/TablaRendicion';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const Rendicion = () => {
   const [items, setItems] = useState([{ fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
@@ -53,9 +54,10 @@ const Rendicion = () => {
   const saldoFinalAsignacion = totalRecibidoAsignacion - totalRendicion;
 
   return (
-    <div className="uwu3 flex flex-col p-3 bg-white h-full">
-      <div className="bg-white rounded-lg">
+    <div className="flex flex-col p-3 bg-white h-full">
+      <div className="bg-white h-full rounded-lg">
         <div className="p-5">
+          <Breadcrumb/>
           <Asignacion
             asignacion={asignacion}
             setAsignacion={setAsignacion}

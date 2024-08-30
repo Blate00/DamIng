@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TrabajadorForm from '../components/TrabajadorForm';
 import TrabajadoresList from '../components/TrabajadorList';
+import Breadcrumb from '../../general/Breadcrumb'; 
 
 const Trabajadores = () => {
   const [trabajadores, setTrabajadores] = useState(JSON.parse(localStorage.getItem('trabajadores')) || []);
@@ -24,9 +25,10 @@ const Trabajadores = () => {
   };
 
   return (
-    <div className=" uwu3 flex flex-col p-3 bg-white h-full">
-    <div className="bg-white  rounded-lg p- 100">
+    <div className="flex flex-col p-3 bg-white h-full">
+    <div className="bg-white h-full rounded-lg ">
       <div className=" p-5">
+        <Breadcrumb/>
       <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Empresa</h1>
 
         <TrabajadorForm trabajadores={filteredTrabajadores} addTrabajador={handleAddTrabajador} />

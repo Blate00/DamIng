@@ -1,8 +1,7 @@
 import React from 'react';
 
 const Summary = ({ netTotal, ggPercentage, gestionPercentage, gg, gestion, totalGgGestion, totalNet, setGgPercentage, setGestionPercentage, formatCLP }) => (
-<div className="flex flex-col bg-white p-5 mt-10 rounded-lg shadow-md space-y-3">
-  <h4 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Resumen Financiero</h4>
+<div className="flex flex-col bg-white p-5  space-y-3">
   <div className="flex flex-col space-y-2">
     <div className="flex justify-between items-center">
       <span className="text-sm font-medium text-gray-700">Neto:</span>

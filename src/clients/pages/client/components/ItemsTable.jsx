@@ -5,11 +5,11 @@ const ItemsTable = ({ items, handleChange, formatCLP }) => (
     <table className="min-w-full table-auto">
       <thead className="bg-red-800 text-white">
         <tr>
-          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">ITEM</th>
-          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">DESCRIPCIÓN</th>
-          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">CANTIDAD</th>
-          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">VALOR UNIT</th>
-          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">TOTAL</th>
+          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">Item</th>
+          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">Descripción</th>
+          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">Cantidad</th>
+          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">Valor Unit</th>
+          <th className="py-2 px-2 md:px-4 border text-xs md:text-base">Total</th>
         </tr>
       </thead>
       <tbody className="text-center">

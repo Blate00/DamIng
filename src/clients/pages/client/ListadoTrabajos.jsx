@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FolderIcon, DotsVerticalIcon } from '@heroicons/react/outline';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const ListadoTrabajos = () => {
   const { id } = useParams();
@@ -68,9 +69,10 @@ const ListadoTrabajos = () => {
     .filter(job => selectedFilter === 'Estado' || job.status === selectedFilter);
 
   return (
-    <div className="uwu3 flex flex-col p-3 bg-white h-full">
-    <div className="bg-white  rounded-lg">
+    <div className="flex flex-col p-3 bg-white h-full">
+    <div className="bg-white h-full rounded-lg">
       <div className=" p-5   ">
+      <Breadcrumb />
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 ">
           <input
             type="text"
@@ -106,7 +108,7 @@ const ListadoTrabajos = () => {
       <ul className="space-y-2">
         {filteredJobs.map((job, index) => (
           <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <Link to={`/archives/${id}`} className="flex items-center flex-grow space-x-4">
+            <Link to={`/clients/archives/${id}`} className="flex items-center flex-grow space-x-4">
               <FolderIcon className="h-6 w-6 text-gray-600" />
               <div className="flex-1">
                 <h3 className="text-md font-semibold text-gray-800 mb-1">{job.name}</h3>

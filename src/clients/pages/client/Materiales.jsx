@@ -1,151 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Sidebar from '../../../general/Sidebar';
-import Header from '../../../general/Header';
+import React, { useState } from 'react';
+import { useMaterials } from '../../../general/MaterialsContext';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
-const Materiales = () => {
-  const { id } = useParams();
-  const clients = JSON.parse(localStorage.getItem('clients')) || [];
-  const client = clients[id];
-  const [materials, setMaterials] = useState(client ? client.materials : []);
-  const [totalValue, setTotalValue] = useState(0);
+const Pmaterial = () => {
+  const [selectedGroups, setSelectedGroups] = useState([]);
+  const [discardedMaterials, setDiscardedMaterials] = useState([]);
+  const [materials, setMaterials] = useMaterials();
 
-  useEffect(() => {
-    if (client) {
-      updateTotalValue(materials);
-    }
-  }, []);
+  const groups = [...new Set(materials.map(material => material.group))];
 
-
-
-  const addMaterial = (description, value, quantity) => {
-    const newMaterial = { description, value, quantity };
-    const updatedMaterials = [...materials, newMaterial];
-    setMaterials(updatedMaterials);
-    updateClientMaterials(updatedMaterials);
-    updateTotalValue(updatedMaterials);
+  const toggleGroupSelection = (group) => {
+    setSelectedGroups((prevSelectedGroups) =>
+      prevSelectedGroups.includes(group)
+        ? prevSelectedGroups.filter((g) => g !== group)
+        : [...prevSelectedGroups, group]
+    );
   };
 
-  const updateMaterialQuantity = (index, quantityChange) => {
-    const updatedMaterials = materials.map((material, i) => {
-      if (i === index) {
-        const updatedQuantity = material.quantity + quantityChange;
-        return { ...material, quantity: updatedQuantity >= 0 ? updatedQuantity : 0 };
-      }
-      return material;
-    });
-    setMaterials(updatedMaterials);
-    updateClientMaterials(updatedMaterials);
-    updateTotalValue(updatedMaterials);
+  const handleDiscardMaterial = (index) => {
+    const materialToDiscard = materials[index];
+    setDiscardedMaterials([...discardedMaterials, materialToDiscard]);
+    setMaterials(materials.filter((_, i) => i !== index));
   };
 
-  const deleteMaterial = (index) => {
-    const updatedMaterials = materials.filter((_, i) => i !== index);
-    setMaterials(updatedMaterials);
-    updateClientMaterials(updatedMaterials);
-    updateTotalValue(updatedMaterials);
+  const handleRecoverMaterial = (index) => {
+    const materialToRecover = discardedMaterials[index];
+    setMaterials([...materials, materialToRecover]);
+    setDiscardedMaterials(discardedMaterials.filter((_, i) => i !== index));
   };
 
-  const updateClientMaterials = (updatedMaterials) => {
-    const updatedClients = clients.map((c, i) => {
-      if (i === parseInt(id)) {
-        return { ...c, materials: updatedMaterials };
-      }
-      return c;
-    });
-    localStorage.setItem('clients', JSON.stringify(updatedClients));
-  };
-
-  const updateTotalValue = (materials) => {
-    const total = materials.reduce((acc, material) => acc + (material.value * material.quantity), 0);
-    setTotalValue(total);
-  };
-
-  if (!client) {
-    return <div>Cliente no encontrado</div>;
-  }
+  const filteredMaterials = selectedGroups.length > 0 
+    ? materials.filter(material => selectedGroups.includes(material.group))
+    : materials;
 
   return (
-    <div className="uwu p-3">
-    
-        <div className="uwu2 flex flex-col p-5">
-            <h2 className="text-lg font-semibold mb-4">{client.name}</h2>
-            <p className="text-sm text-gray-600">Correo Electrónico: {client.email}</p>
-              <p className="text-sm text-gray-600">Dirección: {client.address}</p>
-              <p className="text-sm text-gray-600">Teléfono: {client.phone}</p>
-              <p className="text-sm text-gray-600">Tipo de Trabajo: {client.jobType}</p>
-            <div className="bg-white p-4 rounded-md shadow-md">
-              
-              <h4 className="font-semibold mt-4">Materiales</h4>
-              <MaterialList materials={materials} onUpdateQuantity={updateMaterialQuantity} onDelete={deleteMaterial} />
-              <AddMaterialForm onAdd={addMaterial} />
-              <h4 className="font-semibold mt-4">Valor Total de Materiales: {totalValue}</h4>
+    <div className="flex flex-col p-3 bg-white h-full">
+      <div className="bg-white rounded-lg p-100">
+        <div className="p-5"><Breadcrumb/>
+          <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Lista de Materiales</h1>
+
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold mb-2">Filtrar por Grupo</h2>
+            <div className="grid grid-cols-5 gap-">
+              {groups.map((group, index) => (
+                <label key={index} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedGroups.includes(group)}
+                    onChange={() => toggleGroupSelection(group)}
+                    className="form-checkbox h-5 w-5 text-red-600"
+                  />
+                  <span className="text-gray-700">{group}</span>
+                </label>
+              ))}
             </div>
           </div>
+
+          <div className="overflow-x-auto rounded-lg">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+              <thead className='bg-red-800 border-b border-gray-200'>
+                <tr className="text-gray-100 text-sm leading-normal">
+                  <th className="py-3 px-6 text-left">Grupo</th>
+                  <th className="py-3 px-6 text-left">Descripción</th>
+                  <th className="py-3 px-6 text-left">Valor</th>
+                  <th className="py-3 px-6 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600 text-sm font-light">
+                {filteredMaterials.map((material, index) => (
+                  <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                      <div className="flex items-center">
+                        <span className="font-medium">{material.group}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-6 text-left">
+                      <div className="flex items-center">
+                        <span>{material.description}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-6 text-left">
+                      <div className="flex items-center">
+                        <span>${material.value}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-6 text-center">
+                      <button
+                        onClick={() => handleDiscardMaterial(index)}
+                        className="text-white px-3 py-1 rounded-md"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-red-800">
+                          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75 .75 0 0 0 0-1.5H9a.75 .75 0 0 0 0 1.5h6Z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {discardedMaterials.length > 0 && (
+            <div className="mt-4">
+              <h2 className="text-lg font-semibold mb-2">Materiales Descartados</h2>
+              <div className="overflow-x-auto rounded-lg">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="text-gray-500 text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">Grupo</th>
+                      <th className="py-3 px-6 text-left">Descripción</th>
+                      <th className="py-3 px-6 text-left">Valor</th>
+                      <th className="py-3 px-6 text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600 text-sm font-light">
+                    {discardedMaterials.map((material, index) => (
+                      <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                        <td className="py-3 px-6 text-left whitespace-nowrap">
+                          <div className="flex items-center">
+                            <span className="font-medium">{material.group}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-6 text-left">
+                          <div className="flex items-center">
+                            <span>{material.description}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-6 text-left">
+                          <div className="flex items-center">
+                            <span>${material.value}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-6 text-center">
+                          <button
+                            onClick={() => handleRecoverMaterial(index)}
+                            className="text-white px-3 py-1 rounded-md"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-green-800">
+                              <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-3 10.5a.75 .75 0 0 1 0-1.5h6a.75 .75 0 0 1 0 1.5H9Z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    
+    </div>
   );
 };
 
-const MaterialList = ({ materials, onUpdateQuantity, onDelete }) => (
-  <ul className="divide-y divide-gray-200">
-    {materials.map((material, index) => (
-      <li key={index} className="flex justify-between items-center py-2">
-        <div className="flex flex-col text-sm text-gray-600">
-          <span>{material.description}</span>
-          <span>Valor Unitario: {material.value}</span>
-          <span>Cantidad: {material.quantity}</span>
-          <span>Valor Total: {material.value * material.quantity}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <button
-            className="bg-green-500 text-white px-2 py-1 rounded"
-            onClick={() => onUpdateQuantity(index, 1)}
-          >
-            +1
-          </button>
-          <button
-            className="bg-yellow-500 text-white px-2 py-1 rounded"
-            onClick={() => onUpdateQuantity(index, -1)}
-            disabled={material.quantity <= 0}
-          >
-            -1
-          </button>
-          <button
-            className="bg-red-500 text-white px-2 py-1 rounded"
-            onClick={() => onDelete(index)}
-          >
-            Eliminar
-          </button>
-        </div>
-      </li>
-    ))} <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded">
-        Añadir
-      </button>
-  </ul>
-);
-
-const AddMaterialForm = ({ onAdd }) => {
-  const [description, setDescription] = useState('');
-  const [value, setValue] = useState('');
-  const [quantity, setQuantity] = useState(0);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (description && value && quantity >= 0) {
-      onAdd(description, value, quantity);
-      setDescription('');
-      setValue('');
-      setQuantity(0);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-4">
-     
-     
-    </form>
-  );
-};
-
-export default Materiales;
+export default Pmaterial;

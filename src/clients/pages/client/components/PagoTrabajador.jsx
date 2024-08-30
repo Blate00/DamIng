@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
+import Breadcrumb from '../../../../general/Breadcrumb'; 
 
 const PagoTrabajador = () => {
   const location = useLocation();
@@ -40,8 +41,9 @@ const PagoTrabajador = () => {
   };
 
   return (
-    <div className="uwu3 flex flex-col p-3 bg-white h-full">
-      <div className="bg-white rounded-lg"><div className="p-5">
+    <div className=" flex flex-col p-3 bg-white h-full">
+      <div className="bg-white h-full rounded-lg"><div className="p-5">
+        <Breadcrumb/>
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">Rendición de {trabajador.nombre}</h2>
       {pagos.map((pago, index) => (
         <div key={index} className="mb-2">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from '../tasks/TaskList';
-import RecientClient from './RecientClient'; // Asegúrate de ajustar la ruta según tu estructura de archivos
+import RecientClient from './RecientClient'; 
+import Breadcrumb from '../general/Breadcrumb'; 
+
 import { HomeIcon } from '@heroicons/react/outline';
 
 const Home = () => {
@@ -26,7 +28,8 @@ const Home = () => {
   };
 
   return (
-    <div className="uwu3 flex flex-col p-7  h-full">
+    <div className="flex flex-col p-7  h-full">
+      <Breadcrumb />
       <div className="grid grid-cols-4 gap-2 mb-10">
         
         <div className="cuadro1  p-4 h-32 rounded-lg shadow-md flex items-center">
@@ -80,13 +83,13 @@ const Home = () => {
   
         </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-2">
         <div className="flex-grow p-6 bg-white shadow-md rounded-lg">
           <h2 className="text-2xl font-bold mb-5">Task Table</h2>
           <TaskList tasks={tasks} />
         </div>
 
-        <div className="w-1/4 p-6shadow-md rounded-lg">
+        <div className="w-1/4 bg-white  shadow-md rounded-lg">
           <RecientClient clients={clients} onDeleteClient={handleDeleteClient} />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AccesoPago from './components/ListaTrabajador';
+import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const FlujoCaja = () => {
   const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
@@ -19,9 +20,10 @@ const FlujoCaja = () => {
   };
 
   return (
-    <div className="uwu3 flex flex-col p-3 bg-white h-full">
-        <div className="bg-white rounded-lg">
+    <div className="flex flex-col p-3 bg-white h-full">
+        <div className="bg-white rounded-lg h-full">
             <div className="p-5">
+            <Breadcrumb/>
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg mb-7">
         <thead className="bg-red-800 border-b border-gray-200">
           <tr>

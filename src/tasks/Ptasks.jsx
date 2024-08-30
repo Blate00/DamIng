@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TaskForm from './TaskForm';
 import TaskList from './TaskList';
+import Breadcrumb from '../general/Breadcrumb'; 
 
 const Ptasks = () => {
   const [tasks, setTasks] = useState(JSON.parse(localStorage.getItem('tasks')) || []);
@@ -23,16 +24,16 @@ const Ptasks = () => {
   };
 
   return (
-    <div className=" uwu3 flex flex-col p-3 bg-white h-full">
-    <div className="bg-white  rounded-lg p- 100">
+    <div className="flex flex-col p-3 bg-white h-full">
+    <div className="bg-white h-full  rounded-lg ">
       <div className=" p-5">
-      <div className="p-">
+<Breadcrumb/>
       <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Gestión de Tareas</h1>
       <TaskForm clients={clients} addTask={addTask} />
       <h2 className="text-xl font-semibold mb-4">Lista de Tareas</h2>
 
       <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} />
-    </div></div></div></div>
+    </div></div></div>
   );
 };
 

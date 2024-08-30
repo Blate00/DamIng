@@ -37,7 +37,7 @@ const ClientList = ({ clients, onDeleteClient }) => {
       <ul className="space-y-2">
         {clients.map((client, index) => (
           <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer ">
-            <Link to={`/trabajos/${index}`} className="flex items-center w-full space-x-3">
+            <Link to={`/clients/trabajos/${index}`} className="flex items-center w-full space-x-3">
               {typeof client.image === 'string' && client.image.startsWith('data:image') ? (
                 <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
               ) : (
