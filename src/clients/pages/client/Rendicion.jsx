@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import TablaRendicion from './components/TablaRendicion';
 import Breadcrumb from '../../../general/Breadcrumb'; 
+import ClientInfo from './components/ClientInfo';
 
 const Rendicion = () => {
+  const { id, jobId } = useParams();
+  const clients = JSON.parse(localStorage.getItem('clients')) || [];
+  const client = clients[id];
   const [items, setItems] = useState([{ fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
   const [asignacion, setAsignacion] = useState(0);
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
@@ -26,6 +32,9 @@ const Rendicion = () => {
     setItems(updatedItems);
     localStorage.setItem('items', JSON.stringify(updatedItems));
   };
+
+  const job = client.jobs.find(job => job.id === jobId);
+  if (!job) return <div>Trabajo no encontrado</div>;
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
@@ -58,6 +67,22 @@ const Rendicion = () => {
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb/>
+          <ClientInfo client={client} job={job} />
+
+          <TablaRendicion
+            items={items}
+            handleChange={handleChange}
+            agregarFila={agregarFila}
+            editItem={editItem}
+            deleteItem={deleteItem}
+          /><div className="flex justify-end mb-6">
+            <button
+              onClick={agregarFila}
+              className="px-4 py-2 text-white bg-red-800 rounded hover:bg-red-700"
+            >
+              Agregar Fila
+            </button>
+          </div>
           <Asignacion
             asignacion={asignacion}
             setAsignacion={setAsignacion}
@@ -68,22 +93,8 @@ const Rendicion = () => {
           />
           <ManoObra manoObra={manoObra} setManoObra={setManoObra} />
 
-          <TablaRendicion
-            items={items}
-            handleChange={handleChange}
-            agregarFila={agregarFila}
-            editItem={editItem}
-            deleteItem={deleteItem}
-          />
 
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={agregarFila}
-              className="px-4 py-2 text-white bg-red-800 rounded hover:bg-red-700"
-            >
-              Agregar Fila
-            </button>
-          </div>
+          
 
           <div className="flex flex-col bg-white p-5 mt-10 rounded-lg shadow-md space-y-3">
   <h4 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Resumen</h4>

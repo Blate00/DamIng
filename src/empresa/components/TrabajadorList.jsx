@@ -32,10 +32,10 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   }, []);
 
   return (
-    <div className="rounded-lg p-3">
-      <ul className="grid grid-cols-1 gap-1">
+    <div className="rounded-lg p-4">
+      <ul className="space-y-2">
         {trabajadores.map((trabajador, index) => (
-          <li key={index} className="bg-gray-50 p-3 rounded-lg flex items-center justify-between relative">
+          <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex items-center">
               <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
                 {trabajador.nombre.charAt(0).toUpperCase()}
@@ -43,7 +43,6 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
               <div>
                 <h3 className="font-semibold">{trabajador.nombre}</h3>
                 <p className="text-sm text-gray-500">{trabajador.telefono}</p>
-                <p className="text-sm text-gray-500">{trabajador.correo}</p>
               </div>
             </div>
 

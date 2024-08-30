@@ -49,7 +49,7 @@ const Pmaterial = () => {
       <div className="bg-white rounded-lg p-100">  
        
         <div className="p-5"> <Breadcrumb />
-          <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Gestión de Materiales</h1>
+          <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Gestión de Materiales</h1>
 
           <div className="p-4 rounded-md mb-4 sm:mb-4">
             <h2 className="text-lg font-semibold mb-2">{editMaterial ? "Editar Material" : "Añadir Material"}</h2>

@@ -22,7 +22,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
   };
 
   return (
-    <div className="tabla-rendicion ">
+    <div className="tabla-rendicion mb-6 ">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
         <thead className="bg-red-800 border-b border-gray-200">
           <tr>

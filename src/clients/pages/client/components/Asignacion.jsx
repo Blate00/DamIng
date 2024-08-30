@@ -25,11 +25,11 @@ const Asignacion = ({
     const nuevoAbono = {
       fecha: obtenerFechaActual(),
       tipoTransaccion,
-      monto: nuevoAbonoAsignacion,
+      monto: nuevoAbonoAsignacion || 0, // Asegura que se guarde 0 si nuevoAbonoAsignacion es 0
     };
 
     setAbonosAsignacion([...abonosAsignacion, nuevoAbono]);
-    setNuevoAbonoAsignacion(0);
+    setNuevoAbonoAsignacion('');
   };
 
   return (
@@ -45,31 +45,28 @@ const Asignacion = ({
 
       {desplegado && (
         <>
-         
-
-          <div className="mb-6 mt-6">
-            <label className="block text-sm font-medium text-gray-800">Tipo de Transacción</label>
+          <div className=" mt-3 grid grid-cols-3 gap-4">
             <select
               value={tipoTransaccion}
               onChange={(e) => setTipoTransaccion(e.target.value)}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
+              className="p-2 border border-gray-300 rounded-md bg-white"
             >
+              <option value="" disabled>Seleccione un tipo de transacción</option>
               <option value="Transferencia">Transferencia</option>
               <option value="Efectivo">Efectivo</option>
             </select>
-          </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-800">Nuevo Abono para Asignación</label>
             <input
               type="number"
-              value={nuevoAbonoAsignacion}
-              onChange={(e) => setNuevoAbonoAsignacion(parseFloat(e.target.value) || 0)}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
+              value={nuevoAbonoAsignacion || ''}
+              placeholder="Ingrese el monto del abono"
+              onChange={(e) => setNuevoAbonoAsignacion(e.target.value ? parseFloat(e.target.value) : '')}
+              className="p-2 border border-gray-300 rounded-md bg-white"
             />
+            
             <button
               onClick={handleGuardarAbono}
-              className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               Guardar Abono de Asignación
             </button>

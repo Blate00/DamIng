@@ -29,10 +29,10 @@ const Trabajadores = () => {
     <div className="bg-white h-full rounded-lg ">
       <div className=" p-5">
         <Breadcrumb/>
-      <h1 className="text-2xl font-bold mb-6 text-center md:text-left">Empresa</h1>
+      <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Empresa</h1>
 
         <TrabajadorForm trabajadores={filteredTrabajadores} addTrabajador={handleAddTrabajador} />
-        <h2 className="text-xl font-semibold mb-4">Lista de Trabajadores</h2>
+        <h2 className="text-xl font-semibold mb-">Lista de Trabajadores</h2>
 
         <TrabajadoresList trabajadores={filteredTrabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
       </div>

@@ -9,7 +9,7 @@ const ManoObra = ({
   const [desplegado, setDesplegado] = useState(false);
   const [tipoTransaccion, setTipoTransaccion] = useState('Transferencia');
   const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
-  const [nuevoAbonoManoObra, setNuevoAbonoManoObra] = useState(0);
+  const [nuevoAbonoManoObra, setNuevoAbonoManoObra] = useState('');
 
   // Obtener netTotal desde localStorage y usarlo como valor inicial de manoObra
   useEffect(() => {
@@ -34,15 +34,15 @@ const ManoObra = ({
     const nuevoAbono = {
       fecha: obtenerFechaActual(),
       tipoTransaccion,
-      monto: nuevoAbonoManoObra,
+      monto: nuevoAbonoManoObra || 0, // Asegura que se guarde 0 si nuevoAbonoManoObra es 0
     };
 
     setAbonosManoObra([...abonosManoObra, nuevoAbono]);
-    setNuevoAbonoManoObra(0);
+    setNuevoAbonoManoObra('');
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 bo">
       <div className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md" onClick={() => setDesplegado(!desplegado)}>
         <h4 className="text-xl font-bold text-gray-100">Resumen Mano de Obra</h4>
         {desplegado ? (
@@ -54,49 +54,54 @@ const ManoObra = ({
 
       {desplegado && (
         <>
-          <div className="mt-4 mb-6">
-            <label className="block text-sm font-medium text-gray-800">Total de Mano de Obra</label>
-            <input
-              type="number"
-              value={manoObra}
-              onChange={(e) => setManoObra(parseFloat(e.target.value) || 0)}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
-            />
-            <button
-              onClick={handleGuardarManoObra}
-              className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              Guardar Mano de Obra
-            </button>
-          </div>
+      <div className=' mt-3'>
+          <div className=" grid grid-cols-2  gap-4">
+       
+              <input
+                type="number"
+                value={manoObra || ''}
+                placeholder="Ingrese el total de mano de obra"
+                onChange={(e) => setManoObra(parseFloat(e.target.value) || 0)}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
+              />
+              <button
+                onClick={handleGuardarManoObra}
+                className="mt-2 px-4 py-1 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Guardar Mano de Obra
+              </button>
+         
+            </div>
+            <div className="mt- mb- grid grid-cols-3 gap-4">
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-800">Tipo de Transacción</label>
-            <select
-              value={tipoTransaccion}
-              onChange={(e) => setTipoTransaccion(e.target.value)}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
-            >
-              <option value="Transferencia">Transferencia</option>
-              <option value="Efectivo">Efectivo</option>
-            </select>
-          </div>
+      
+              <select
+                value={tipoTransaccion}
+                onChange={(e) => setTipoTransaccion(e.target.value)}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
+              >
+                <option value="" disabled>Seleccione un tipo de transacción</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Efectivo">Efectivo</option>
+              </select>
+      
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-800">Nuevo Abono para Mano de Obra</label>
-            <input
-              type="number"
-              value={nuevoAbonoManoObra}
-              onChange={(e) => setNuevoAbonoManoObra(parseFloat(e.target.value) || 0)}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
-            />
-            <button
-              onClick={handleGuardarAbono}
-              className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              Guardar Abono de Mano de Obra
-            </button>
-          </div>
+           
+              <input
+                type="number"
+                value={nuevoAbonoManoObra || ''}
+                placeholder="Ingrese el monto del abono"
+                onChange={(e) => setNuevoAbonoManoObra(e.target.value ? parseFloat(e.target.value) : '')}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
+              />
+              <button
+                onClick={handleGuardarAbono}
+                className="mt-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Guardar Abono de Mano de Obra
+              </button>
+            </div>
+     </div>
 
           <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
             <thead className="bg-gray-100 border-b border-gray-300">

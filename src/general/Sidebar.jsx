@@ -80,7 +80,7 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
           })}
         </ul>
         <button
-          className="bg-[#733c50] text-[white] p-3 rounded-lg mx-14 mt-80 hover:bg-[black] transition"
+          className="bg-[#733c46] text-[white] p-3 rounded-lg mx-14 mt-80 hover:bg-[black] transition"
           onClick={() => setIsModalOpen(true)}
         >
           Añadir Proyecto
