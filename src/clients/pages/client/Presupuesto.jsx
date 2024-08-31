@@ -3,49 +3,44 @@ import { useParams } from 'react-router-dom';
 import ClientInfo from './components/ClientInfo';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const Presupuesto = () => {
   const { id, jobId } = useParams();
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
-  const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
+
   const [items, setItems] = useState([{ description: '', quantity: '', unitValue: '', total: '' }]);
   const [ggPercentage, setGgPercentage] = useState(20);
   const [gestionPercentage, setGestionPercentage] = useState(8);
+  const [trabajadores, setTrabajadores] = useState([]);
+  const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
   const [asignacion, setAsignacion] = useState(0);
+  const [manoObra, setManoObra] = useState(0);
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
   const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
-  const [manoObra, setManoObra] = useState(0);
-  const [activeSection, setActiveSection] = useState(null); // Estado para manejar la sección activa
-
-  // Estado para los trabajadores
-  const [trabajadores, setTrabajadores] = useState([]);
-  const totalRecibido = abonosManoObra.reduce((total, abono) => total + abono.monto, 0);
+  const [activeSection, setActiveSection] = useState(null);
 
   useEffect(() => {
-    const savedItems = JSON.parse(localStorage.getItem('items'));
-    const savedGgPercentage = localStorage.getItem('ggPercentage');
-    const savedGestionPercentage = localStorage.getItem('gestionPercentage');
-    const storedAsignacion = localStorage.getItem('asignacion');
-    const storedManoObra = localStorage.getItem('manoObra');
+    const savedItems = JSON.parse(localStorage.getItem('items')) || [];
+    const savedGgPercentage = localStorage.getItem('ggPercentage') || '20';
+    const savedGestionPercentage = localStorage.getItem('gestionPercentage') || '8';
     const savedTrabajadores = JSON.parse(localStorage.getItem('trabajadores')) || [];
 
-    if (savedItems) setItems(savedItems);
-    if (savedGgPercentage) setGgPercentage(parseFloat(savedGgPercentage));
-    if (savedGestionPercentage) setGestionPercentage(parseFloat(savedGestionPercentage));
-    if (storedAsignacion) setAsignacion(parseFloat(storedAsignacion) || 0);
-    if (storedManoObra) setManoObra(parseFloat(storedManoObra) || 0);
-    if (savedTrabajadores) setTrabajadores(savedTrabajadores);
+    setItems(savedItems);
+    setGgPercentage(parseFloat(savedGgPercentage));
+    setGestionPercentage(parseFloat(savedGestionPercentage));
+    setTrabajadores(savedTrabajadores);
   }, []);
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
+
     if (field === 'quantity' || field === 'unitValue') {
       updatedItems[index].total = (updatedItems[index].quantity * updatedItems[index].unitValue).toFixed(2);
     }
+
     setItems(updatedItems);
 
     if (
@@ -58,46 +53,6 @@ const Presupuesto = () => {
     }
   };
 
-  const handleDeleteTrabajador = (index) => {
-    const updatedTrabajadores = trabajadores.filter((_, i) => i !== index);
-    setTrabajadores(updatedTrabajadores);
-    localStorage.setItem('trabajadores', JSON.stringify(updatedTrabajadores));
-  };
-
-  const handleGuardarDatos = () => {
-    localStorage.setItem('items', JSON.stringify(items));
-    localStorage.setItem('ggPercentage', ggPercentage);
-    localStorage.setItem('gestionPercentage', gestionPercentage);
-    localStorage.setItem('netTotal', netTotal);
-    localStorage.setItem('trabajadores', JSON.stringify(trabajadores));
-    alert('Datos guardados con éxito');
-  };
-
-  const exportToPDF = () => {
-    // Implementación exportToPDF
-  };
-
-  const exportToExcel = () => {
-    // Implementación exportToExcel
-  };
-
-  if (!client) return <div>Cliente no encontrado</div>;
-
-  const job = client.jobs.find(job => job.id === jobId);
-  if (!job) return <div>Trabajo no encontrado</div>;
-
-  const totalRecibidoAsignacion = abonosAsignacion.reduce((total, abono) => total + abono.monto, 0);
-  const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
-  const saldoActualAsignacion = totalRecibidoAsignacion;
-  const saldoFinalAsignacion = totalRecibidoAsignacion - totalRendicion;
-
-  const calculateNetTotal = () => items.reduce((acc, item) => acc + parseFloat(item.total || 0), 0);
-
-  const netTotal = calculateNetTotal();
-  const gg = ((netTotal * ggPercentage) / 100).toFixed(2);
-  const gestion = ((netTotal * gestionPercentage) / 100).toFixed(2);
-  const totalGgGestion = (parseFloat(gg) + parseFloat(gestion)).toFixed(2);
-  const totalNet = (parseFloat(netTotal) + parseFloat(totalGgGestion)).toFixed(2);
   const deleteItem = (index) => {
     const updatedItems = items.filter((_, i) => i !== index);
     setItems(updatedItems);
@@ -108,45 +63,41 @@ const Presupuesto = () => {
     return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   };
 
-  // Manejar el despliegue de las secciones
-  const handleSectionToggle = (section) => {
-    setActiveSection(activeSection === section ? null : section);
-  };
+  const job = client?.jobs.find(job => job.id === jobId);
+  if (!job) return <div>Trabajo no encontrado</div>;
+
+  const total = items.reduce((total, item) => total + parseFloat(item.total || 0), 0);
+  const ggValue = (total * ggPercentage) / 100;
+  const gestionValue = (total * gestionPercentage) / 100;
+  const subtotal = total + ggValue + gestionValue;
 
   return (
     <div className="flex flex-col p-3 bg-white h-full">
-      <div id="presupuesto-content" className="w-full  p-5 bg-white rounded-lg ">
-       <Breadcrumb/>
-        <ClientInfo client={client} job={job} />
+      <div className="bg-white h-full rounded-lg">
+        <div className="p-5">
+          <Breadcrumb />
+          <ClientInfo client={client} job={job} />
 
-       
-          <ItemsTable items={items} handleChange={handleChange} formatCLP={formatCLP} />
+          <ItemsTable
+            items={items}
+            handleChange={handleChange}
+            formatCLP={formatCLP}
+            deleteItem={deleteItem}
+          />
+
           <Summary
-            netTotal={netTotal}
+            total={total}
             ggPercentage={ggPercentage}
             gestionPercentage={gestionPercentage}
-            gg={gg}
-            gestion={gestion}
-            totalGgGestion={totalGgGestion}
-            totalNet={totalNet}
-            setGgPercentage={setGgPercentage}
-            setGestionPercentage={setGestionPercentage}
+            ggValue={ggValue}
+            gestionValue={gestionValue}
+            subtotal={subtotal}
             formatCLP={formatCLP}
           />
-          <button
-            onClick={handleGuardarDatos}
-            className="mt-4 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Guardar datos
-          </button>
-
-     
-      
+        </div>
       </div>
     </div>
   );
 };
-
-
 
 export default Presupuesto;

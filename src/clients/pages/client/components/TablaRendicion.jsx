@@ -22,26 +22,26 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
   };
 
   return (
-    <div className="tabla-rendicion mb-6 ">
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-        <thead className="bg-red-800 border-b border-gray-200">
+    <div className="tabla-rendicion ">
+      <table className="min-w-full bg-white shadow-md  ">
+        <thead className="">
           <tr>
-            <th className="py-2 px-4 text-left text-gray-100">Fecha</th>
-            <th className="py-2 px-4 text-left text-gray-100">Detalle</th>
-            <th className="py-2 px-4 text-left text-gray-100">Folio</th>
-            <th className="py-2 px-4 text-left text-gray-100">Proveedor</th>
-            <th className="py-2 px-4 text-left text-gray-100">Documento</th>
-            <th className="py-2 px-4 text-left text-gray-100">Total (CLP)</th>
-            <th className="py-2 px-4 text-center text-gray-100">Acciones</th>
+            <th className="py-2 px-4 text-center  ">Fecha</th>
+            <th className="py-2 px-4 text-center ">Detalle</th>
+            <th className="py-2 px-4 text-center ">Folio</th>
+            <th className="py-2 px-4 text-center ">Proveedor</th>
+            <th className="py-2 px-4 text-center">Documento</th>
+            <th className="py-2 px-4 text-center">Total </th>
+            <th className="py-2 px-4 text-center ">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item, index) => (
-            <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+            <tr key={index} className=" border-gray-200 hover:bg-gray-50">
               <td className="py-2 px-4">
                 <input
                   type="date"
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                  className="w-full px-2 py-1  border-gray-300 rounded"
                   value={item.fecha}
                   onChange={(e) => handleChange(index, 'fecha', e.target.value)}
                 />
@@ -49,7 +49,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
               <td className="py-2 px-4">
                 <input
                   type="text"
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                  className="w-full px-2 py-1  border-gray-300 rounded"
                   value={item.detalle}
                   onChange={(e) => handleChange(index, 'detalle', e.target.value)}
                 />
@@ -90,9 +90,11 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 
                 <button
                   onClick={() => deleteItem(index)}
-                  className="px-3 py-1 text-white bg-red-800 rounded hover:bg-red-900"
+                  className="px-3 py-1 text-white "
                 >
-                  Eliminar
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-red-800">
+                          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z" clipRule="evenodd" />
+                        </svg>
                 </button>
               </td>
             </tr>

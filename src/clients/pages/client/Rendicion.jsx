@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import TablaRendicion from './components/TablaRendicion';
@@ -11,6 +10,7 @@ const Rendicion = () => {
   const { id, jobId } = useParams();
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
+
   const [items, setItems] = useState([{ fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
   const [asignacion, setAsignacion] = useState(0);
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
@@ -33,9 +33,6 @@ const Rendicion = () => {
     localStorage.setItem('items', JSON.stringify(updatedItems));
   };
 
-  const job = client.jobs.find(job => job.id === jobId);
-  if (!job) return <div>Trabajo no encontrado</div>;
-
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
@@ -50,12 +47,8 @@ const Rendicion = () => {
     setItems([...items, { fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
   };
 
-  const editItem = (index, updatedFields) => {
-    const updatedItems = [...items];
-    updatedItems[index] = { ...updatedItems[index], ...updatedFields };
-    setItems(updatedItems);
-    localStorage.setItem('items', JSON.stringify(updatedItems));
-  };
+  const job = client?.jobs.find(job => job.id === jobId);
+  if (!job) return <div>Trabajo no encontrado</div>;
 
   const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
   const totalRecibidoAsignacion = abonosAsignacion.reduce((total, abono) => total + abono.monto, 0);
@@ -66,23 +59,43 @@ const Rendicion = () => {
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
-          <Breadcrumb/>
+          <Breadcrumb />
           <ClientInfo client={client} job={job} />
 
           <TablaRendicion
             items={items}
             handleChange={handleChange}
             agregarFila={agregarFila}
-            editItem={editItem}
             deleteItem={deleteItem}
-          /><div className="flex justify-end mb-6">
-            <button
-              onClick={agregarFila}
-              className="px-4 py-2 text-white bg-red-800 rounded hover:bg-red-700"
-            >
-              Agregar Fila
-            </button>
+          />
+
+        
+    <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-2">
+            
+            <div className="flex flex-col  space-y-2">
+            
+             
+              <div className="flex justify-end  items-right">
+                <span className="text-sm font-medium px-2 text-gray-700">Total de Rendición: </span>
+                <p className="text-sm text-red-600 font-semibold">
+                   {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                </p>
+              </div>
+              <div className="flex justify-end items-right">
+                <span className="text-sm font-medium px-2 text-gray-700">Saldo Actual de Asignación:</span>
+                <p className="text-sm text-red-600 font-semibold">
+                  {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                </p>
+              </div>
+              <div className="flex justify-end items-right">
+                <span className="text-sm font-medium px-2 text-gray-700">Saldo Final de Asignación:</span>
+                <p className="text-sm text-red-600 font-semibold">
+                  {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                </p>
+              </div>
+            </div>
           </div>
+
           <Asignacion
             asignacion={asignacion}
             setAsignacion={setAsignacion}
@@ -91,39 +104,14 @@ const Rendicion = () => {
             nuevoAbonoAsignacion={nuevoAbonoAsignacion}
             setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
           />
+
           <ManoObra manoObra={manoObra} setManoObra={setManoObra} />
 
-
           
-
-          <div className="flex flex-col bg-white p-5 mt-10 rounded-lg shadow-md space-y-3">
-  <h4 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Resumen</h4>
-  <div className="flex flex-col space-y-2">
-    <div className="flex justify-between items-center">
-      <span className="text-sm font-medium text-gray-700">Total de Rendición:</span>
-      <p className="text-sm text-gray-600 font-semibold">
-        {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-      </p>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className="text-sm font-medium text-gray-700">Saldo Actual de Asignación:</span>
-      <p className="text-sm text-gray-600 font-semibold">
-        {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-      </p>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className="text-sm font-medium text-gray-700">Saldo Final de Asignación:</span>
-      <p className="text-sm text-gray-600 font-semibold">
-        {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-      </p>
-    </div>
-  </div>
-</div>
-          </div>
         </div>
       </div>
-    );
-  };
-  
-  export default Rendicion;
-  
+    </div>
+  );
+};
+
+export default Rendicion;
