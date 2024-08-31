@@ -74,8 +74,8 @@ const AccesoPago = ({ trabajadores }) => {
   };
 
   return (
-    <div className="rounded-lg p-4">
-      <table className="min-w-full bg-white shadow-md">
+    <div className="rounded-lg ">
+      <table className="min-w-full rounded-lg shadow-lg">
         <thead>
           <tr>
             <th className="py-2 px-4 text-center">Trabajador</th>
@@ -163,7 +163,7 @@ const AccesoPago = ({ trabajadores }) => {
               <td className="py-2 px-4 text-center">
                 <button
                   onClick={() => handleDeleteRow(index)}
-                  className="px-3 py-1 text-white bg-red-500 rounded"
+                  className="px-3 py-1 text-white rounded"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-red-800">
                     <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z" clipRule="evenodd" />
@@ -177,7 +177,7 @@ const AccesoPago = ({ trabajadores }) => {
       <div className="mt-4 text-right">
         <button
           onClick={handleSaveData}
-          className="px-4 py-2 text-white bg-blue-500 rounded"
+          className="px-4 py-2 text-white bg-red-800 rounded"
         >
           Guardar Datos
         </button>

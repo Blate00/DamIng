@@ -12,34 +12,39 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
   const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
   const [materials] = useMaterials();
 
+  
+
   useEffect(() => {
     localStorage.setItem('clients', JSON.stringify(clients));
   }, [clients]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setIsModalOpen(false);
-      }
-    };
-
-    const handleEscKey = (event) => {
-      if (event.key === 'Escape') {
-        setIsModalOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscKey);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [modalRef]);
-
   const handleAddClient = (name, email, address, phone, jobType) => {
-    // Handle adding client
+    const existingClientIndex = clients.findIndex(client => client.name.toLowerCase() === name.toLowerCase());
+    const newJob = { name: jobType, date: new Date().toLocaleDateString() };
+
+    let updatedClients;
+
+    if (existingClientIndex !== -1) {
+      updatedClients = [...clients];
+      updatedClients[existingClientIndex].jobs.push(newJob);
+      updatedClients[existingClientIndex].jobDate = new Date().toLocaleDateString();
+    } else {
+      const materialsForJob = materials.filter(material => material.group === jobType);
+      const newClient = {
+        name,
+        email,
+        address,
+        phone,
+        jobType,
+        jobDate: new Date().toLocaleDateString(),
+        materials: materialsForJob,
+        jobs: [newJob],
+      };
+      updatedClients = [...clients, newClient];
+    }
+
+    setClients(updatedClients);
+    localStorage.setItem('clients', JSON.stringify(updatedClients));
   };
 
   const navItems = [

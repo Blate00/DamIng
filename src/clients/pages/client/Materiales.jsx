@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMaterials } from '../../../general/MaterialsContext';
-import Breadcrumb from '../../../general/Breadcrumb'; 
+import Breadcrumb from '../../../general/Breadcrumb';
 import ClientInfo from './components/ClientInfo';
-import GroupFilter from './components/GroupFilter';
-import MaterialTable from './components/MaterialTable';
-import DiscardedMaterialsTable from './components/DiscardedMaterialsTable';
 import SelectedMaterialsTable from './components/SelectedMaterialsTable';
 import MaterialSearch from './components/MaterialSearch';
+import DiscardedMaterialsTable from './components/DiscardedMaterialsTable';
+import MaterialSummary from './components/MaterialSummary';  // Importar el nuevo componente
 
 const Pmaterial = () => {
   const [selectedGroups, setSelectedGroups] = useState([]);
@@ -17,22 +16,11 @@ const Pmaterial = () => {
   const { id, jobId } = useParams();
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
-  const groups = [...new Set(materials.map(material => material.group))];
 
-  const toggleGroupSelection = (group) => {
-    setSelectedGroups((prevSelectedGroups) =>
-      prevSelectedGroups.includes(group)
-        ? prevSelectedGroups.filter((g) => g !== group)
-        : [...prevSelectedGroups, group]
-    );
-  };
-
-  const handleAddMaterial = (index) => {
-    const materialToAdd = materials[index];
-    setSelectedMaterials([...selectedMaterials, { ...materialToAdd, quantity: 1 }]);
-    setMaterials(materials.filter((_, i) => i !== index));
-  };
-
+  // Estados para los porcentajes de GG y Gestión
+  const [ggPercentage, setGgPercentage] = useState(0);
+  const [gestionPercentage, setGestionPercentage] = useState(0);
+  
   const handleAddMaterialWithQuantity = (material, quantity) => {
     setSelectedMaterials([...selectedMaterials, { ...material, quantity }]);
     setMaterials(materials.filter((mat) => mat !== material));
@@ -53,9 +41,9 @@ const Pmaterial = () => {
   };
 
   const handleDiscardMaterial = (index) => {
-    const materialToDiscard = materials[index];
+    const materialToDiscard = selectedMaterials[index];
     setDiscardedMaterials([...discardedMaterials, materialToDiscard]);
-    setMaterials(materials.filter((_, i) => i !== index));
+    setSelectedMaterials(selectedMaterials.filter((_, i) => i !== index));
   };
 
   const handleRecoverMaterial = (index) => {
@@ -64,10 +52,6 @@ const Pmaterial = () => {
     setDiscardedMaterials(discardedMaterials.filter((_, i) => i !== index));
   };
 
-  const filteredMaterials = selectedGroups.length > 0 
-    ? materials.filter(material => selectedGroups.includes(material.group))
-    : [];
-    
   const job = client?.jobs.find(job => job.id === jobId);
   if (!job) return <div>Trabajo no encontrado</div>;
 
@@ -75,11 +59,16 @@ const Pmaterial = () => {
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white rounded-lg p-100">
         <div className="p-5">
-          <Breadcrumb/>
-       
-          <h1 className="text-2xl font-bold mb-4 text-center md:text-left">Lista de Materiales</h1>
+          <Breadcrumb />
+          <h1 className="text-2xl font-semibold mb-4 text-center md:text-left">Lista de Materiales</h1>
+          
+          {/* Componente para buscar y agregar materiales */}
           <MaterialSearch materials={materials} handleAddMaterialWithQuantity={handleAddMaterialWithQuantity} />
-            <ClientInfo client={client} job={job} />
+          
+          {/* Información del cliente y trabajo */}
+          <ClientInfo client={client} job={job} />
+          
+          {/* Tabla de materiales seleccionados */}
           {selectedMaterials.length > 0 && (
             <SelectedMaterialsTable
               selectedMaterials={selectedMaterials}
@@ -87,14 +76,27 @@ const Pmaterial = () => {
               handleUpdateQuantity={handleUpdateQuantity}
             />
           )}
+
+          {/* Tabla de materiales descartados */}
           {discardedMaterials.length > 0 && (
             <DiscardedMaterialsTable
               discardedMaterials={discardedMaterials}
               handleRecoverMaterial={handleRecoverMaterial}
             />
           )}
+
+          {/* Resumen de materiales seleccionados */}
+         
         </div>
-      </div>
+      </div> {selectedMaterials.length > 0 && (
+            <MaterialSummary
+              selectedMaterials={selectedMaterials}
+              ggPercentage={ggPercentage}
+              setGgPercentage={setGgPercentage}
+              gestionPercentage={gestionPercentage}
+              setGestionPercentage={setGestionPercentage}
+            />
+          )}
     </div>
   );
 };

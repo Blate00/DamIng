@@ -17,7 +17,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   };
 
   const handleViewPayments = (trabajador) => {
-    navigate('/pagos', { state: { trabajadorId: trabajador.id } });
+    navigate('/detallepago', { state: { trabajadorId: trabajador.id } });
   };
 
   useEffect(() => {
