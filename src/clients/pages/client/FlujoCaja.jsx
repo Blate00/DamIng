@@ -21,26 +21,31 @@ const FlujoCaja = () => {
 
   return (
     <div className="flex flex-col p-3 bg-white h-full">
-        <div className="bg-white rounded-lg h-full">
-            <div className="p-5">
-            <Breadcrumb/>
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg mb-7">
-        <thead className="bg-red-800 border-b border-gray-200">
-          <tr>
-            <th className="py-3 px-4 text-left text-gray-100">Cliente</th>
-            <th className="py-2 px-4 text-right text-gray-100">Trabajo</th>
-            <th className="py-2 px-4 text-right text-gray-100">Dinero Disponible: {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</th>
-            </tr>
-            </thead>
-            </table>
+      <div className="flex items-start">
+        <div className="p-5">
+          <Breadcrumb />
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Flujo de Caja</h2>
 
-<h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Trabajadores</h2>
-      <AccesoPago
-        trabajadores={trabajadores}
-        onDeleteTrabajador={handleDeleteTrabajador}
-      />
-      {/* Otros elementos del flujo de caja pueden ir aquí */}
-    </div></div></div>
+          <table className="min-w-full rounded-lg shadow-lg">
+            <thead className="bg-red-800 rounded-lg">
+              <tr className="border border-white">
+                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">Cliente</th>
+                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">Trabajo</th>
+                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">
+                  Dinero Disponible: {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                </th>
+              </tr>
+            </thead>
+          </table>
+
+          <AccesoPago
+            trabajadores={trabajadores}
+            onDeleteTrabajador={handleDeleteTrabajador}
+          />
+          {/* Otros elementos del flujo de caja pueden ir aquí */}
+        </div>
+      </div>
+    </div>
   );
 };
 

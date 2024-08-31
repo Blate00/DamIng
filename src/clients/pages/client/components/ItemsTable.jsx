@@ -9,7 +9,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
 
   return (
     <div>
-      <table className="min-w-full bg-white shadow-md rounded">
+      <table className="min-w-full bg-white shadow-md ">
         <thead className=''>
           <tr>
             <th className="py-2 px-4 text-center">Descripción</th>

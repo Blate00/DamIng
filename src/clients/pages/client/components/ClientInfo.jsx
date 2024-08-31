@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ClientInfo = ({ client, job }) => (
-    <div className="flex items-start mt-10">
+    <div className="flex items-start ">
     {/* Contenedor para la imagen del logo */}
     
 

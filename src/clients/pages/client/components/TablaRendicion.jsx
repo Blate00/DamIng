@@ -49,7 +49,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
               <td className="py-2 px-4">
                 <input
                   type="text"
-                  className="w-full px-2 py-1  border-gray-300 rounded"
+                  className="w-full px-2 py-1 border border-gray-300 rounded"
                   value={item.detalle}
                   onChange={(e) => handleChange(index, 'detalle', e.target.value)}
                 />

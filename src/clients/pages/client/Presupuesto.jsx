@@ -75,7 +75,8 @@ const Presupuesto = () => {
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
-          <Breadcrumb />
+          <Breadcrumb />          <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
+
           <ClientInfo client={client} job={job} />
 
           <ItemsTable

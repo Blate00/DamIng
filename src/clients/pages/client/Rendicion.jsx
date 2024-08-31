@@ -59,7 +59,9 @@ const Rendicion = () => {
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
-          <Breadcrumb />
+     
+          <Breadcrumb />   
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Rendición</h2>
           <ClientInfo client={client} job={job} />
 
           <TablaRendicion
@@ -73,7 +75,10 @@ const Rendicion = () => {
     <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-2">
             
             <div className="flex flex-col  space-y-2">
-            
+            <div className="flex justify-end   items-right">
+                <span className="text-lg font-semibold text-gray-700">Resumen</span>
+              
+              </div>
              
               <div className="flex justify-end  items-right">
                 <span className="text-sm font-medium px-2 text-gray-700">Total de Rendición: </span>
