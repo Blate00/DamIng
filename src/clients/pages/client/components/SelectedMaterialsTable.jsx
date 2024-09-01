@@ -2,7 +2,7 @@ import React from 'react';
 
 const SelectedMaterialsTable = ({ selectedMaterials, handleRemoveMaterial, handleUpdateQuantity }) => (
   <div>
-    <div className="overflow-x-auto rounded-lg">
+    <div className="overflow-x-auto ">
       <table className="w-full border border-collapse">
         <thead>
           <tr className="text-gray-800 text-sm leading-normal">
@@ -51,6 +51,7 @@ const SelectedMaterialsTable = ({ selectedMaterials, handleRemoveMaterial, handl
             </tr>
           ))}
         </tbody>
+        
       </table>
     </div>
   </div>

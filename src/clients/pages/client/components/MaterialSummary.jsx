@@ -26,7 +26,7 @@ const MaterialSummary = ({ selectedMaterials }) => {
   }, 0);
 
   return (
-    <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-3">
+    <div className="flex flex-col bg-white p-6 mb-10 ">
       <div className="flex flex-col space-y-1">
         <div className="flex justify-end items-right">
           <span className="text-sm font-medium px-2 text-gray-700">Total:</span>

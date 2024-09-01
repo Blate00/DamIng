@@ -76,7 +76,15 @@ const Pmaterial = () => {
               handleUpdateQuantity={handleUpdateQuantity}
             />
           )}
-
+  {selectedMaterials.length > 0 && (
+            <MaterialSummary
+              selectedMaterials={selectedMaterials}
+              ggPercentage={ggPercentage}
+              setGgPercentage={setGgPercentage}
+              gestionPercentage={gestionPercentage}
+              setGestionPercentage={setGestionPercentage}
+            />
+          )}
           {/* Tabla de materiales descartados */}
           {discardedMaterials.length > 0 && (
             <DiscardedMaterialsTable
@@ -86,17 +94,9 @@ const Pmaterial = () => {
           )}
 
           {/* Resumen de materiales seleccionados */}
-         
+       
         </div>
-      </div> {selectedMaterials.length > 0 && (
-            <MaterialSummary
-              selectedMaterials={selectedMaterials}
-              ggPercentage={ggPercentage}
-              setGgPercentage={setGgPercentage}
-              gestionPercentage={gestionPercentage}
-              setGestionPercentage={setGestionPercentage}
-            />
-          )}
+      </div> 
     </div>
   );
 };

@@ -28,43 +28,45 @@ const AccesoPago = ({ trabajadores }) => {
     const { name, value } = event.target;
     const updatedRows = [...rows];
 
-    // Desformatear el valor antes de actualizar el estado
-    const numericValue = name.includes('total') ? parseCLP(value) : value;
+    if (name === 'trabajador' || name === 'fecha') {
+      // Manejar inputs que no requieren conversión numérica
+      updatedRows[index] = {
+        ...updatedRows[index],
+        [name]: value,
+      };
+    } else {
+      // Desformatear el valor para campos numéricos
+      const numericValue = parseCLP(value);
+      updatedRows[index] = {
+        ...updatedRows[index],
+        [name]: numericValue,
+      };
 
-    updatedRows[index] = {
-      ...updatedRows[index],
-      [name]: numericValue,
-    };
+      // Calcular el total
+      const { pagoDia = 0, colacion = 0, gestion = 0, extra = 0 } = updatedRows[index];
+      const total = pagoDia + colacion + gestion + extra;
 
-    // Calcular el total
-    const { pagoDia = '0', colacion = '0', gestion = '0', extra = '0' } = updatedRows[index];
-    const total = [pagoDia, colacion, gestion, extra]
-      .map(parseCLP)
-      .reduce((acc, curr) => acc + curr, 0)
-      .toFixed(2); // Usar .toFixed(2) para dos decimales
-
-    updatedRows[index].total = formatCLP(total);
+      updatedRows[index].total = total;
+    }
 
     setRows(updatedRows);
-
-    // Si el campo seleccionado es el trabajador y es la primera vez que se selecciona, agregar una nueva fila
-    if (name === 'trabajador' && value !== '' && index === rows.length - 1) {
-      handleAddRow();
-    }
   };
 
   const handleSaveData = () => {
     // Guardar los datos en localStorage
-    const pagos = rows.map(row => ({
+    const pagos = JSON.parse(localStorage.getItem('pagos')) || [];
+    const nuevosPagos = rows.map(row => ({
       trabajadorId: row.trabajador,
+      trabajadorNombre: trabajadores.find(t => t.id === row.trabajador)?.nombre || 'Desconocido',
       fecha: row.fecha,
-      pagoDia: parseCLP(row.pagoDia),
-      colacion: parseCLP(row.colacion),
-      gestion: parseCLP(row.gestion),
-      extra: parseCLP(row.extra),
-      total: parseCLP(row.total),
+      pagoDia: row.pagoDia,
+      colacion: row.colacion,
+      gestion: row.gestion,
+      extra: row.extra,
+      total: row.total,
     }));
-    localStorage.setItem('pagos', JSON.stringify(pagos));
+
+    localStorage.setItem('pagos', JSON.stringify([...pagos, ...nuevosPagos]));
     alert('Datos guardados exitosamente!');
   };
 
@@ -74,7 +76,7 @@ const AccesoPago = ({ trabajadores }) => {
   };
 
   return (
-    <div className="rounded-lg ">
+    <div className="rounded-lg">
       <table className="min-w-full rounded-lg shadow-lg">
         <thead>
           <tr>
@@ -175,6 +177,12 @@ const AccesoPago = ({ trabajadores }) => {
         </tbody>
       </table>
       <div className="mt-4 text-right">
+        <button
+          onClick={handleAddRow}
+          className="mr-2 px-4 py-2 text-white bg-red-700 rounded"
+        >
+          Añadir Nuevo Pago
+        </button>
         <button
           onClick={handleSaveData}
           className="px-4 py-2 text-white bg-red-800 rounded"
