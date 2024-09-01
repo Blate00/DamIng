@@ -16,7 +16,6 @@ import Phome from './home/Phome';
 import Pagos from './clients/pages/client/components/PagoTrabajador';
 import ListaPagos from './clients/pages/client/components/ListaPagos';
 import RegistroPagos from './clients/pages/client/components/RegistroPagos';
-import { SearchProvider } from './general/SearchContext';
 import { DarkModeProvider } from './general/DarkModeContext';
 
 import './index.css';

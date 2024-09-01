@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ClientList from '../components/ClientList';
-import { useMaterials } from '../../general/MaterialsContext';
 import Breadcrumb from '../../general/Breadcrumb'; 
 
 const Pclient = () => {
   const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
   const [filteredClients, setFilteredClients] = useState(clients);
-  const [materials] = useMaterials();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
   const [selectedPeriod, setSelectedPeriod] = useState('2024');
@@ -56,7 +54,6 @@ const Pclient = () => {
           >
             <option value="2023">2023</option>
             <option value="2024">2024</option>
-            {/* Agrega más períodos según sea necesario */}
           </select>
           <select
             value={selectedFilter}
@@ -66,7 +63,6 @@ const Pclient = () => {
             <option value="Mes">Filtrar por Mes</option>
             <option value="Julio">Julio</option>
             <option value="Agosto">Agosto</option>
-            {/* Agrega más filtros según sea necesario */}
           </select>
         </div>
       </div>
