@@ -14,7 +14,7 @@ import Layout from './general/layout';
 import Ptasks from './tasks/Ptasks';
 import Phome from './home/Phome';
 import Pagos from './clients/pages/client/components/PagoTrabajador';
-import ListaPagos from './clients/pages/client/components/ListaPagos';
+import ListaPagos from './empresa/components/Liquidaciones';
 import RegistroPagos from './clients/pages/client/components/RegistroPagos';
 import { DarkModeProvider } from './general/DarkModeContext';
 
@@ -41,7 +41,7 @@ function App() {
               <Route path="/empresa" element={<Pempresa />} />
               <Route path="*" element={<div>Página no encontrada (404)</div>} />
               <Route path="/pago" element={<Pagos />} />
-              <Route path="/detallepago" element={<ListaPagos />} />
+              <Route path="/liquidaciones" element={<ListaPagos />} />
               <Route path="/pagos" element={<RegistroPagos />} />
             </Routes>
           </Layout>

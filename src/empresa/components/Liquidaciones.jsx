@@ -1,21 +1,28 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useLocation,Link } from 'react-router-dom';
+import Breadcrumb from '../../general/Breadcrumb';
 import { DocumentTextIcon, DownloadIcon } from '@heroicons/react/outline';
-import Breadcrumb from '../../../../general/Breadcrumb'; // Asegúrate de que esta ruta es correcta
 
-const PagoDetalle = () => {
-
+const Liquidaciones = () => {
+  const location = useLocation();
+  const { nombre, correo, telefono } = location.state || {};
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
+   
+      <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Pagos Registrados</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Pagos Registrados Al Trabajador {nombre}</h2>
  
          
           
-            <div className="mt-6">
+            <div className="m-5">
+            <h3 className="text-lg font-semibold">Datos del Trabajador:</h3>
+            <p><strong>Correo:</strong> {correo}</p>
+            <p><strong>Telefono:</strong> {telefono}</p>
+
+          </div>
               <Link
                 to={`/pagos`}
                 className="flex items-center p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
@@ -33,9 +40,8 @@ const PagoDetalle = () => {
             </div>
           </div>
         </div>
-      </div>
 
   );
 };
 
-export default PagoDetalle;
+export default Liquidaciones;

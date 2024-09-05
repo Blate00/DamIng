@@ -5,7 +5,7 @@ import ManoObra from './components/ManoObra';
 import TablaRendicion from './components/TablaRendicion';
 import Breadcrumb from '../../../general/Breadcrumb'; 
 import ClientInfo from './components/ClientInfo';
-
+  
 const Rendicion = () => {
   const { id, jobId } = useParams();
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
@@ -16,6 +16,14 @@ const Rendicion = () => {
   const [abonosAsignacion, setAbonosAsignacion] = useState([]);
   const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
   const [manoObra, setManoObra] = useState(0);
+
+
+  const [subtotal, setSubtotal] = useState(0);
+
+useEffect(() => {
+  const savedSubtotal = parseFloat(localStorage.getItem('subtotal')) || 0;
+  setSubtotal(savedSubtotal);
+}, []);
 
   useEffect(() => {
     const savedItems = JSON.parse(localStorage.getItem('items')) || [{ fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }];
@@ -110,7 +118,7 @@ const Rendicion = () => {
             setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
           />
 
-          <ManoObra manoObra={manoObra} setManoObra={setManoObra} />
+<ManoObra manoObra={manoObra} setManoObra={setManoObra} subtotal={subtotal} />
 
           
         </div>

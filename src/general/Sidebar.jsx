@@ -12,8 +12,6 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
   const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
   const [materials] = useMaterials();
 
-  
-
   useEffect(() => {
     localStorage.setItem('clients', JSON.stringify(clients));
   }, [clients]);
@@ -45,6 +43,10 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
 
     setClients(updatedClients);
     localStorage.setItem('clients', JSON.stringify(updatedClients));
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   const navItems = [
@@ -95,7 +97,7 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div ref={modalRef} className=" w-72">
-            <ClientForm clients={clients} addClient={handleAddClient} materials={materials} />
+            <ClientForm clients={clients} addClient={handleAddClient} onClose={closeModal} />
           </div>
         </div>
       )}

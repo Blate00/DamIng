@@ -19,7 +19,7 @@ const TrabajadorDetalle = ({ trabajadorId }) => {
       <table className="min-w-full bg-white ">
         <tbody>
           <tr className="">
-            <td className="px-4 py-2 text-sm font-medium text-gray-800">Nombre: David Coo {trabajador.apellido}</td>
+            <td className="px-4 py-2 text-sm font-medium text-gray-800">Nombre: David Coo </td>
 <td className="px-4 py-2 text-sm font-medium text-gray-800">Correo: antoniodavidcoo@gmail.com</td>
             <td className="px-4 py-2 text-sm text-gray-600"></td>         
                <td className="px-4 py-2 text-sm font-medium text-gray-800">Banco de Pago: Banco Estado</td>

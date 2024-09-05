@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'; // Asegúrate de que la ruta sea correcta
 
 const ManoObra = ({
   manoObra,
   setManoObra,
-  handleGuardarManoObra,
+  subtotal
 }) => {
   const [desplegado, setDesplegado] = useState(false);
   const [tipoTransaccion, setTipoTransaccion] = useState('Transferencia');
   const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
   const [nuevoAbonoManoObra, setNuevoAbonoManoObra] = useState('');
+  const [valorManoObraModificado, setValorManoObraModificado] = useState(subtotal); // Usar subtotal como valor inicial
 
-  // Obtener netTotal desde localStorage y usarlo como valor inicial de manoObra
   useEffect(() => {
-    const netTotal = parseFloat(localStorage.getItem('netTotal')) || 0;
-    setManoObra(netTotal);
-  }, [setManoObra]);
+    setValorManoObraModificado(subtotal); // Actualiza valorManoObraModificado si subtotal cambia
+  }, [subtotal]);
 
   useEffect(() => {
     localStorage.setItem('abonosManoObra', JSON.stringify(abonosManoObra));
@@ -23,7 +22,7 @@ const ManoObra = ({
   }, [abonosManoObra]);
 
   const totalRecibido = abonosManoObra.reduce((total, abono) => total + abono.monto, 0);
-  const saldoActual = manoObra - totalRecibido;
+  const saldoActual = valorManoObraModificado - totalRecibido;
 
   const obtenerFechaActual = () => {
     const hoy = new Date();
@@ -34,7 +33,7 @@ const ManoObra = ({
     const nuevoAbono = {
       fecha: obtenerFechaActual(),
       tipoTransaccion,
-      monto: nuevoAbonoManoObra || 0, // Asegura que se guarde 0 si nuevoAbonoManoObra es 0
+      monto: nuevoAbonoManoObra || 0,
     };
 
     setAbonosManoObra([...abonosManoObra, nuevoAbono]);
@@ -42,7 +41,7 @@ const ManoObra = ({
   };
 
   return (
-    <div className="mb-6 bo">
+    <div className="mb-6">
       <div className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md" onClick={() => setDesplegado(!desplegado)}>
         <h4 className="text-xl font-bold text-gray-100">Resumen Mano de Obra</h4>
         {desplegado ? (
@@ -54,27 +53,26 @@ const ManoObra = ({
 
       {desplegado && (
         <>
-      <div className=' mt-3'>
-          <div className=" grid grid-cols-2  gap-4">
-       
+          <div className="mt-3">
+            <div className="grid grid-cols-2 gap-4">
               <input
                 type="number"
-                value={manoObra || ''}
+                value={valorManoObraModificado || ''}
                 placeholder="Ingrese el total de mano de obra"
-                onChange={(e) => setManoObra(parseFloat(e.target.value) || 0)}
+                onChange={(e) => setValorManoObraModificado(parseFloat(e.target.value) || 0)}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-white"
               />
               <button
-                onClick={handleGuardarManoObra}
+                onClick={() => {
+                  setManoObra(valorManoObraModificado);
+                  localStorage.setItem('manoObra', valorManoObraModificado); // Guardar el nuevo valor en localStorage
+                }}
                 className="mt-2 px-4 py-1 bg-red-800 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 Guardar Mano de Obra
               </button>
-         
             </div>
-            <div className="mt- mb- grid grid-cols-3 gap-4">
-
-      
+            <div className="mt-3 mb-6 grid grid-cols-3 gap-4">
               <select
                 value={tipoTransaccion}
                 onChange={(e) => setTipoTransaccion(e.target.value)}
@@ -84,9 +82,6 @@ const ManoObra = ({
                 <option value="Transferencia">Transferencia</option>
                 <option value="Efectivo">Efectivo</option>
               </select>
-      
-
-           
               <input
                 type="number"
                 value={nuevoAbonoManoObra || ''}
@@ -101,7 +96,7 @@ const ManoObra = ({
                 Guardar Abono de Mano de Obra
               </button>
             </div>
-     </div>
+          </div>
 
           <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
             <thead className="bg-gray-100 border-b border-gray-300">
@@ -130,7 +125,7 @@ const ManoObra = ({
               <tr className="bg-gray-100 font-bold">
                 <td colSpan="2" className="py-3 px-6 text-left">Total Mano de Obra</td>
                 <td className="py-3 px-6 text-right">
-                  {manoObra.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  {valorManoObraModificado.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>
               <tr className="bg-gray-100 font-bold">

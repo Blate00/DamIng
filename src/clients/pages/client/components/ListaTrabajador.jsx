@@ -18,7 +18,6 @@ const parseCLP = (value) => {
 
 const AccesoPago = ({ trabajadores }) => {
   const [rows, setRows] = useState([{}]); // Estado para manejar las filas
-  const navigate = useNavigate();
 
   const handleAddRow = () => {
     setRows([...rows, {}]); // Agregar una nueva fila

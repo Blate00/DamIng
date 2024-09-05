@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from 'react';
 
-const Summary = ({ total, formatCLP }) => {
+const Summary = ({ total, formatCLP, ggPercentage, gestionPercentage, ggValue, gestionValue, subtotal }) => {
   // Estados para los porcentajes y valores
-  const [ggPercentage, setGgPercentage] = useState(0);
-  const [gestionPercentage, setGestionPercentage] = useState(0);
-  const [ggValue, setGgValue] = useState(0);
-  const [gestionValue, setGestionValue] = useState(0);
-  const [subtotal, setSubtotal] = useState(0);
+  const [localGgPercentage, setLocalGgPercentage] = useState(ggPercentage);
+  const [localGestionPercentage, setLocalGestionPercentage] = useState(gestionPercentage);
 
-  // Actualizar valores de GG, gestión y subtotal cuando cambian los porcentajes o el total
   useEffect(() => {
-    const ggCalculated = (total * ggPercentage) / 100;
-    const gestionCalculated = (total * gestionPercentage) / 100;
-    const subtotalCalculated = total + ggCalculated + gestionCalculated;
+    // Cargar los valores de porcentaje desde localStorage al montar el componente
+    const savedGgPercentage = parseFloat(localStorage.getItem('ggPercentage')) || ggPercentage;
+    const savedGestionPercentage = parseFloat(localStorage.getItem('gestionPercentage')) || gestionPercentage;
 
-    setGgValue(ggCalculated);
-    setGestionValue(gestionCalculated);
-    setSubtotal(subtotalCalculated);
-  }, [total, ggPercentage, gestionPercentage]);
+    setLocalGgPercentage(savedGgPercentage);
+    setLocalGestionPercentage(savedGestionPercentage);
+  }, [ggPercentage, gestionPercentage]);
 
-  // Función para guardar datos en localStorage
   const handleSave = () => {
     const dataToSave = {
-      ggPercentage,
-      gestionPercentage,
+      ggPercentage: localGgPercentage,
+      gestionPercentage: localGestionPercentage,
       ggValue,
       gestionValue,
       subtotal,
@@ -43,9 +37,10 @@ const Summary = ({ total, formatCLP }) => {
           <span className="text-sm font-medium px-2 text-gray-700">GG (%):</span>
           <input
             type="number"
-            value={ggPercentage}
-            onChange={(e) => setGgPercentage(e.target.value)}
+            value={localGgPercentage}
+            onChange={(e) => setLocalGgPercentage(parseFloat(e.target.value) || 0)}
             className="w-16 px-2 py-1 border rounded"
+            onBlur={handleSave}
           />
           <p className="text-sm text-red-600 font-semibold">{formatCLP(ggValue)}</p>
         </div>
@@ -53,9 +48,10 @@ const Summary = ({ total, formatCLP }) => {
           <span className="text-sm font-medium px-2 text-gray-700">Gestión (%):</span>
           <input
             type="number"
-            value={gestionPercentage}
-            onChange={(e) => setGestionPercentage(e.target.value)}
+            value={localGestionPercentage}
+            onChange={(e) => setLocalGestionPercentage(parseFloat(e.target.value) || 0)}
             className="w-16 px-2 py-1 border rounded"
+            onBlur={handleSave}
           />
           <p className="text-sm text-red-600 font-semibold">{formatCLP(gestionValue)}</p>
         </div>
@@ -63,10 +59,6 @@ const Summary = ({ total, formatCLP }) => {
           <span className="text-sm font-medium px-2 text-gray-700">Subtotal:</span>
           <p className="text-sm text-red-600 font-semibold">{formatCLP(subtotal)}</p>
         </div>
-      </div>
-      {/* Botón para guardar datos en localStorage */}
-      <div className="flex justify-end mt-4">
-
       </div>
     </div>
   );

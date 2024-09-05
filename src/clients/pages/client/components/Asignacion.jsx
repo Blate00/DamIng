@@ -3,12 +3,10 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 
 const Asignacion = ({
   asignacion,
-  setAsignacion,
   abonosAsignacion,
   setAbonosAsignacion,
   nuevoAbonoAsignacion,
   setNuevoAbonoAsignacion,
-  handleGuardarAsignacion,
 }) => {
   const [desplegado, setDesplegado] = useState(false);
   const [tipoTransaccion, setTipoTransaccion] = useState('Transferencia');

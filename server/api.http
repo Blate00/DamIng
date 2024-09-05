@@ -1,0 +1,200 @@
+
+### Recuperar todas las peliculas
+GET  http://localhost:1234/producto/categoria/1
+
+### Recuperar todas las peliculas
+GET http://localhost:1234/producto?id=Hogar
+
+###Recuperar toda la pelicula por id
+GET http://localhost:1234/producto/3
+
+###Crear una categoria
+POST http://localhost:1234/producto
+Content-Type: application/json
+
+{
+    "nombre": "dasdas",
+    "descripcion": " ",
+    "precio": 100,
+    "stock": 10,
+    "categoriaID": 1
+}
+
+### Borrar una ferreteria
+DELETE http://localhost:1234/producto/8
+
+###Actualizar Categoria
+PATCH http://localhost:1234/categoria/3
+Content-Type: application/json
+
+{
+    "descripcion": "Materiales de Construcción",
+    "precio": 100
+}
+
+
+###Recuperar todas las categorias por id
+GET http://localhost:1234/categoria/2
+
+
+### Post Categoria
+POST http://localhost:1234/categoria
+Content-Type: application/json
+
+{
+    "nombre": "Materiales de Construcción",
+    "descripcion": ""
+}
+
+### Borrar una categoria
+DELETE http://localhost:1234/categoria/4
+
+###Actualizar Categoria
+PATCH http://localhost:1234/categoria/2
+Content-Type: application/json
+
+{
+    "nombre": "Materiales de Construcción",
+    "descripcion": ""
+}
+
+###Crear una categoria
+POST http://localhost:1234/producto
+Content-Type: application/json
+
+{
+    "nombre": "dasdas",
+    "descripcion": " ",
+    "precio": 100,
+    "stock": 10,
+    "categoriaID": 1
+}
+
+### Borrar una ferreteria
+DELETE http://localhost:1234/producto/8
+
+###Actualizar Categoria
+PATCH http://localhost:1234/producto/3
+Content-Type: application/json
+
+{
+    "descripcion": "SADASD"
+}
+
+
+###Recuperar todas las marcas
+GET http://localhost:1234/marca
+=======
+GET http://localhost:1234/marca
+
+
+### Get ByPrecio
+
+GET http://localhost:1234/producto/precio/1
+
+
+### Venta
+
+POST http://localhost:1234/webpay/createVenta
+Content-Type: application/json
+
+{
+  "venta": {
+    "fecha": "2024-06-01 00:00:00",
+    "clienteID": 1,
+    "estado": "CREATED"
+  },
+  "detallesVenta": [
+    {
+      "productoID": 1,
+      "cantidad": 2,
+      "precio": 1000
+    },
+    {
+      "productoID": 2,
+      "cantidad": 1,
+      "precio": 500
+    }
+  ],
+  "amount": 2500
+}
+
+### Venta
+
+### Crear Venta y Redirigir a Webpay
+POST http://localhost:1234/webpay/comprar
+Content-Type: application/json
+
+{
+  "clienteID": 1,
+  "productos": [
+    {
+      "productoID": 1,
+      "cantidad": 2,
+      "precio": 1000
+    },
+    {
+      "productoID": 2,
+      "cantidad": 1,
+      "precio": 2000
+    }
+  ]
+}
+
+### compra pago
+POST http://localhost:1234/webpay/createPago
+Content-Type: application/json
+
+{
+ "ventaID": 11
+}
+
+### compra pago
+POST http://localhost:1234/webpay/pagoFinal
+Content-Type: application/json
+
+{
+  "clienteID": 1,
+  "productos": [
+    {
+      "productoID": 1,
+      "cantidad": 2,
+      "precio": 10000
+    },
+    {
+      "productoID": 2,
+      "cantidad": 1,
+      "precio": 15000
+    }
+  ]
+}
+
+
+### TOKEN 
+GET http://localhost:1234/webpay/token/O-56f44f8a-4289-44de-a
+
+
+### Commit
+POST http://localhost:1234/webpay/commit
+Content-Type: application/json
+
+{
+  "token_ws": "01ab31506c1e55a27907761a0edd2f6a6dfb65895a86426aa30eb82108524c91"
+}
+
+
+### Commit
+GET http://localhost:1234/webpay/commit
+Content-Type: application/json
+
+{
+  "token": "01ab3ae6d814a96ea0e2e0a1bc676fc079d0c48154c348d55d694b0fc1225bfe",
+}
+
+### detalle venta
+GET http://localhost:1234/detalleVenta/O-040764d3-48d9-429c-a
+
+
+### detalle venta
+
+GET http://localhost:1234/venta/O-2243680a-5cad-4e3e-8

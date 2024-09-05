@@ -1,11 +1,6 @@
 import React from 'react';
 
 const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
-  // Función para guardar datos en localStorage
-  const handleSave = () => {
-    localStorage.setItem('items', JSON.stringify(items));
-    alert('Datos guardados en el almacenamiento local.');
-  };
 
   return (
     <div>
@@ -34,7 +29,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
                 <input
                   type="number"
                   value={item.quantity}
-                  onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                  onChange={(e) => handleChange(index, 'quantity', parseFloat(e.target.value) || 0)}
                   className="w-full px-2 py-1 border rounded"
                 />
               </td>
@@ -42,7 +37,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
                 <input
                   type="number"
                   value={item.unitValue}
-                  onChange={(e) => handleChange(index, 'unitValue', e.target.value)}
+                  onChange={(e) => handleChange(index, 'unitValue', parseFloat(e.target.value) || 0)}
                   className="w-full px-2 py-1 border rounded"
                 />
               </td>
@@ -60,9 +55,6 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
           ))}
         </tbody>
       </table>
-      
-      {/* Botón para guardar datos en localStorage */}
-   
     </div>
   );
 };

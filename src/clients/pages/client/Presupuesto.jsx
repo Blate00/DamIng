@@ -10,26 +10,20 @@ const Presupuesto = () => {
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
   const client = clients[id];
 
-  const [items, setItems] = useState([{ description: '', quantity: '', unitValue: '', total: '' }]);
+  const [items, setItems] = useState([{ description: '', quantity: 0, unitValue: 0, total: 0 }]);
   const [ggPercentage, setGgPercentage] = useState(20);
   const [gestionPercentage, setGestionPercentage] = useState(8);
   const [trabajadores, setTrabajadores] = useState([]);
-  const [abonosManoObra, setAbonosManoObra] = useState(JSON.parse(localStorage.getItem('abonosManoObra')) || []);
-  const [asignacion, setAsignacion] = useState(0);
-  const [manoObra, setManoObra] = useState(0);
-  const [abonosAsignacion, setAbonosAsignacion] = useState([]);
-  const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
-  const [activeSection, setActiveSection] = useState(null);
 
   useEffect(() => {
     const savedItems = JSON.parse(localStorage.getItem('items')) || [];
-    const savedGgPercentage = localStorage.getItem('ggPercentage') || '20';
-    const savedGestionPercentage = localStorage.getItem('gestionPercentage') || '8';
+    const savedGgPercentage = parseFloat(localStorage.getItem('ggPercentage')) || 20;
+    const savedGestionPercentage = parseFloat(localStorage.getItem('gestionPercentage')) || 8;
     const savedTrabajadores = JSON.parse(localStorage.getItem('trabajadores')) || [];
 
     setItems(savedItems);
-    setGgPercentage(parseFloat(savedGgPercentage));
-    setGestionPercentage(parseFloat(savedGestionPercentage));
+    setGgPercentage(savedGgPercentage);
+    setGestionPercentage(savedGestionPercentage);
     setTrabajadores(savedTrabajadores);
   }, []);
 
@@ -38,7 +32,9 @@ const Presupuesto = () => {
     updatedItems[index][field] = value;
 
     if (field === 'quantity' || field === 'unitValue') {
-      updatedItems[index].total = (updatedItems[index].quantity * updatedItems[index].unitValue).toFixed(2);
+      const quantity = parseFloat(updatedItems[index].quantity) || 0;
+      const unitValue = parseFloat(updatedItems[index].unitValue) || 0;
+      updatedItems[index].total = (quantity * unitValue).toFixed(2);
     }
 
     setItems(updatedItems);
@@ -49,8 +45,11 @@ const Presupuesto = () => {
       updatedItems[index].unitValue &&
       index === updatedItems.length - 1
     ) {
-      setItems([...updatedItems, { description: '', quantity: '', unitValue: '', total: '' }]);
+      setItems([...updatedItems, { description: '', quantity: 0, unitValue: 0, total: 0 }]);
     }
+
+    // Guardar items en localStorage
+    localStorage.setItem('items', JSON.stringify(updatedItems));
   };
 
   const deleteItem = (index) => {
@@ -71,11 +70,27 @@ const Presupuesto = () => {
   const gestionValue = (total * gestionPercentage) / 100;
   const subtotal = total + ggValue + gestionValue;
 
+  const saveToLocalStorage = () => {
+    const dataToSave = {
+      total,
+      gg: ggValue,
+      gestion: gestionValue,
+      subtotal,
+      ggPercentage, // Guardar el porcentaje GG
+      gestionPercentage // Guardar el porcentaje Gestión
+    };
+    localStorage.setItem('presupuestoData', JSON.stringify(dataToSave));
+    localStorage.setItem('ggPercentage', ggPercentage);
+    localStorage.setItem('gestionPercentage', gestionPercentage);
+    alert('Datos guardados en el localStorage');
+  };
+
   return (
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
-          <Breadcrumb />          <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
+          <Breadcrumb />          
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
 
           <ClientInfo client={client} job={job} />
 
@@ -95,6 +110,12 @@ const Presupuesto = () => {
             subtotal={subtotal}
             formatCLP={formatCLP}
           />
+
+          <button 
+            className="mt-4 bg-red-800 text-white p-2 rounded"
+            onClick={saveToLocalStorage}
+          >
+            Guardar          </button>
         </div>
       </div>
     </div>
