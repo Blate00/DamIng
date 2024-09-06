@@ -42,12 +42,12 @@ const ManoObra = ({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer p-3 bg-red-800 rounded-md shadow-md" onClick={() => setDesplegado(!desplegado)}>
-        <h4 className="text-xl font-bold text-gray-100">Resumen Mano de Obra</h4>
+      <div className="flex items-center justify-between cursor-pointer  " onClick={() => setDesplegado(!desplegado)}>
+        <h4 className="text-xl font-bold text-gray-800">Resumen Mano de Obra</h4>
         {desplegado ? (
-          <ChevronUpIcon className="w-6 h-6 text-gray-100" />
+          <ChevronUpIcon className="w-6 h-6 text-gray-800" />
         ) : (
-          <ChevronDownIcon className="w-6 h-6 text-gray-100" />
+          <ChevronDownIcon className="w-6 h-6 text-gray-800" />
         )}
       </div>
 
@@ -99,11 +99,11 @@ const ManoObra = ({
           </div>
 
           <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden">
-            <thead className="bg-gray-100 border-b border-gray-300">
+            <thead className="bg-red-800 border-b border-gray-300">
               <tr>
-                <th className="py-3 px-6 text-left text-gray-800">Fecha</th>
-                <th className="py-3 px-6 text-left text-gray-800">Tipo de Transacción</th>
-                <th className="py-3 px-6 text-right text-gray-800">Ingreso</th>
+                <th className="py-3 px-6 text-left text-gray-100">Fecha</th>
+                <th className="py-3 px-6 text-left text-gray-100">Tipo de Transacción</th>
+                <th className="py-3 px-6 text-right text-gray-100">Ingreso</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
@@ -116,19 +116,19 @@ const ManoObra = ({
                   </td>
                 </tr>
               ))}
-              <tr className="bg-gray-100 font-bold">
+              <tr className="bg-white font-bold">
                 <td colSpan="2" className="py-3 px-6 text-left">Total Recibido</td>
                 <td className="py-3 px-6 text-right">
                   {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>
-              <tr className="bg-gray-100 font-bold">
+              <tr className="bg-white font-bold">
                 <td colSpan="2" className="py-3 px-6 text-left">Total Mano de Obra</td>
                 <td className="py-3 px-6 text-right">
                   {valorManoObraModificado.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </td>
               </tr>
-              <tr className="bg-gray-100 font-bold">
+              <tr className="bg-white font-bold">
                 <td colSpan="2" className="py-3 px-6 text-left">Saldo Actual</td>
                 <td className="py-3 px-6 text-right">
                   {saldoActual.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}

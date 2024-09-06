@@ -6,9 +6,18 @@ import Summary from './components/Summary';
 import Breadcrumb from '../../../general/Breadcrumb'; 
 
 const Presupuesto = () => {
-  const { id, jobId } = useParams();
+  const { id, jobIndex } = useParams(); // Obtener id del cliente y jobIndex
   const clients = JSON.parse(localStorage.getItem('clients')) || [];
-  const client = clients[id];
+  const client = clients[parseInt(id)]; // Buscar cliente por id
+
+  if (!client) {
+    return <div>Cliente no encontrado</div>;
+  }
+
+  const job = client?.jobs[parseInt(jobIndex)]; // Buscar trabajo por jobIndex
+  if (!job) {
+    return <div>Trabajo no encontrado</div>;
+  }
 
   const [items, setItems] = useState([{ description: '', quantity: 0, unitValue: 0, total: 0 }]);
   const [ggPercentage, setGgPercentage] = useState(20);
@@ -62,9 +71,6 @@ const Presupuesto = () => {
     return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   };
 
-  const job = client?.jobs.find(job => job.id === jobId);
-  if (!job) return <div>Trabajo no encontrado</div>;
-
   const total = items.reduce((total, item) => total + parseFloat(item.total || 0), 0);
   const ggValue = (total * ggPercentage) / 100;
   const gestionValue = (total * gestionPercentage) / 100;
@@ -91,7 +97,7 @@ const Presupuesto = () => {
         <div className="p-5">
           <Breadcrumb />          
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
-
+          <p>ID del Proyecto: {jobIndex}</p> {/* Muestra la ID del proyecto */}
           <ClientInfo client={client} job={job} />
 
           <ItemsTable
@@ -115,7 +121,8 @@ const Presupuesto = () => {
             className="mt-4 bg-red-800 text-white p-2 rounded"
             onClick={saveToLocalStorage}
           >
-            Guardar          </button>
+            Guardar
+          </button>
         </div>
       </div>
     </div>

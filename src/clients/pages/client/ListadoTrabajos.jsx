@@ -107,44 +107,44 @@ const ListadoTrabajos = () => {
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Trabajos Registrados</h2>
       <ul className="space-y-2">
         {filteredJobs.map((job, index) => (
-          <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <Link to={`/clients/archives/${id}`} className="flex items-center flex-grow space-x-4">
-              <FolderIcon className="h-6 w-6 text-gray-600" />
-              <div className="flex-1">
-                <h3 className="text-md font-semibold text-gray-800 mb-1">{job.name}</h3>
-                <p className="text-xs text-gray-600">{`Modificado: ${job.date}`}</p>
-              </div>
-            </Link>
-            <select
-              value={job.status}
-              onChange={(e) => handleStatusChange(index, e.target.value)}
-              className="p-1 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mr-9"
-            >
-              <option value="Iniciado">Iniciado</option>
-              <option value="No Iniciado">No Iniciado</option>
-              <option value="Finalizado">Finalizado</option>
-            </select>
-            <DotsVerticalIcon
-              className="h-6 w-6 text-gray-600 cursor-pointer absolute  right-9"
-              onClick={() => handleDotsClick(index)}
-            />
-            {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
-                <button
-                  className="block w-full text-left px-3 py-1 text-xs text-red-600 hover:bg-red-50"
-                  onClick={() => handleDelete(index)}
-                >
-                  Eliminar
-                </button>
-                <button
-                  className="block w-full text-left px-3 py-1 text-xs text-blue-600 hover:bg-blue-50"
-                  onClick={() => handleDownload(index)}
-                >
-                  Descargar Archivos
-                </button>
-              </div>
-            )}
-          </li>
+         <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+         <Link to={`/clients/archives/${id}/${index}`} className="flex items-center flex-grow space-x-4">
+           <FolderIcon className="h-6 w-6 text-gray-600" />
+           <div className="flex-1">
+             <h3 className="text-md font-semibold text-gray-800 mb-1">{job.name}</h3>
+             <p className="text-xs text-gray-600">{`Modificado: ${job.date}`}</p>
+           </div>
+         </Link>
+         <select
+           value={job.status}
+           onChange={(e) => handleStatusChange(index, e.target.value)}
+           className="p-1 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mr-9"
+         >
+           <option value="Iniciado">Iniciado</option>
+           <option value="No Iniciado">No Iniciado</option>
+           <option value="Finalizado">Finalizado</option>
+         </select>
+         <DotsVerticalIcon
+           className="h-6 w-6 text-gray-600 cursor-pointer absolute right-9"
+           onClick={() => handleDotsClick(index)}
+         />
+         {openIndex === index && (
+           <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
+             <button
+               className="block w-full text-left px-3 py-1 text-xs text-red-600 hover:bg-red-50"
+               onClick={() => handleDelete(index)}
+             >
+               Eliminar
+             </button>
+             <button
+               className="block w-full text-left px-3 py-1 text-xs text-blue-600 hover:bg-blue-50"
+               onClick={() => handleDownload(index)}
+             >
+               Descargar Archivos
+             </button>
+           </div>
+         )}
+       </li>
         ))}
       </ul>
     </div></div></div>

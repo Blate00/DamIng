@@ -18,6 +18,7 @@ const parseCLP = (value) => {
 
 const AccesoPago = ({ trabajadores }) => {
   const [rows, setRows] = useState([{}]); // Estado para manejar las filas
+  const [activeRow, setActiveRow] = useState(null); // Estado para manejar qué fila está activa
 
   const handleAddRow = () => {
     setRows([...rows, {}]); // Agregar una nueva fila
@@ -74,6 +75,10 @@ const AccesoPago = ({ trabajadores }) => {
     setRows(updatedRows);
   };
 
+  const toggleRow = (index) => {
+    setActiveRow(activeRow === index ? null : index); // Desplegar solo una fila a la vez
+  };
+
   return (
     <div className="rounded-lg">
       <table className="min-w-full rounded-lg shadow-lg">
@@ -91,87 +96,100 @@ const AccesoPago = ({ trabajadores }) => {
         </thead>
         <tbody>
           {rows.map((row, index) => (
-            <tr key={index} className="border-gray-200 hover:bg-gray-50">
-              <td className="py-2 px-4">
-                <select
-                  name="trabajador"
-                  value={row.trabajador || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                >
-                  <option value="">Selecciona un trabajador</option>
-                  {trabajadores.map((trabajador) => (
-                    <option key={trabajador.id} value={trabajador.id}>
-                      {trabajador.nombre}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="date"
-                  name="fecha"
-                  value={row.fecha || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="text"
-                  name="pagoDia"
-                  value={formatCLP(row.pagoDia) || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="text"
-                  name="colacion"
-                  value={formatCLP(row.colacion) || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="text"
-                  name="gestion"
-                  value={formatCLP(row.gestion) || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="text"
-                  name="extra"
-                  value={formatCLP(row.extra) || ''}
-                  onChange={(e) => handleInputChange(index, e)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="py-2 px-4">
-                <input
-                  type="text"
-                  name="total"
-                  value={formatCLP(row.total) || ''}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
-                  readOnly
-                />
-              </td>
-              <td className="py-2 px-4 text-center">
-                <button
-                  onClick={() => handleDeleteRow(index)}
-                  className="px-3 py-1 text-white rounded"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-red-800">
-                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </td>
-            </tr>
+            <React.Fragment key={index}>
+              <tr
+                className={`border-gray-200 hover:bg-gray-50 ${activeRow === index ? 'bg-gray-100' : ''}`}
+                onClick={() => toggleRow(index)}
+              >
+                <td className="py-2 px-4">
+                  <select
+                    name="trabajador"
+                    value={row.trabajador || ''}
+                    onChange={(e) => handleInputChange(index, e)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded"
+                  >
+                    <option value="">Selecciona un trabajador</option>
+                    {trabajadores.map((trabajador) => (
+                      <option key={trabajador.id} value={trabajador.id}>
+                        {trabajador.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="py-2 px-4">
+                  <input
+                    type="date"
+                    name="fecha"
+                    value={row.fecha || ''}
+                    onChange={(e) => handleInputChange(index, e)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded"
+                  />
+                </td>
+                <td className="py-2 px-4 text-center" colSpan="6">
+                  <button className="text-sm text-blue-600">
+                    {activeRow === index ? 'Cerrar detalles' : 'Ver detalles'}
+                  </button>
+                </td>
+              </tr>
+              {activeRow === index && (
+                <tr className="border-b border-gray-300">
+                  <td colSpan="8" className="py-2 px-4 bg-gray-50">
+                    <div className="grid grid-cols-5 gap-4">
+                      <div>
+                        <label>Pago Día</label>
+                        <input
+                          type="text"
+                          name="pagoDia"
+                          value={formatCLP(row.pagoDia) || ''}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label>Colación</label>
+                        <input
+                          type="text"
+                          name="colacion"
+                          value={formatCLP(row.colacion) || ''}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label>Gestión</label>
+                        <input
+                          type="text"
+                          name="gestion"
+                          value={formatCLP(row.gestion) || ''}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label>Extra</label>
+                        <input
+                          type="text"
+                          name="extra"
+                          value={formatCLP(row.extra) || ''}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label>Total</label>
+                        <input
+                          type="text"
+                          name="total"
+                          value={formatCLP(row.total) || ''}
+                          className="w-full px-2 py-1 border border-gray-300 rounded"
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>
