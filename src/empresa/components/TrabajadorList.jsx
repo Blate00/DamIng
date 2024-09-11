@@ -29,35 +29,32 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   }, []);
 
   const handleTrabajadorClick = (trabajador) => {
-    navigate('/liquidaciones', { state: { nombre: trabajador.nombre, correo: trabajador.correo , telefono: trabajador.telefono} });
+    navigate('/liquidaciones', { state: { nombre: trabajador.first_name, correo: trabajador.email, telefono: trabajador.phone_number } });
   };
 
-
-
   return (
-    <div className="rounded-lg p-4">
+    <div className="relative rounded-lg p-4">
       <ul className="space-y-2">
-        {trabajadores.map((trabajador) => (
-          <li key={trabajador.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleTrabajadorClick(trabajador)}>
+        {trabajadores.map((trabajador, index) => (
+          <li key={trabajador.employee_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleTrabajadorClick(trabajador)}>
             <div className="flex items-center w-full">
               <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
-                {trabajador.nombre.charAt(0).toUpperCase()}
+                {trabajador.first_name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="font-semibold">{trabajador.nombre}</h3>
-                <p className="text-sm text-gray-500">{trabajador.telefono}</p>
+                <h3 className="font-semibold">{trabajador.first_name} {trabajador.last_name}</h3>
+                <p className="text-sm text-gray-500">{trabajador.phone_number}</p>
               </div>
             </div>
             <DotsVerticalIcon
               className="h-6 w-6 text-gray-500 cursor-pointer"
-              onClick={(e) => handleDotsClick(trabajador.id, e)}
+              onClick={(e) => handleDotsClick(trabajador.employee_id, e)}
             />
-            {openIndex === trabajador.id && (
+            {openIndex === trabajador.employee_id && (
               <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-               
                 <button
                   className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-                  onClick={(e) => handleDeleteTrabajador(trabajador.id, e)}
+                  onClick={(e) => handleDeleteTrabajador(trabajador.employee_id, e)}
                 >
                   Eliminar Trabajador
                 </button>

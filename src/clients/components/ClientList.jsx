@@ -1,17 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../supabase/client';  // Asegúrate de que la ruta sea correcta
 
-const ClientList = ({ clients, onDeleteClient }) => {
+const ClientList = ({ onDeleteClient }) => {
+  const [clients, setClients] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
+
+  // Recuperar datos desde Supabase
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('client_id, name, email, phone_number'); // Ajusta los campos según tu tabla
+
+        if (error) {
+          throw error;
+        }
+
+        setClients(data);
+      } catch (error) {
+        console.error('Error fetching clients:', error.message);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   const handleDotsClick = (index) => {
     setOpenIndex(prevIndex => prevIndex === index ? null : index);
   };
 
   const handleDeleteClient = (index) => {
-    onDeleteClient(index);
+    onDeleteClient(clients[index].client_id); // Pasa el client_id en lugar del índice
     setOpenIndex(null);
   };
 
@@ -32,12 +55,12 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="rounded-lg p-4 100 ">
+    <div className="rounded-lg p-4">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Clientes</h2>
       <ul className="space-y-2">
         {clients.map((client, index) => (
-          <li key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer ">
-            <Link to={`/clients/trabajos/${index}`} className="flex items-center w-full space-x-3">
+          <li key={client.client_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+            <Link to={`/clients/trabajos/${client.client_id}`} className="flex items-center w-full space-x-3">
               {typeof client.image === 'string' && client.image.startsWith('data:image') ? (
                 <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
               ) : (
@@ -47,7 +70,7 @@ const ClientList = ({ clients, onDeleteClient }) => {
               )}
               <div className="flex-1">
                 <h3 className="text-md font-semibold text-gray-800">{client.name}</h3>
-                <p className="text-sm text-gray-500">Modificado {client.jobDate}</p>
+                <p className="text-sm text-gray-500">{client.email}</p>
               </div>
             </Link>
 
