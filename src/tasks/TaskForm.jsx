@@ -34,15 +34,7 @@ const TaskForm = ({ clients, employees, addTask }) => {
           ))}
         </select>
 
-        {/* Campo para ingresar el nombre de la tarea */}
-        <input
-          type="text"
-          placeholder="Nombre de la Tarea"
-          className="w-full p-2 border border-gray-300 rounded"
-          value={taskName}
-          onChange={(e) => setTaskName(e.target.value)}
-        />
-
+       
         {/* Menú desplegable para seleccionar el empleado responsable */}
         <select
           value={selectedEmployee}
@@ -56,6 +48,14 @@ const TaskForm = ({ clients, employees, addTask }) => {
             </option>
           ))}
         </select>
+ {/* Campo para ingresar el nombre de la tarea */}
+        <input
+          type="text"
+          placeholder="Nombre de la Tarea"
+          className="w-full p-2 border border-gray-300 rounded"
+          value={taskName}
+          onChange={(e) => setTaskName(e.target.value)}
+        />
 
         {/* Botón para añadir la tarea */}
         <button

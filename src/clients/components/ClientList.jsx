@@ -32,7 +32,8 @@ const ClientList = ({ clients, onDeleteClient }) => {
   }, []);
 
   return (
-    <div className="rounded-lg p-4 bg-white shadow-md">
+    <div className="rounded-lg p- 100 ">
+    <div className="rounded-lg ">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Clientes</h2>
       <ul className="space-y-2">
         {clients.map((client, index) => (
@@ -74,7 +75,7 @@ const ClientList = ({ clients, onDeleteClient }) => {
           </li>
         ))}
       </ul>
-    </div>
+    </div> </div>
   );
 };
 

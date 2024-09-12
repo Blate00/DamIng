@@ -4,51 +4,119 @@ import { HomeIcon, UsersIcon, ClipboardListIcon, OfficeBuildingIcon, UserCircleI
 import damLogo from '../assets/dam.png';
 import ClientForm from '../clients/components/ClientForm';
 import { useMaterials } from './MaterialsContext';
+import { supabase } from '../supabase/client';
 
 const Sidebar = ({ isVisible, closeSidebar }) => {
   const location = useLocation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef();
-  const [clients, setClients] = useState(JSON.parse(localStorage.getItem('clients')) || []);
   const [materials] = useMaterials();
+  const [clients, setClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('*');
+
+        if (error) {
+          throw error;
+        }
+
+        setClients(data);
+        setFilteredClients(data);
+      } catch (error) {
+        console.error('Error fetching clients:', error.message);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('clients', JSON.stringify(clients));
+    setFilteredClients(clients);
   }, [clients]);
 
-  const handleAddClient = (name, email, address, phone, jobType) => {
-    const existingClientIndex = clients.findIndex(client => client.name.toLowerCase() === name.toLowerCase());
-    const newJob = { name: jobType, date: new Date().toLocaleDateString() };
+  const handleAddClient = async (clientName, email, phone, projectName, quoteNumber, status, startDate, endDate) => {
+    try {
+      // Verificar si el cliente ya existe
+      const { data: existingClients, error: fetchError } = await supabase
+        .from('clients')
+        .select('client_id')
+        .eq('name', clientName)
+        .single();
 
-    let updatedClients;
+      if (fetchError) {
+        throw fetchError;
+      }
 
-    if (existingClientIndex !== -1) {
-      updatedClients = [...clients];
-      updatedClients[existingClientIndex].jobs.push(newJob);
-      updatedClients[existingClientIndex].jobDate = new Date().toLocaleDateString();
-    } else {
-      const materialsForJob = materials.filter(material => material.group === jobType);
-      const newClient = {
-        name,
-        email,
-        address,
-        phone,
-        jobType,
-        jobDate: new Date().toLocaleDateString(),
-        materials: materialsForJob,
-        jobs: [newJob],
-      };
-      updatedClients = [...clients, newClient];
+      let clientId;
+
+      if (existingClients) {
+        // Cliente ya existe, asignar el proyecto al cliente existente
+        clientId = existingClients.client_id;
+      } else {
+        // Insertar el nuevo cliente
+        const { data: clientData, error: clientError } = await supabase
+          .from('clients')
+          .insert([{ name: clientName, email, phone_number: phone, project_count: 1 }])
+          .select('client_id')
+          .single();
+
+        if (clientError || !clientData) {
+          throw clientError || new Error('No se pudo insertar el cliente');
+        }
+
+        clientId = clientData.client_id;
+
+        // Actualizar la lista de clientes
+        setClients(prevClients => [...prevClients, clientData]);
+        setFilteredClients(prevClients => [...prevClients, clientData]);
+      }
+
+      // Insertar el proyecto
+      const { error: projectError } = await supabase
+        .from('projects')
+        .insert([{ client_id: clientId, project_name: projectName, quote_number: quoteNumber, status, start_date: startDate, end_date: endDate }]);
+
+      if (projectError) {
+        throw projectError;
+      }
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error adding client and project:', error.message);
     }
-
-    setClients(updatedClients);
-    localStorage.setItem('clients', JSON.stringify(updatedClients));
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleDeleteClient = async (clientId) => {
+    try {
+      const { error: clientError } = await supabase
+        .from('clients')
+        .delete()
+        .eq('client_id', clientId);
 
+      if (clientError) {
+        throw clientError;
+      }
+
+      // Eliminar proyectos asociados
+      const { error: projectsError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('client_id', clientId);
+
+      if (projectsError) {
+        throw projectsError;
+      }
+
+      setClients(prevClients => prevClients.filter(client => client.client_id !== clientId));
+      setFilteredClients(prevClients => prevClients.filter(client => client.client_id !== clientId));
+    } catch (error) {
+      console.error('Error deleting client:', error.message);
+    }
+  };
   const navItems = [
     { name: 'Inicio', path: '/home', icon: HomeIcon },
     { name: 'Clientes', path: '/clients', icon: UsersIcon },
@@ -97,7 +165,7 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div ref={modalRef} className=" w-72">
-            <ClientForm clients={clients} addClient={handleAddClient} onClose={closeModal} />
+          <ClientForm clients={clients} addClient={handleAddClient} onClose={() => setIsModalOpen(false)} />
           </div>
         </div>
       )}

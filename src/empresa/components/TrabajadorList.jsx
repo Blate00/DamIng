@@ -33,7 +33,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   };
 
   return (
-    <div className="relative rounded-lg p-4">
+    <div className="relative rounded-lg">
       <ul className="space-y-2">
         {trabajadores.map((trabajador, index) => (
           <li key={trabajador.employee_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleTrabajadorClick(trabajador)}>

@@ -18,7 +18,7 @@ const Archives = () => {
           .select('*') // Selecciona todos los campos
           .eq('project_id', id); // Filtra por el project_id
 
-        if (error) {
+        if (error) { 
           throw error; // Lanza el error si ocurre uno
         }
 
