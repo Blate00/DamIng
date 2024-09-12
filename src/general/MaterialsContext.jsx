@@ -5,7 +5,7 @@ import { supabase } from '../supabase/client'; // Ajusta la ruta según la ubica
 const MaterialsContext = createContext();
 
 // Proveedor del contexto
-export const MaterialsProvider = ({ children }) => {
+const MaterialsProvider = ({ children }) => {
   const [materials, setMaterials] = useState([]);
 
   useEffect(() => {
@@ -33,4 +33,8 @@ export const MaterialsProvider = ({ children }) => {
 };
 
 // Hook para usar el contexto
-export const useMaterials = () => useContext(MaterialsContext);
+const useMaterials = () => useContext(MaterialsContext);
+
+// Exportar como exportación por defecto
+export default MaterialsProvider;
+export { useMaterials };

@@ -5,10 +5,12 @@ const ClientForm = ({ clients, addClient, onClose }) => {
   const [formData, setFormData] = useState({
     clientName: '',
     email: '',
-    address: '',
     phone: '',
-    jobType: '',
-    clientImage: ''
+    projectName: '',
+    quoteNumber: '', // Campo para el número de cotización
+    status: '',
+    startDate: '',
+    endDate: ''
   });
   const [clientMatches, setClientMatches] = useState([]);
 
@@ -36,25 +38,29 @@ const ClientForm = ({ clients, addClient, onClose }) => {
     setFormData({
       clientName: client.name,
       email: client.email,
-      address: client.address,
       phone: client.phone,
-      jobType: '',
-      clientImage: client.image || client.name.charAt(0).toUpperCase()
+      projectName: '',
+      quoteNumber: '', // Reseteamos el número de cotización
+      status: '',
+      startDate: '',
+      endDate: ''
     });
     setClientMatches([]);
   };
 
   const handleAddClient = () => {
-    const { clientName, email, address, phone, jobType, clientImage } = formData;
+    const { clientName, email, phone, projectName, quoteNumber, status, startDate, endDate } = formData;
     if (clientName.trim()) {
-      addClient(clientName, email, address, phone, jobType, clientImage);
+      addClient(clientName, email, phone, projectName, quoteNumber, status, startDate, endDate);
       setFormData({
         clientName: '',
         email: '',
-        address: '',
         phone: '',
-        jobType: '',
-        clientImage: ''
+        projectName: '',
+        quoteNumber: '',
+        status: '',
+        startDate: '',
+        endDate: ''
       });
     }
   };
@@ -63,7 +69,7 @@ const ClientForm = ({ clients, addClient, onClose }) => {
     <div className="bg-gray-50 p-6 rounded-lg shadow-md max-w-lg mx-auto">
       <h2 className="text-xl font-semibold mb-6 flex items-center text-gray-800">
         <UserIcon className="h-6 w-6 text-red-800 mr-2" />
-        Nuevo Proyecto
+        Nuevo Cliente y Proyecto
       </h2>
       <div className="mb-4">
         <input
@@ -101,16 +107,6 @@ const ClientForm = ({ clients, addClient, onClose }) => {
       <div className="mb-4">
         <input
           type="text"
-          id="address"
-          placeholder="Dirección"
-          value={formData.address}
-          onChange={handleInputChange}
-          className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
-        />
-      </div>
-      <div className="mb-4">
-        <input
-          type="text"
           id="phone"
           placeholder="Teléfono"
           value={formData.phone}
@@ -121,9 +117,49 @@ const ClientForm = ({ clients, addClient, onClose }) => {
       <div className="mb-4">
         <input
           type="text"
-          id="jobType"
-          placeholder="Tipo de Trabajo"
-          value={formData.jobType}
+          id="projectName"
+          placeholder="Nombre del Proyecto"
+          value={formData.projectName}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          id="quoteNumber"
+          placeholder="Número de Cotización"
+          value={formData.quoteNumber}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          id="status"
+          placeholder="Estado"
+          value={formData.status}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="date"
+          id="startDate"
+          placeholder="Fecha de Inicio"
+          value={formData.startDate}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="date"
+          id="endDate"
+          placeholder="Fecha de Fin"
+          value={formData.endDate}
           onChange={handleInputChange}
           className="w-full p-3 border border-red-800 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition"
         />
@@ -139,7 +175,7 @@ const ClientForm = ({ clients, addClient, onClose }) => {
           onClick={handleAddClient}
           className="bg-red-800 text-white py-2 px-4 rounded-lg hover:bg-red-900 transition"
         >
-          Guardar Cliente
+          Guardar Cliente y Proyecto
         </button>
       </div>
     </div>
