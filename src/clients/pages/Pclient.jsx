@@ -124,7 +124,7 @@ const Pclient = () => {
             <input
               type="text"
               placeholder="Buscar Cliente"
-              className="p-3 border border-black rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-600 flex-grow mb-3 md:mb-0"
+              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-800 flex-grow mb-3 md:mb-0"
               // Implementa la lógica de búsqueda si es necesario
             />
             <select

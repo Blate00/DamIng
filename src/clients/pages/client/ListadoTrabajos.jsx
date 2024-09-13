@@ -115,12 +115,12 @@ const ListadoTrabajos = () => {
               placeholder="Buscar Proyecto"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow mb-3 md:mb-0"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-800 flex-grow mb-3 md:mb-0"
             />
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mb-3 md:mb-0"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mb-1 md:mb-0"
             >
               <option value="2023">2023</option>
               <option value="2024">2024</option>

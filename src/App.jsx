@@ -31,10 +31,10 @@ function App() {
               <Route path="/materials" element={<Pmaterial />} />
               <Route path="/clients/trabajos/:id" element={<ListadoTrabajos />} />
               <Route path="/clients/Materiales/:id/:jobIndex" element={<MaterialesPage />} />
-              <Route path="/clients/Presupuesto/:id/:jobIndex" element={<PresupuestoPage />} />
+              <Route path="/clients/Presupuesto/:projectId" element={<PresupuestoPage />} />
               <Route path="/clients/rendicion/:id/:jobIndex" element={<RendicionPage />} />
               <Route path="/clients/flujo/:id/:jobIndex" element={<FlujoPage />} />
-              <Route path="/clients/archives/:id/:jobIndex" element={<Archives />} />
+              <Route path="/clients/archives/:id/:projectId" element={<Archives />} />
               <Route path="/home" element={<Phome />} />
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/tasks" element={<Ptasks />} />

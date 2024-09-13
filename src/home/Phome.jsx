@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from '../tasks/TaskList';
-import RecientClient from './RecientClient'; 
 import Breadcrumb from '../general/Breadcrumb'; 
 
 import { HomeIcon } from '@heroicons/react/outline';
@@ -90,7 +89,6 @@ const Home = () => {
         </div>
 
         <div className="w-1/4 bg-white  shadow-md rounded-lg">
-          <RecientClient clients={clients} onDeleteClient={handleDeleteClient} />
         </div>
       </div>
     </div>

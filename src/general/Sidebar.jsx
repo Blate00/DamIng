@@ -44,49 +44,48 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
       const { data: existingClients, error: fetchError } = await supabase
         .from('clients')
         .select('client_id')
-        .eq('name', clientName)
-        .single();
-
+        .eq('name', clientName);
+  
       if (fetchError) {
         throw fetchError;
       }
-
+  
       let clientId;
-
-      if (existingClients) {
-        // Cliente ya existe, asignar el proyecto al cliente existente
-        clientId = existingClients.client_id;
+  
+      if (existingClients && existingClients.length > 0) {
+        // Cliente ya existe, usar el primer resultado
+        clientId = existingClients[0].client_id;
       } else {
         // Insertar el nuevo cliente
         const { data: clientData, error: clientError } = await supabase
           .from('clients')
           .insert([{ name: clientName, email, phone_number: phone, project_count: 1 }])
-          .select('client_id')
-          .single();
-
-        if (clientError || !clientData) {
+          .select('client_id');
+  
+        if (clientError || !clientData || clientData.length === 0) {
           throw clientError || new Error('No se pudo insertar el cliente');
         }
-
-        clientId = clientData.client_id;
-
+  
+        clientId = clientData[0].client_id;
+  
         // Actualizar la lista de clientes
-        setClients(prevClients => [...prevClients, clientData]);
-        setFilteredClients(prevClients => [...prevClients, clientData]);
+        setClients(prevClients => [...prevClients, clientData[0]]);
+        setFilteredClients(prevClients => [...prevClients, clientData[0]]);
       }
-
+  
       // Insertar el proyecto
       const { error: projectError } = await supabase
         .from('projects')
         .insert([{ client_id: clientId, project_name: projectName, quote_number: quoteNumber, status, start_date: startDate, end_date: endDate }]);
-
+  
       if (projectError) {
         throw projectError;
       }
-
+  
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error adding client and project:', error.message);
+      // Aquí podrías mostrar un mensaje de error al usuario
     }
   };
 
