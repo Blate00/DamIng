@@ -1,55 +1,80 @@
 import React, { useState } from 'react';
+import { supabase } from '../../supabase/client';
 
-const NewMaterial = ({ addMaterial }) => {
-  const [material, setMaterial] = useState({ name: '', category: '', value: '' });
+const NewMaterial = ({ onMaterialAdded }) => {
+  const [material, setMaterial] = useState({ category: '', description: '', current_value: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setMaterial({ ...material, [name]: value });
+    if (name === 'current_value') {
+      // Remove non-numeric characters and convert to number
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setMaterial({ ...material, [name]: numericValue });
+    } else {
+      setMaterial({ ...material, [name]: value });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (material.name.trim() && material.category.trim() && material.value.trim()) {
-      addMaterial(material);
-      setMaterial({ name: '', category: '', value: '' });
+    if (material.category.trim() && material.description.trim() && material.current_value.trim()) {
+      try {
+        const numericValue = parseInt(material.current_value, 10);
+        const { data, error } = await supabase
+          .from('materiales')
+          .insert({
+            ...material,
+            current_value: numericValue,
+            updated_value: numericValue,
+            entry_date: new Date().toISOString()
+          })
+          .select();
+
+        if (error) throw error;
+
+        onMaterialAdded(data[0]);
+        setMaterial({ category: '', description: '', current_value: '' });
+      } catch (error) {
+        console.error('Error adding material:', error);
+      }
     }
   };
 
   return (
-    <div className="p-4 rounded-md mb-4 sm:mb-4">
-      <h2 className="text-lg font-semibold mb-2">Añadir Material</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4">
-        <input
-          type="text"
-          name="name"
-          value={material.name}
-          onChange={handleChange}
-          placeholder="Nombre del Material"
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
+    <div className="p-4 bg-white rounded-md ">
+      <h2 className="text-lg font-semibold mb-2">Añadir Nuevo Material</h2>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input
           type="text"
           name="category"
           value={material.category}
           onChange={handleChange}
-          placeholder="Categoría"
+          placeholder="Categoría (1 carácter)"
+          maxLength=""
           className="w-full p-2 border border-gray-300 rounded"
           required
         />
         <input
-          type="number"
-          name="value"
-          value={material.value}
+          type="text"
+          name="description"
+          value={material.description}
           onChange={handleChange}
-          placeholder="Valor"
+          placeholder="Descripción"
+          className="w-full p-2 border border-gray-300 rounded"
+          required
+        />
+        <input
+          type="text"
+          name="current_value"
+          value={material.current_value ? `${parseInt(material.current_value).toLocaleString('es-CL')}` : ''}
+          onChange={handleChange}
+          placeholder="Valor Actual (CLP)"
           className="w-full p-2 border border-gray-300 rounded"
           required
         />
         <button
           type="submit"
-          className="col-span-3 bg-red-800 text-white p-2 rounded hover:bg-red-900"
+          className=" bg-red-800 text-white p-2 rounded hover:bg-red-900 transition duration-300"
         >
           Añadir Material
         </button>
