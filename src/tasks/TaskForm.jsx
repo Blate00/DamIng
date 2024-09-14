@@ -1,71 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabase/client'; // Asegúrate de que la ruta sea correcta
 
-const TaskForm = ({ clients, employees, addTask }) => {
-  const [selectedClient, setSelectedClient] = useState('');
-  const [taskName, setTaskName] = useState('');
-  const [selectedEmployee, setSelectedEmployee] = useState(''); // Para manejar el empleado responsable
-  const [taskStatus, setTaskStatus] = useState('Iniciado');
+const TaskForm = ({ addTask }) => {
+  const [projects, setProjects] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [formData, setFormData] = useState({
+    project_id: '',
+    task_name: '',
+    responsible_employee_id: '',
+    status: 'Pendiente'
+  });
 
-  const handleAddTask = () => {
-    if (selectedClient && taskName.trim() && selectedEmployee) {
-      addTask(selectedClient, taskName, taskStatus, selectedEmployee);
-      setTaskName('');
-      setSelectedClient(''); // Limpiar la selección de cliente
-      setSelectedEmployee(''); // Limpiar la selección de empleado
-      setTaskStatus('Iniciado');
+  useEffect(() => {
+    fetchProjects();
+    fetchEmployees();
+  }, []);
+
+  const fetchProjects = async () => {
+    const { data, error } = await supabase.from('projects').select('project_id, project_name');
+    if (error) console.error('Error fetching projects:', error);
+    else setProjects(data);
+  };
+
+  const fetchEmployees = async () => {
+    const { data, error } = await supabase.from('employees').select('employee_id,name');
+    if (error) console.error('Error fetching employees:', error);
+    else setEmployees(data);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.project_id && formData.task_name) {
+      await addTask(formData);
+      setFormData({
+        project_id: '',
+        task_name: '',
+        responsible_employee_id: '',
+        status: 'Pendiente'
+      });
     }
   };
 
   return (
-    <div className="p-4 rounded-md mb-4 sm:mb-4">
+    <form onSubmit={handleSubmit} className="p-4 rounded-md mb-4 sm:mb-4">
       <h2 className="text-lg font-semibold mb-2">Añadir Tarea</h2>
       <div className="grid grid-cols-4 gap-4">
-        {/* Menú desplegable para seleccionar un cliente */}
         <select
-          value={selectedClient}
-          onChange={(e) => setSelectedClient(e.target.value)}
+          name="project_id"
+          value={formData.project_id}
+          onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
+          required
         >
-          <option value="">Seleccione Cliente</option>
-          {clients.map((client) => (
-            <option key={client.client_id} value={client.client_id}>
-              {client.name}
+          <option value="">Seleccione Proyecto</option>
+          {projects.map((project) => (
+            <option key={project.project_id} value={project.project_id}>
+              {project.project_name}
             </option>
           ))}
         </select>
 
        
-        {/* Menú desplegable para seleccionar el empleado responsable */}
         <select
-          value={selectedEmployee}
-          onChange={(e) => setSelectedEmployee(e.target.value)}
+          name="responsible_employee_id"
+          value={formData.responsible_employee_id}
+          onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
         >
           <option value="">Seleccione Responsable</option>
           {employees.map((employee) => (
             <option key={employee.employee_id} value={employee.employee_id}>
-              {`${employee.first_name} ${employee.last_name}`}
+              {employee.name}
             </option>
           ))}
         </select>
- {/* Campo para ingresar el nombre de la tarea */}
-        <input
+ <input
           type="text"
+          name="task_name"
           placeholder="Nombre de la Tarea"
+          value={formData.task_name}
+          onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
-          value={taskName}
-          onChange={(e) => setTaskName(e.target.value)}
+          required
         />
 
-        {/* Botón para añadir la tarea */}
         <button
+          type="submit"
           className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900"
-          onClick={handleAddTask}
         >
           Añadir Tarea
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

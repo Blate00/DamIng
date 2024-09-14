@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon, XCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
 
-const TaskList = ({ tasks, updateTaskStatus }) => {
+const TaskList = ({ tasks, updateTaskStatus, deleteTask }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
 
-  const handleStatusChange = (index, newStatus) => {
-    updateTaskStatus(index, newStatus);
+  const handleStatusChange = (taskId, newStatus) => {
+    updateTaskStatus(taskId, newStatus);
   };
 
   const handleDotsClick = (index) => {
@@ -29,7 +29,7 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
 
   const renderStatusIcon = (status) => {
     switch (status) {
-      case 'Iniciado':
+      case 'Pendiente':
         return <ExclamationCircleIcon className="h-5 w-5 text-yellow-500 inline-block" />;
       case 'En Progreso':
         return <CheckCircleIcon className="h-5 w-5 text-green-500 inline-block" />;
@@ -68,10 +68,10 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
                 {renderStatusIcon(task.status)}
                 <select
                   value={task.status}
-                  onChange={(e) => handleStatusChange(index, e.target.value)}
+                  onChange={(e) => handleStatusChange(task.task_id, e.target.value)}
                   className="ml-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-600 cursor-pointer"
                 >
-                  <option value="Iniciado">Iniciado</option>
+                  <option value="Pendiente">Pendiente</option>
                   <option value="En Progreso">En Progreso</option>
                   <option value="Finalizado">Finalizado</option>
                 </select>
@@ -86,7 +86,7 @@ const TaskList = ({ tasks, updateTaskStatus }) => {
                 <div ref={dropdownRef} className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-lg">
                   <button 
                     className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100 focus:outline-none"
-                    // Agrega la lógica de eliminación basada en la API si es necesario
+                    onClick={() => deleteTask(task.task_id)}
                   >
                     Eliminar
                   </button>

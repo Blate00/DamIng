@@ -1,89 +1,129 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../../supabase/client';
 
-const TrabajadorForm = ({ trabajadores, addTrabajador }) => {
+const TrabajadorForm = ({ onTrabajadorAdded }) => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    telefono: '',
-    correo: '',
+    name: '',
+    phone_number: '',
+    email: '',
+    banco_id: '',
+    tipo_cuenta_id: '',
+    account_number: '',
   });
-  const [trabajadorMatches, setTrabajadorMatches] = useState([]);
+  const [bancos, setBancos] = useState([]);
+  const [tiposCuenta, setTiposCuenta] = useState([]);
 
   useEffect(() => {
-    if (formData.nombre.trim()) {
-      setTrabajadorMatches(
-        trabajadores.filter(trabajador =>
-          trabajador.nombre.toLowerCase().includes(formData.nombre.toLowerCase())
-        )
-      );
-    } else {
-      setTrabajadorMatches([]);
-    }
-  }, [formData.nombre, trabajadores]);
+    fetchBancos();
+    fetchTiposCuenta();
+  }, []);
+
+  const fetchBancos = async () => {
+    const { data, error } = await supabase
+      .from('banco')
+      .select('banco_id, nombre_banco');
+    if (error) console.error('Error fetching bancos:', error);
+    else setBancos(data);
+  };
+
+  const fetchTiposCuenta = async () => {
+    const { data, error } = await supabase
+      .from('tipocuenta')
+      .select('tipo_cuenta_id, nombre_tipo_cuenta');
+    if (error) console.error('Error fetching tipos de cuenta:', error);
+    else setTiposCuenta(data);
+  };
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData(prevState => ({ ...prevState, [id]: value }));
   };
 
-  const handleTrabajadorSelect = (trabajador) => {
-    setFormData({
-      nombre: trabajador.nombre,
-      telefono: trabajador.telefono,
-      correo: trabajador.correo,
-    });
-    setTrabajadorMatches([]);
-  };
+  const handleAddTrabajador = async () => {
+    if (formData.last_name.trim()) {
+      try {
+        const { data, error } = await supabase
+          .from('employees')
+          .insert([formData])
+          .select();
 
-  const handleAddTrabajador = () => {
-    const { nombre, telefono, correo } = formData;
-    if (nombre.trim()) {
-      addTrabajador(nombre, telefono, correo);
-      setFormData({
-        nombre: '',
-        telefono: '',
-        correo: '',
-      });
+        if (error) throw error;
+
+        console.log('Trabajador añadido:', data);
+        onTrabajadorAdded();
+        setFormData({
+          name: '',
+          phone_number: '',
+          email: '',
+          banco_id: '',
+          tipo_cuenta_id: '',
+          account_number: '',
+        });
+      } catch (error) {
+        console.error('Error al añadir trabajador:', error);
+      }
     }
   };
 
   return (
-    <div className="p-4 rounded-md  mb-4 sm:mb-4">
+    <div className="p-4 rounded-md mb-4 sm:mb-4">
       <h2 className="text-lg font-semibold mb-2">Añadir Trabajador</h2>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <input
           type="text"
-          id="nombre"
+          id="last_name"
           placeholder="Nombre del Trabajador"
-          value={formData.nombre}
+          value={formData.name}
           onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
         />
-        {trabajadorMatches.length > 0 && (
-          <ul className="col-span-4 border border-gray-300 rounded mt-2">
-            {trabajadorMatches.map((trabajador, index) => (
-              <li
-                key={index}
-                onClick={() => handleTrabajadorSelect(trabajador)}
-                className="cursor-pointer hover:bg-gray-200 p-2"
-              >
-                {trabajador.nombre}
-              </li>
-            ))}
-          </ul>
-        )}
         <input
           type="text"
-          id="telefono"
+          id="phone_number"
           placeholder="Teléfono"
-          value={formData.telefono}
+          value={formData.phone_number}
           onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
         />
         <input
           type="email"
-          id="correo"
+          id="email"
           placeholder="Correo"
-          value={formData.correo}
+          value={formData.email}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+        <select
+          id="banco_id"
+          value={formData.banco_id}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Seleccione un banco</option>
+          {bancos.map(banco => (
+            <option key={banco.banco_id} value={banco.banco_id}>
+              {banco.nombre_banco}
+            </option>
+          ))}
+        </select>
+        <select
+          id="tipo_cuenta_id"
+          value={formData.tipo_cuenta_id}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Seleccione tipo de cuenta</option>
+          {tiposCuenta.map(tipo => (
+            <option key={tipo.tipo_cuenta_id} value={tipo.tipo_cuenta_id}>
+              {tipo.nombre_tipo_cuenta}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          id="account_number"
+          placeholder="Número de Cuenta"
+          value={formData.account_number}
           onChange={handleInputChange}
           className="w-full p-2 border border-gray-300 rounded"
         />

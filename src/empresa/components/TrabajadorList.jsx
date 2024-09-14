@@ -29,21 +29,29 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   }, []);
 
   const handleTrabajadorClick = (trabajador) => {
-    navigate('/liquidaciones', { state: { nombre: trabajador.first_name, correo: trabajador.email, telefono: trabajador.phone_number } });
+    navigate('/liquidaciones', { state: { nombre: trabajador.name, correo: trabajador.email, telefono: trabajador.phone_number } });
+  };
+
+  const getInitial = (lastName) => {
+    return lastName && typeof lastName === 'string' ? lastName.charAt(0).toUpperCase() : '?';
   };
 
   return (
     <div className="relative rounded-lg">
       <ul className="space-y-2">
-        {trabajadores.map((trabajador, index) => (
+        {trabajadores.map((trabajador) => (
           <li key={trabajador.employee_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleTrabajadorClick(trabajador)}>
             <div className="flex items-center w-full">
               <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
-                {trabajador.first_name.charAt(0).toUpperCase()}
+                {getInitial(trabajador._name)}
               </div>
               <div>
-                <h3 className="font-semibold">{trabajador.first_name} {trabajador.last_name}</h3>
-                <p className="text-sm text-gray-500">{trabajador.phone_number}</p>
+                <h3 className="font-semibold">{trabajador.name || 'Sin apellido'}</h3>
+                <p className="text-sm text-gray-500">{trabajador.phone_number || 'Sin teléfono'}</p>
+                <p className="text-sm text-gray-500">{trabajador.email || 'Sin correo'}</p>
+                <p className="text-sm text-gray-500">Banco: {trabajador.banco?.nombre_banco || 'No especificado'}</p>
+                <p className="text-sm text-gray-500">Tipo de cuenta: {trabajador.tipocuenta?.nombre_tipo_cuenta || 'No especificado'}</p>
+                <p className="text-sm text-gray-500">Número de cuenta: {trabajador.account_number || 'No especificado'}</p>
               </div>
             </div>
             <DotsVerticalIcon
