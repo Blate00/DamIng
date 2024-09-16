@@ -10,7 +10,7 @@ const Presupuesto = () => {
   const { id, projectId } = useParams(); // Obtener id del cliente y projectId desde la URL
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
-  const [items, setItems] = useState([{ description: '', quantity: 0, unitValue: 0, total: 0 }]);
+  const [items, setItems] = useState([]);
   const [ggPercentage, setGgPercentage] = useState(20);
   const [gestionPercentage, setGestionPercentage] = useState(8);
   const [loading, setLoading] = useState(true);
@@ -44,8 +44,20 @@ const Presupuesto = () => {
         }
 
         setJob(jobData);
+
+        // Obtenemos los presupuestos existentes para el proyecto
+        const { data: budgetData, error: budgetError } = await supabase
+          .from('budgets')
+          .select('*')
+          .eq('project_id', projectId);
+
+        if (budgetError) {
+          throw budgetError;
+        }
+
+        setItems(budgetData || []);
       } catch (error) {
-        console.error('Error fetching client or job:', error.message);
+        console.error('Error fetching data:', error.message);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -82,15 +94,6 @@ const Presupuesto = () => {
     }
 
     setItems(updatedItems);
-
-    if (
-      updatedItems[index].description &&
-      updatedItems[index].quantity &&
-      updatedItems[index].unitValue &&
-      index === updatedItems.length - 1
-    ) {
-      setItems([...updatedItems, { description: '', quantity: 0, unitValue: 0, total: 0 }]);
-    }
   };
 
   const deleteItem = (index) => {
@@ -107,16 +110,35 @@ const Presupuesto = () => {
   const gestionValue = (total * gestionPercentage) / 100;
   const subtotal = total + ggValue + gestionValue;
 
-  const saveToLocalStorage = () => {
-    const dataToSave = {
-      total,
-      gg: ggValue,
-      gestion: gestionValue,
-      subtotal,
-      ggPercentage, 
-      gestionPercentage 
-    };
-    alert('Datos guardados en el localStorage');
+  const updateDatabase = async () => {
+    try {
+      for (const item of items) {
+        if (item.description && item.quantity > 0 && item.unitValue > 0) {
+          const { error } = await supabase
+            .from('budgets')
+            .update({
+              description: item.description,
+              quantity: item.quantity,
+              unit_price: item.unitValue,
+              total: item.total,
+              gg_percentage: ggPercentage,
+              gestion_percentage: gestionPercentage,
+              gg_amount: ggValue,
+              gestion_amount: gestionValue,
+              subtotal: subtotal
+            })
+            .eq('budget_id', item.budget_id);
+
+          if (error) {
+            throw error;
+          }
+        }
+      }
+      alert('Presupuesto actualizado exitosamente en la base de datos.');
+    } catch (error) {
+      console.error('Error updating budget:', error.message);
+      alert('Error al actualizar el presupuesto.');
+    }
   };
 
   return (
@@ -147,9 +169,9 @@ const Presupuesto = () => {
 
           <button 
             className="mt-4 bg-red-800 text-white p-2 rounded"
-            onClick={saveToLocalStorage}
+            onClick={updateDatabase}
           >
-            Guardar
+            Actualizar en Base de Datos
           </button>
         </div>
       </div>

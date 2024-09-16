@@ -31,7 +31,7 @@ function App() {
               <Route path="/clients" element={<Pclient />} />
               <Route path="/materials" element={<Pmaterial />} />
               <Route path="/clients/trabajos/:id" element={<ListadoTrabajos />} />
-              <Route path="/clients/materiales/:id/:projectId" element={<MaterialesPage />} />
+              <Route path="/clients/listamaterial/:id/:projectId" element={<MaterialesPage />} />
               
               {/* Rutas para cada tipo de documento */}
               <Route path="/clients/presupuesto/:id/:projectId" element={<PresupuestoPage />} />

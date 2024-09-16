@@ -8,14 +8,14 @@ import MaterialSearch from './components/MaterialSearch';
 import DiscardedMaterialsTable from './components/DiscardedMaterialsTable';
 import MaterialSummary from './components/MaterialSummary';  // Importar el nuevo componente
 
+
 const Pmaterial = () => {
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [discardedMaterials, setDiscardedMaterials] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [materials, setMaterials] = useMaterials();
-  const { id, jobId } = useParams();
-  const clients = JSON.parse(localStorage.getItem('clients')) || [];
-  const client = clients[id];
+  const { id, projectId } = useParams(); // Obtener id del cliente y projectId desde la URL
+  const [client, setClient] = useState(null);
 
   // Estados para los porcentajes de GG y Gestión
   const [ggPercentage, setGgPercentage] = useState(0);

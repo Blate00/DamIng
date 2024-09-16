@@ -111,6 +111,12 @@ const Rendicion = () => {
   const saldoActualAsignacion = totalRecibidoAsignacion;
   const saldoFinalAsignacion = totalRecibidoAsignacion - totalRendicion;
 
+  const handleProveedorChange = (index, value) => {
+    const updatedItems = [...items];
+    updatedItems[index].proveedor = value;
+    setItems(updatedItems);
+  };
+
   return (
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">
@@ -125,6 +131,7 @@ const Rendicion = () => {
             agregarFila={agregarFila}
             deleteItem={deleteItem}
             proveedores={proveedores} // Pasar proveedores a la tabla
+            handleProveedorChange={handleProveedorChange} // Pasar la función de cambio de proveedor
           />
 
           <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-2">

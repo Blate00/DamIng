@@ -15,8 +15,8 @@ const Archives = () => {
 const documentRoutes = {
   Presupuesto: 'presupuesto',
   Rendición: 'rendicion',
-  Reporte: 'reporte',
-  Factura: 'factura',
+  ListaMateriales: 'listamaterial',
+  Flujo: 'flujo',
 };
 
 

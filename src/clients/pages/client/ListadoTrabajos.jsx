@@ -14,6 +14,7 @@ const ListadoTrabajos = () => {
   const [selectedFilter, setSelectedFilter] = useState('Estado');
   const [searchQuery, setSearchQuery] = useState('');
 
+
   useEffect(() => {
     const fetchClientAndProjects = async () => {
       try {

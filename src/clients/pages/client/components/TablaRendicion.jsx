@@ -25,6 +25,13 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
     }
   };
 
+  const getSuggestions = (value) => {
+    const inputValue = value.trim().toLowerCase();
+    return proveedores.filter(proveedor =>
+      proveedor.nombre.toLowerCase().includes(inputValue)
+    );
+  };
+
   return (
     <div className="tabla-rendicion">
       <table className="min-w-full bg-white border border-gray-200">
@@ -67,18 +74,18 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 />
               </td>
               <td className="py-2 px-4">
-                <select
+                <input
+                  type="text"
                   className="w-full px-2 py-1 border border-gray-300 rounded"
                   value={item.proveedor}
                   onChange={(e) => handleProveedorChange(index, e.target.value)}
-                >
-                  <option value="">Seleccionar proveedor</option>
-                  {proveedores.map((proveedor) => (
-                    <option key={proveedor.id} value={proveedor.nombre}>
-                      {proveedor.nombre}
-                    </option>
+                  list={`proveedores-${index}`}
+                />
+                <datalist id={`proveedores-${index}`}>
+                  {getSuggestions(item.proveedor).map((suggestion, i) => (
+                    <option key={i} value={suggestion.nombre} />
                   ))}
-                </select>
+                </datalist>
               </td>
               <td className="py-2 px-4">
                 <input
