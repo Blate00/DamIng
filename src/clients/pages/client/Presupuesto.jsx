@@ -96,9 +96,54 @@ const Presupuesto = () => {
     setItems(updatedItems);
   };
 
-  const deleteItem = (index) => {
-    const updatedItems = items.filter((_, i) => i !== index);
-    setItems(updatedItems);
+  const deleteItem = async (index) => {
+    const itemToDelete = items[index];
+    try {
+      const { error } = await supabase
+        .from('budgets')
+        .delete()
+        .eq('budget_id', itemToDelete.budget_id);
+
+      if (error) {
+        throw error;
+      }
+
+      const updatedItems = items.filter((_, i) => i !== index);
+      setItems(updatedItems);
+    } catch (error) {
+      console.error('Error deleting budget:', error.message);
+      alert('Error al eliminar el presupuesto.');
+    }
+  };
+
+  const addNewItem = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('budgets')
+        .insert({
+          project_id: projectId,
+          quote_number: job.quote_number,
+          description: '',
+          quantity: 0,
+          unit_price: 0,
+          total: 0,
+          gg_percentage: ggPercentage,
+          gestion_percentage: gestionPercentage,
+          gg_amount: 0,
+          gestion_amount: 0,
+          subtotal: 0
+        })
+        .select();
+
+      if (error) {
+        throw error;
+      }
+
+      setItems([...items, ...data]);
+    } catch (error) {
+      console.error('Error adding new budget item:', error.message);
+      alert('Error al añadir una nueva fila.');
+    }
   };
 
   const formatCLP = (value) => {
@@ -156,6 +201,13 @@ const Presupuesto = () => {
             formatCLP={formatCLP}
             deleteItem={deleteItem}
           />
+
+          <button 
+            className="mt-4 bg-blue-600 text-white p-2 rounded"
+            onClick={addNewItem}
+          >
+            Añadir Nueva Fila
+          </button>
 
           <Summary
             total={total}
