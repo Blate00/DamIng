@@ -39,7 +39,8 @@ const Home = () => {
     </div>
     <div className="ml-4 text-left">
       <h2 className="text-white font-medium">Balance Total</h2>
-      <p className="text-white text-2xl font-bold">0</p>
+      <p className="text-white text-2xl font-bold"> GG 0</p>
+      <p className="text-white text-2xl font-bold"> Gestión 0</p>
     </div>
   </div>
   
@@ -51,7 +52,7 @@ const Home = () => {
               </svg>
             </div>
             <div className="ml-4 text-left">
-              <h2 className="text-black font-medium">Total Materiales</h2>
+              <h2 className="text-black font-medium">Resumen Mano Obra</h2>
               <p className="text-black text-2xl font-bold">0</p>
             </div>
           </div>
@@ -63,7 +64,7 @@ const Home = () => {
               </svg>
             </div>
             <div className="ml-4 text-left">
-              <h2 className="text-black font-medium">Facturas Totales</h2>
+              <h2 className="text-black font-medium">Resumen Asignación</h2>
               <p className="text-black text-2xl font-bold">0</p>
             </div>
           </div>
@@ -75,7 +76,7 @@ const Home = () => {
               </svg>
             </div>
             <div className="ml-4 text-left">
-              <h2 className="text-black font-medium">Total Mano de Obra</h2>
+              <h2 className="text-black font-medium">Proyectos Activos</h2>
               <p className="text-black text-2xl font-bold">0</p>
             </div>
           </div>

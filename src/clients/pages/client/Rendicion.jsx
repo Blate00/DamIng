@@ -134,31 +134,31 @@ const Rendicion = () => {
             handleProveedorChange={handleProveedorChange} // Pasar la función de cambio de proveedor
           />
 
-          <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-2">
-            <div className="flex flex-col space-y-2">
-              <div className="flex justify-end items-right">
-                <span className="text-lg font-semibold text-gray-700">Resumen</span>
-              </div>
-              <div className="flex justify-end items-right">
-                <span className="text-sm font-medium px-2 text-gray-700">Total de Rendición: </span>
-                <p className="text-sm text-red-600 font-semibold">
-                  {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </p>
-              </div>
-              <div className="flex justify-end items-right">
-                <span className="text-sm font-medium px-2 text-gray-700">Saldo Actual de Asignación:</span>
-                <p className="text-sm text-red-600 font-semibold">
-                  {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </p>
-              </div>
-              <div className="flex justify-end items-right">
-                <span className="text-sm font-medium px-2 text-gray-700">Saldo Final de Asignación:</span>
-                <p className="text-sm text-red-600 font-semibold">
-                  {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </p>
-              </div>
-            </div>
-          </div>
+<div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300  mb-10 rounded-b-lg shadow-lg space-y-4">
+  <div className="flex flex-col space-y-3">
+    <div className="flex justify-between items-center">
+      <span className="text-xl font-bold text-black">Resumen</span>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-md font-medium text-black">Total de Rendición:</span>
+      <p className="text-md text-black font-bold">
+        {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+      </p>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-md font-medium text-black">Saldo Actual de Asignación:</span>
+      <p className="text-md text-black font-bold">
+        {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+      </p>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-md font-medium text-black">Saldo Final de Asignación:</span>
+      <p className="text-md text-black font-bold">
+        {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+      </p>
+    </div>
+  </div>
+</div>
 
           <Asignacion
             asignacion={asignacion}

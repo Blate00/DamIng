@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../../../../supabase/client';
 
-const MaterialSearch = ({ materials, handleAddMaterialWithQuantity }) => {
+const MaterialSearch = ({ handleAddMaterialWithQuantity }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [materiales, setMaterials] = useState([]);
 
-  // Filtrar materiales según el término de búsqueda
-  const filteredMaterials = materials.filter((material) =>
-    material.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    fetchMaterials();
+  }, [searchTerm]);
+
+  const fetchMaterials = async () => {
+    const { data, error } = await supabase
+      .from('materiales')
+      .select('material_id, category, description, current_value')
+      .ilike('description', `%${searchTerm}%`)
+      .limit(10);
+
+    if (error) {
+      console.error('Error fetching materials:', error);
+    } else {
+      setMaterials(data);
+    }
+  };
 
   return (
     <div className="mb-4">
@@ -17,16 +32,16 @@ const MaterialSearch = ({ materials, handleAddMaterialWithQuantity }) => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      {searchTerm && filteredMaterials.length > 0 && (
+      {searchTerm && materiales.length > 0 && (
         <div className="mt-2">
           <ul>
-            {filteredMaterials.map((material, index) => (
+            {materiales.map((material) => (
               <li
-                key={index}
+                key={material.material_id}
                 className="flex justify-between items-center p-2 border-b cursor-pointer hover:bg-gray-100"
                 onClick={() => {
-                  handleAddMaterialWithQuantity(material, 1); // Agregar con cantidad 1
-                  setSearchTerm(''); // Limpiar la búsqueda después de añadir
+                  handleAddMaterialWithQuantity(material, 1);
+                  setSearchTerm('');
                 }}
               >
                 <span>{material.description}</span>

@@ -1,34 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMaterials } from '../../../general/MaterialsContext';
+import { supabase } from '../../../supabase/client';
 import Breadcrumb from '../../../general/Breadcrumb';
 import ClientInfo from './components/ClientInfo';
 import SelectedMaterialsTable from './components/SelectedMaterialsTable';
 import MaterialSearch from './components/MaterialSearch';
 import DiscardedMaterialsTable from './components/DiscardedMaterialsTable';
-import MaterialSummary from './components/MaterialSummary';  // Importar el nuevo componente
-
+import MaterialSummary from './components/MaterialSummary';
 
 const Pmaterial = () => {
-  const [selectedGroups, setSelectedGroups] = useState([]);
-  const [discardedMaterials, setDiscardedMaterials] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [materials, setMaterials] = useMaterials();
-  const { id, projectId } = useParams(); // Obtener id del cliente y projectId desde la URL
+  const [discardedMaterials, setDiscardedMaterials] = useState([]);
+  const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
+  const [job, setJob] = useState(null);
 
-  // Estados para los porcentajes de GG y Gestión
-  const [ggPercentage, setGgPercentage] = useState(0);
-  const [gestionPercentage, setGestionPercentage] = useState(0);
-  
+  useEffect(() => {
+    fetchClientAndJob();
+  }, [id, projectId]);
+
+  const fetchClientAndJob = async () => {
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('client_id', id)
+      .single();
+
+    if (clientError) {
+      console.error('Error fetching client:', clientError);
+    } else {
+      setClient(clientData);
+    }
+
+    const { data: jobData, error: jobError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('project_id', projectId)
+      .single();
+
+    if (jobError) {
+      console.error('Error fetching job:', jobError);
+    } else {
+      setJob(jobData);
+    }
+  };
+
   const handleAddMaterialWithQuantity = (material, quantity) => {
     setSelectedMaterials([...selectedMaterials, { ...material, quantity }]);
-    setMaterials(materials.filter((mat) => mat !== material));
   };
 
   const handleRemoveMaterial = (index) => {
-    const materialToRemove = selectedMaterials[index];
-    setMaterials([...materials, materialToRemove]);
     setSelectedMaterials(selectedMaterials.filter((_, i) => i !== index));
   };
 
@@ -48,12 +69,11 @@ const Pmaterial = () => {
 
   const handleRecoverMaterial = (index) => {
     const materialToRecover = discardedMaterials[index];
-    setMaterials([...materials, materialToRecover]);
+    setSelectedMaterials([...selectedMaterials, materialToRecover]);
     setDiscardedMaterials(discardedMaterials.filter((_, i) => i !== index));
   };
 
-  const job = client?.jobs.find(job => job.id === jobId);
-  if (!job) return <div>Trabajo no encontrado</div>;
+  if (!client || !job) return <div>Cargando...</div>;
 
   return (
     <div className="flex flex-col p-3 bg-white h-full">
@@ -62,13 +82,10 @@ const Pmaterial = () => {
           <Breadcrumb />
           <h1 className="text-2xl font-semibold mb-4 text-center md:text-left">Lista de Materiales</h1>
           
-          {/* Componente para buscar y agregar materiales */}
-          <MaterialSearch materials={materials} handleAddMaterialWithQuantity={handleAddMaterialWithQuantity} />
+          <MaterialSearch handleAddMaterialWithQuantity={handleAddMaterialWithQuantity} />
           
-          {/* Información del cliente y trabajo */}
           <ClientInfo client={client} job={job} />
           
-          {/* Tabla de materiales seleccionados */}
           {selectedMaterials.length > 0 && (
             <SelectedMaterialsTable
               selectedMaterials={selectedMaterials}
@@ -76,25 +93,15 @@ const Pmaterial = () => {
               handleUpdateQuantity={handleUpdateQuantity}
             />
           )}
-  {selectedMaterials.length > 0 && (
-            <MaterialSummary
-              selectedMaterials={selectedMaterials}
-              ggPercentage={ggPercentage}
-              setGgPercentage={setGgPercentage}
-              gestionPercentage={gestionPercentage}
-              setGestionPercentage={setGestionPercentage}
-            />
+          {selectedMaterials.length > 0 && (
+            <MaterialSummary selectedMaterials={selectedMaterials} />
           )}
-          {/* Tabla de materiales descartados */}
           {discardedMaterials.length > 0 && (
             <DiscardedMaterialsTable
               discardedMaterials={discardedMaterials}
               handleRecoverMaterial={handleRecoverMaterial}
             />
           )}
-
-          {/* Resumen de materiales seleccionados */}
-       
         </div>
       </div> 
     </div>

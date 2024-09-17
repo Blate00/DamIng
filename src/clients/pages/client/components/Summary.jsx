@@ -1,66 +1,113 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../../../../supabase/client'; // Asegúrate de importar tu cliente de Supabase
 
-const Summary = ({ total, formatCLP, ggPercentage, gestionPercentage, ggValue, gestionValue, subtotal }) => {
-  // Estados para los porcentajes y valores
-  const [localGgPercentage, setLocalGgPercentage] = useState(ggPercentage);
-  const [localGestionPercentage, setLocalGestionPercentage] = useState(gestionPercentage);
+const Summary = ({ total, formatCLP, projectId }) => {
+  const [localGgPercentage, setLocalGgPercentage] = useState(0);
+  const [localGestionPercentage, setLocalGestionPercentage] = useState(0);
+  const [ggValue, setGgValue] = useState(0);
+  const [gestionValue, setGestionValue] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
 
   useEffect(() => {
-    // Cargar los valores de porcentaje desde localStorage al montar el componente
-    const savedGgPercentage = parseFloat(localStorage.getItem('ggPercentage')) || ggPercentage;
-    const savedGestionPercentage = parseFloat(localStorage.getItem('gestionPercentage')) || gestionPercentage;
+    const fetchPercentages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('description_budgets')
+          .select('gg_percentage, gestion_percentage')
+          .eq('project_id', projectId)
+          .limit(1)
+          .single();
 
-    setLocalGgPercentage(savedGgPercentage);
-    setLocalGestionPercentage(savedGestionPercentage);
-  }, [ggPercentage, gestionPercentage]);
+        if (error) {
+          throw error;
+        }
 
-  const handleSave = () => {
-    const dataToSave = {
-      ggPercentage: localGgPercentage,
-      gestionPercentage: localGestionPercentage,
-      ggValue,
-      gestionValue,
-      subtotal,
+        if (data) {
+          setLocalGgPercentage(data.gg_percentage || 0);
+          setLocalGestionPercentage(data.gestion_percentage || 0);
+        } else {
+          console.warn('No data found for the given project_id');
+        }
+      } catch (error) {
+        console.error('Error fetching percentages:', error.message);
+      }
     };
-    localStorage.setItem('summaryData', JSON.stringify(dataToSave));
-    alert('Datos del resumen guardados en el almacenamiento local.');
+
+    fetchPercentages();
+  }, [projectId]);
+
+  useEffect(() => {
+    const calculateValues = () => {
+      const gg = (total * localGgPercentage) / 100;
+      const gestion = (total * localGestionPercentage) / 100;
+      setGgValue(gg);
+      setGestionValue(gestion);
+      setSubtotal(total + gg + gestion);
+    };
+
+    calculateValues();
+  }, [total, localGgPercentage, localGestionPercentage]);
+
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('description_budgets')
+        .update({
+          gg_percentage: localGgPercentage,
+          gestion_percentage: localGestionPercentage
+        })
+        .eq('project_id', projectId);
+
+      if (error) {
+        throw error;
+      }
+
+      alert('Porcentajes actualizados en la base de datos.');
+    } catch (error) {
+      console.error('Error updating percentages:', error.message);
+      alert('Error al actualizar los porcentajes.');
+    }
   };
 
   return (
-    <div className="flex flex-col bg-white p-5 mb-10 shadow-md space-y-3">
-      <div className="flex flex-col space-y-1">
-        <div className="flex justify-end items-right ">
-          <span className="text-sm font-medium px-2 text-gray-700">Total:</span>
-          <p className="text-sm text-red-600 font-semibold">{formatCLP(total)}</p>
-        </div>
-        <div className="flex justify-end items-right">
-          <span className="text-sm font-medium px-2 text-gray-700">GG (%):</span>
-          <input
-            type="number"
-            value={localGgPercentage}
-            onChange={(e) => setLocalGgPercentage(parseFloat(e.target.value) || 0)}
-            className="w-16 px-2 py-1 border rounded"
-            onBlur={handleSave}
-          />
-          <p className="text-sm text-red-600 font-semibold">{formatCLP(ggValue)}</p>
-        </div>
-        <div className="flex justify-end items-right">
-          <span className="text-sm font-medium px-2 text-gray-700">Gestión (%):</span>
-          <input
-            type="number"
-            value={localGestionPercentage}
-            onChange={(e) => setLocalGestionPercentage(parseFloat(e.target.value) || 0)}
-            className="w-16 px-2 py-1 border rounded"
-            onBlur={handleSave}
-          />
-          <p className="text-sm text-red-600 font-semibold">{formatCLP(gestionValue)}</p>
-        </div>
-        <div className="flex justify-end items-right">
-          <span className="text-sm font-medium px-2 text-gray-700">Subtotal:</span>
-          <p className="text-sm text-red-600 font-semibold">{formatCLP(subtotal)}</p>
-        </div>
+<div className="flex flex-col border-r border-l border-b border-gray-300 bg-gray-100 p-6 mb- rounded-b-lg shadow-lg space-y-4">
+  <div className="flex flex-col space-y-2">
+    <div className="flex justify-between items-center">
+      <span className="text-lg font-medium text-gray-800">Total:</span>
+      <p className="text-lg text-black font-bold">{formatCLP(total)}</p>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-lg font-medium text-gray-800">GG (%):</span>
+      <div className="flex items-center space-x-2">
+        <input
+          type="number"
+          value={localGgPercentage}
+          onChange={(e) => setLocalGgPercentage(parseFloat(e.target.value) || 0)}
+          className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onBlur={handleSave}
+        />
+        <p className="text-lg text-black font-bold">{formatCLP(ggValue)}</p>
       </div>
     </div>
+    <div className="flex justify-between items-center">
+      <span className="text-lg font-medium text-gray-800">Gestión (%):</span>
+      <div className="flex items-center space-x-2">
+        <input
+          type="number"
+          value={localGestionPercentage}
+          onChange={(e) => setLocalGestionPercentage(parseFloat(e.target.value) || 0)}
+          className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onBlur={handleSave}
+        />
+        <p className="text-lg text-black   font-bold">{formatCLP(gestionValue)}</p>
+      </div>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className="text-lg font-medium text-gray-800">Subtotal:</span>
+      <p className="text-lg text-black font-bold">{formatCLP(subtotal)}</p>
+    </div>
+  </div>
+</div>
   );
 };
 

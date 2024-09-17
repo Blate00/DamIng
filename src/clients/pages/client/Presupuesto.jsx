@@ -11,8 +11,8 @@ const Presupuesto = () => {
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
   const [items, setItems] = useState([]);
-  const [ggPercentage, setGgPercentage] = useState(20);
-  const [gestionPercentage, setGestionPercentage] = useState(8);
+  const [ggPercentage, setGgPercentage] = useState(0);
+  const [gestionPercentage, setGestionPercentage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -47,7 +47,7 @@ const Presupuesto = () => {
 
         // Obtenemos los presupuestos existentes para el proyecto
         const { data: budgetData, error: budgetError } = await supabase
-          .from('budgets')
+          .from('description_budgets')
           .select('*')
           .eq('project_id', projectId);
 
@@ -56,6 +56,12 @@ const Presupuesto = () => {
         }
 
         setItems(budgetData || []);
+
+        // Si hay datos de presupuesto, toma los porcentajes del primer elemento
+        if (budgetData.length > 0) {
+          setGgPercentage(budgetData[0].gg_percentage || 0);
+          setGestionPercentage(budgetData[0].gestion_percentage || 0);
+        }
       } catch (error) {
         console.error('Error fetching data:', error.message);
         setError(error.message);
@@ -100,7 +106,7 @@ const Presupuesto = () => {
     const itemToDelete = items[index];
     try {
       const { error } = await supabase
-        .from('budgets')
+        .from('description_budgets')
         .delete()
         .eq('budget_id', itemToDelete.budget_id);
 
@@ -119,7 +125,7 @@ const Presupuesto = () => {
   const addNewItem = async () => {
     try {
       const { data, error } = await supabase
-        .from('budgets')
+        .from('description_budgets')
         .insert({
           project_id: projectId,
           quote_number: job.quote_number,
@@ -160,7 +166,7 @@ const Presupuesto = () => {
       for (const item of items) {
         if (item.description && item.quantity > 0 && item.unitValue > 0) {
           const { error } = await supabase
-            .from('budgets')
+            .from('description_budgets')
             .update({
               description: item.description,
               quantity: item.quantity,
@@ -187,12 +193,11 @@ const Presupuesto = () => {
   };
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
+    <div className="flex flex-col p-3  h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />          
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
-          <p>ID del Proyecto: {projectId}</p> {/* Muestra la ID del proyecto */}
           <ClientInfo client={client} job={job} />
 
           <ItemsTable
@@ -202,20 +207,11 @@ const Presupuesto = () => {
             deleteItem={deleteItem}
           />
 
-          <button 
-            className="mt-4 bg-blue-600 text-white p-2 rounded"
-            onClick={addNewItem}
-          >
-            Añadir Nueva Fila
-          </button>
+         
 
           <Summary
             total={total}
-            ggPercentage={ggPercentage}
-            gestionPercentage={gestionPercentage}
-            ggValue={ggValue}
-            gestionValue={gestionValue}
-            subtotal={subtotal}
+            projectId={projectId}
             formatCLP={formatCLP}
           />
 
@@ -223,7 +219,12 @@ const Presupuesto = () => {
             className="mt-4 bg-red-800 text-white p-2 rounded"
             onClick={updateDatabase}
           >
-            Actualizar en Base de Datos
+            Guardar
+          </button> <button 
+            className="mt-4 bg-red-700 text-white p-2 rounded"
+            onClick={addNewItem}
+          >
+            Añadir Nueva Fila
           </button>
         </div>
       </div>
