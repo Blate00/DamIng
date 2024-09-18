@@ -4,6 +4,7 @@ import { supabase } from '../supabase/client'; // Asegúrate de que la ruta sea 
 const TaskForm = ({ addTask }) => {
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     project_id: '',
     task_name: '',
@@ -43,60 +44,81 @@ const TaskForm = ({ addTask }) => {
         responsible_employee_id: '',
         status: 'Pendiente'
       });
+      setIsFormOpen(false);
     }
   };
 
+  const toggleForm = () => {
+    setIsFormOpen(!isFormOpen);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="p-4 rounded-md mb-4 sm:mb-4">
-      <h2 className="text-lg font-semibold mb-2">Añadir Tarea</h2>
-      <div className="grid grid-cols-4 gap-4">
-        <select
-          name="project_id"
-          value={formData.project_id}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        >
-          <option value="">Seleccione Proyecto</option>
-          {projects.map((project) => (
-            <option key={project.project_id} value={project.project_id}>
-              {project.project_name}
-            </option>
-          ))}
-        </select>
-
-       
-        <select
-          name="responsible_employee_id"
-          value={formData.responsible_employee_id}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        >
-          <option value="">Seleccione Responsable</option>
-          {employees.map((employee) => (
-            <option key={employee.employee_id} value={employee.employee_id}>
-              {employee.name}
-            </option>
-          ))}
-        </select>
- <input
-          type="text"
-          name="task_name"
-          placeholder="Nombre de la Tarea"
-          value={formData.task_name}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900"
-        >
-          Añadir Tarea
+    <div className="p-4 rounded-md mb-4 sm:mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Añadir Tarea</h2>
+        <button onClick={toggleForm} className="focus:outline-none">
+          {isFormOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          )}
         </button>
       </div>
-    </form>
+
+      {isFormOpen && (
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <select
+            name="project_id"
+            value={formData.project_id}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          >
+            <option value="">Seleccione Proyecto</option>
+            {projects.map((project) => (
+              <option key={project.project_id} value={project.project_id}>
+                {project.project_name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="responsible_employee_id"
+            value={formData.responsible_employee_id}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="">Seleccione Responsable</option>
+            {employees.map((employee) => (
+              <option key={employee.employee_id} value={employee.employee_id}>
+                {employee.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            name="task_name"
+            placeholder="Nombre de la Tarea"
+            value={formData.task_name}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900"
+          >
+            Añadir Tarea
+          </button>
+        </form>
+      )}
+    </div>
   );
 };
 

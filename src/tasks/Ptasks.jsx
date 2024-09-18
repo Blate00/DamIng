@@ -6,25 +6,55 @@ import { supabase } from '../supabase/client';
 
 const Ptasks = () => {
   const [tasks, setTasks] = useState([]);
+  const [employees, setEmployees] = useState([]);
 
   const fetchTasks = async () => {
     try {
       const { data, error } = await supabase
-      .from('tasks')
-      .select(`
-        *,
-        projects:project_id (project_id, project_name)
-      `);
+        .from('tasks')
+        .select(`
+          *,
+          projects:project_id (project_id, project_name)
+        `);
   
       if (error) throw error;
-      console.log(data); // Para depuración
-      setTasks(data);
+      return data;
     } catch (error) {
       console.error('Error al obtener las tareas:', error);
+      return [];
     }
   };
+
+  const fetchEmployees = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employees')
+        .select('employee_id, name');
+  
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error al obtener los empleados:', error);
+      return [];
+    }
+  };
+
+  const loadData = async () => {
+    const tasksData = await fetchTasks();
+    const employeesData = await fetchEmployees();
+    
+    setEmployees(employeesData);
+
+    const tasksWithEmployeeNames = tasksData.map(task => ({
+      ...task,
+      responsible_employee_name: employeesData.find(emp => emp.employee_id === task.responsible_employee_id)?.name || 'Desconocido'
+    }));
+
+    setTasks(tasksWithEmployeeNames);
+  };
+
   useEffect(() => {
-    fetchTasks();
+    loadData();
   }, []);
 
   const addTask = async (taskData) => {
@@ -35,7 +65,7 @@ const Ptasks = () => {
         .select();
 
       if (error) throw error;
-      fetchTasks(); // Refetch tasks after adding
+      loadData(); // Refetch tasks after adding
     } catch (error) {
       console.error('Error al agregar la tarea:', error);
     }
@@ -49,7 +79,7 @@ const Ptasks = () => {
         .eq('task_id', taskId);
 
       if (error) throw error;
-      fetchTasks(); // Refetch tasks after updating
+      loadData(); // Refetch tasks after updating
     } catch (error) {
       console.error('Error al actualizar el estado de la tarea:', error);
     }
@@ -63,7 +93,7 @@ const Ptasks = () => {
         .eq('task_id', taskId);
 
       if (error) throw error;
-      fetchTasks(); // Refetch tasks after deleting
+      loadData(); // Refetch tasks after deleting
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
     }

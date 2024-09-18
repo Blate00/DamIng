@@ -125,12 +125,12 @@ const Pclient = () => {
               placeholder="Buscar Cliente"
               value={searchTerm} // Vincular al estado del término de búsqueda
               onChange={(e) => setSearchTerm(e.target.value)} // Actualizar el término de búsqueda
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-800 flex-grow mb-3 md:mb-0"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-800 flex-grow mb-3 md:mb-0"
             />
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="p-2 border border-black rounded-lg shadow-sm mb-3 md:mb-0"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm mb-3 md:mb-0"
             >
               <option value="2023">2023</option>
               <option value="2024">2024</option>
@@ -138,7 +138,7 @@ const Pclient = () => {
             <select
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="p-2 border border-black rounded-lg shadow-sm"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm"
             >
               <option value="Mes">Filtrar por Mes</option>
               <option value="Julio">Julio</option>
