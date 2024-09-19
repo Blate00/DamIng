@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
 
-const ClientList = ({ clients, onDeleteClient }) => {
+const ClientList = ({ clients, onDeleteClient, loading }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
 
@@ -33,49 +33,56 @@ const ClientList = ({ clients, onDeleteClient }) => {
 
   return (
     <div className="rounded-lg p- 100 ">
-    <div className="rounded-lg ">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Lista de Clientes</h2>
-      <ul className="space-y-2">
-        {clients.map((client, index) => (
-          <li key={client.client_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer relative">
-            <Link to={`/clients/trabajos/${client.client_id}`} className="flex items-center w-full space-x-3">
-              {client.image ? (
-                <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center text-lg font-medium">
-                  {client.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <div className="flex-1">
-                <h3 className="text-md font-semibold text-gray-800">{client.name}</h3>
-                <p className="text-sm text-gray-500">Modificado {client.jobDate}</p>
-              </div>
-            </Link>
+      <div className="rounded-lg ">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Clientes</h1>
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#700F23]"></div>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {clients.map((client, index) => (
+              <li key={client.client_id} className="shadow-md flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer relative">
+                <Link to={`/clients/trabajos/${client.client_id}`} className="flex items-center w-full space-x-3">
+                  {client.image ? (
+                    <img src={client.image} alt={client.name} className="h-10 w-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="h-12 w-12 rounded-full bg-[#700F23] text-white flex items-center justify-center text-lg font-medium border-2 border-[#8B1D34]">
+                      {client.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <h3 className="text-md font-semibold text-gray-800">{client.name}</h3>
+                    <p className="text-sm text-gray-500">Modificado {client.jobDate}</p>
+                  </div>
+                </Link>
 
-            <DotsVerticalIcon
-              className="h-6 w-6 text-gray-500 cursor-pointer"
-              onClick={() => handleDotsClick(index)}
-            />
-            {openIndex === index && (
-              <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
-                <button
-                  className="block w-full text-left px-3 py-1 text-gray-700 hover:bg-gray-100 text-sm"
-                  onClick={() => handleDownloadFiles(index)}
-                >
-                  Descargar Archivos
-                </button>
-                <button
-                  className="block w-full text-left px-3 py-1 text-red-600 hover:bg-red-100 text-sm"
-                  onClick={() => handleDeleteClient(client.client_id)}
-                >
-                  Eliminar Cliente
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div> </div>
+                <DotsVerticalIcon
+                  className="h-6 w-6 text-gray-500 cursor-pointer"
+                  onClick={() => handleDotsClick(index)}
+                />
+                {openIndex === index && (
+                  <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
+                    <button
+                      className="block w-full text-left px-3 py-1 text-gray-700 hover:bg-gray-100 text-sm"
+                      onClick={() => handleDownloadFiles(index)}
+                    >
+                      Descargar Archivos
+                    </button>
+                    <button
+                      className="block w-full text-left px-3 py-1 text-red-600 hover:bg-red-100 text-sm"
+                      onClick={() => handleDeleteClient(client.client_id)}
+                    >
+                      Eliminar Cliente
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 };
 

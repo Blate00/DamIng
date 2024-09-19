@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FolderIcon, DotsVerticalIcon } from '@heroicons/react/outline';
+import { FolderIcon, DotsVerticalIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../general/Breadcrumb';
-import { supabase } from '../../../supabase/client';  // Asegúrate de que la ruta sea correcta
+import { supabase } from '../../../supabase/client';
 
 const ListadoTrabajos = () => {
-  const { id } = useParams(); // `id` es `client_id`
+  const { id } = useParams();
   const [client, setClient] = useState(null);
   const [projects, setProjects] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
@@ -13,7 +13,7 @@ const ListadoTrabajos = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('2024');
   const [selectedFilter, setSelectedFilter] = useState('Estado');
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchClientAndProjects = async () => {
@@ -38,6 +38,8 @@ const ListadoTrabajos = () => {
         setProjects(projectData);
       } catch (error) {
         console.error('Error fetching data:', error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -110,80 +112,100 @@ const ListadoTrabajos = () => {
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
-          <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-            <input
-              type="text"
-              placeholder="Buscar Proyecto"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-red-800 flex-grow mb-3 md:mb-0"
-            />
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm mb-1 md:mb-0"
-            >
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-            </select>
-            <select
-              value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm"
-            >
-              <option value="Estado">Estado</option>
-              <option value="Iniciado">Iniciado</option>
-              <option value="No Iniciado">No Iniciado</option>
-              <option value="Finalizado">Finalizado</option>
-            </select>
+          
+          <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
+            <div className="relative flex-grow mb-4 md:mb-0">
+              <input
+                type="text"
+                placeholder="Buscar Proyecto"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#700F23] transition duration-150 ease-in-out"
+              />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            
+            <div className="relative mb-4 md:mb-0">
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value)}
+                className="appearance-none w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#700F23] transition duration-150 ease-in-out"
+              >
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+              </select>
+              <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            
+            <div className="relative">
+              <select
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="appearance-none w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#700F23] transition duration-150 ease-in-out"
+              >
+                <option value="Estado">Estado</option>
+                <option value="Iniciado">Iniciado</option>
+                <option value="No Iniciado">No Iniciado</option>
+                <option value="Finalizado">Finalizado</option>
+              </select>
+              <FilterIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
           </div>
-        </div>
-        <div className="rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Proyectos Registrados</h2>
-          <ul className="space-y-2">
-            {filteredProjects.map((project, index) => (
-              <li key={project.project_id} className="relative flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                <Link to={`/clients/archives/${id}/${project.project_id}`} className="flex items-center flex-grow space-x-4">
-                  <FolderIcon className="h-6 w-6 text-gray-600" />
-                  <div className="flex-1">
-                    <h3 className="text-md font-semibold text-gray-800 mb-1">{project.project_name}</h3>
-                    <p className="text-xs text-gray-600">{`Inicio: ${project.start_date}`}</p>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Proyectos Registrados</h1>
+          
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#700F23]"></div>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {filteredProjects.map((project, index) => (
+                <li key={project.project_id} className="bg-gray-50 rounded-lg hover:shadow-lg transition-shadow duration-300">
+                  <div className="relative flex items-center justify-between p-4">
+                    <Link to={`/clients/archives/${id}/${project.project_id}`} className="flex items-center flex-grow space-x-4">
+                      <div className="bg-[#700F23] p-2 rounded-full">
+                        <FolderIcon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-black mb-1">{project.project_name}</h3>
+                        <p className="text-sm text-gray-600">{`Inicio: ${project.start_date}`}</p>
+                      </div>
+                    </Link>
+                    <div className="flex items-center space-x-4">
+                      <select
+                        value={project.status}
+                        onChange={(e) => handleStatusChange(project.project_id, e.target.value)}
+                        className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#700F23]"
+                      >
+                        <option value="Iniciado">Iniciado</option>
+                        <option value="No Iniciado">No Iniciado</option>
+                        <option value="Finalizado">Finalizado</option>
+                      </select>
+                      <button onClick={() => handleDotsClick(index)} className="focus:outline-none">
+                        <DotsVerticalIcon className="h-6 w-6 text-gray-600 hover:text-[#700F23]" />
+                      </button>
+                    </div>
+                    {openIndex === index && (
+                      <div ref={dropdownRef} className="absolute right-2 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20">
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-150 ease-in-out"
+                          onClick={() => handleDelete(project.project_id)}
+                        >
+                          Eliminar
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition duration-150 ease-in-out"
+                          onClick={() => handleDownload(project.project_id)}
+                        >
+                          Descargar Archivos
+                        </button>
+                      </div>
+                    )}
                   </div>
-                </Link>
-                <div className="flex items-center space-x-4">
-                  <select
-                    value={project.status}
-                    onChange={(e) => handleStatusChange(project.project_id, e.target.value)}
-                    className="p-1 border border-gray-300 rounded-lg shadow-sm bg-white text-sm"
-                  >
-                    <option value="Iniciado">Iniciado</option>
-                    <option value="No Iniciado">No Iniciado</option>
-                    <option value="Finalizado">Finalizado</option>
-                  </select>
-                  <DotsVerticalIcon
-                    className="h-6 w-6 text-gray-600 cursor-pointer"
-                    onClick={() => handleDotsClick(index)}
-                  />
-                </div>
-                {openIndex === index && (
-                  <div ref={dropdownRef} className="absolute right-2 top-10 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
-                    <button
-                      className="block w-full text-left px-3 py-1 text-xs text-red-600 hover:bg-red-50"
-                      onClick={() => handleDelete(project.project_id)}
-                    >
-                      Eliminar
-                    </button>
-                    <button
-                      className="block w-full text-left px-3 py-1 text-xs text-blue-600 hover:bg-blue-50"
-                      onClick={() => handleDownload(project.project_id)}
-                    >
-                      Descargar Archivos
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

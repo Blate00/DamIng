@@ -1,100 +1,113 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { DocumentTextIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, FolderIcon } from '@heroicons/react/solid';
 import Breadcrumb from '../../../general/Breadcrumb';
-import { supabase } from '../../../supabase/client'; // Asegúrate de importar tu cliente de Supabase
+import { supabase } from '../../../supabase/client';
 
 const Archives = () => {
-  const { projectId, id } = useParams(); // Obtén `client_id` y `project_id` desde los parámetros de la ruta
-  const [documents, setDocuments] = useState([]); // Estado para almacenar los documentos
-  const [loading, setLoading] = useState(true); // Estado para mostrar que los datos están cargando
-  const [error, setError] = useState(null); // Estado para manejar errores
+  const { projectId, id } = useParams();
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [projectName, setProjectName] = useState('');
 
-  // Mapeo de los tipos de documentos a sus rutas específicas
-// Mapeo de los tipos de documentos a sus rutas específicas
-const documentRoutes = {
-  Presupuesto: 'presupuesto',
-  Rendición: 'rendicion',
-  ListaMateriales: 'materiales',
-  Flujo: 'flujo',
-};
-
+  const documentRoutes = {
+    Presupuesto: 'presupuesto',
+    Rendición: 'rendicion',
+    ListaMateriales: 'materiales',
+    Flujo: 'flujo',
+  };
 
   useEffect(() => {
-    const fetchDocuments = async () => {
+    const fetchDocumentsAndProjectName = async () => {
       try {
         if (!projectId || !id) {
           throw new Error('ID del proyecto o cliente no proporcionado');
         }
 
-        const { data, error } = await supabase
-          .from('documents') // Nombre de la tabla en Supabase
-          .select('*, tipo_document( nombre_documento)') // Selecciona todos los campos y el nombre del documento
-          .eq('project_id', parseInt(projectId)); // Filtra por el project_id
+        const [documentsResponse, projectResponse] = await Promise.all([
+          supabase
+            .from('documents')
+            .select('*, tipo_document(nombre_documento)')
+            .eq('project_id', parseInt(projectId)),
+          supabase
+            .from('projects')
+            .select('project_name')
+            .eq('project_id', parseInt(projectId))
+            .single()
+        ]);
 
-        if (error) { 
-          throw error; // Lanza el error si ocurre uno
-        }
+        if (documentsResponse.error) throw documentsResponse.error;
+        if (projectResponse.error) throw projectResponse.error;
 
-        setDocuments(data); // Almacena los documentos obtenidos
+        setDocuments(documentsResponse.data);
+        setProjectName(projectResponse.data.project_name);
       } catch (error) {
-        console.error('Error al cargar los documentos:', error);
-        setError(error.message); // Guarda el mensaje de error
+        console.error('Error al cargar los datos:', error);
+        setError(error.message);
       } finally {
-        setLoading(false); // Termina la carga
+        setLoading(false);
       }
     };
 
-    fetchDocuments(); // Llamamos a la función cuando se monta el componente
+    fetchDocumentsAndProjectName();
   }, [projectId, id]);
 
   if (loading) {
-    return <div className="p-6 text-center text-gray-500">Cargando documentos...</div>;
+    return <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#F3E7E9] to-[#E3EEFF]">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#700F23]"></div>
+    </div>;
   }
 
   if (error) {
-    return <div className="p-6 text-center text-red-500">Error: {error}</div>;
-  }
-
-  if (documents.length === 0) {
-    return <div className="p-6 text-center text-gray-500">No hay documentos disponibles para este proyecto</div>;
+    return <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#F3E7E9] to-[#E3EEFF]">
+      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+        <p className="text-gray-700">{error}</p>
+      </div>
+    </div>;
   }
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white h-full rounded-lg">
-        <div className="p-5">
+    <div className="flex flex-col  bg-white h-full ">
+      <div className="bg-white rounded-xl ">
+        <div className="p-8">
           <Breadcrumb />
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            Documentos del Proyecto {projectId} para el Cliente {id}
-          </h2>
-          <ul className="space-y-2">
-            {documents.map((document) => {
-              // Obtener la ruta dinámica correspondiente al tipo de documento
-              const documentTypeRoute = documentRoutes[document.tipo_document.nombre_documento] || 'default';
-
-              return (
-                <li key={document.document_id}>
-                  <Link 
-                    to={`/clients/${documentTypeRoute}/${id}/${projectId}`}
-                    className="flex mb-2 items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                  >
-                    <div className="flex items-center">
-                      <DocumentTextIcon className="h-8 w-8 text-red-600 mr-4" />
+          <div className="flex items-center mb-6">
+            <FolderIcon className="h-10 w-10 text-gray-800 mr-4" />
+            <h2 className="text-3xl font-bold text-gray-800">
+              Documentos: {projectName}
+            </h2>
+          </div>
+          {documents.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-xl text-gray-600">No hay documentos disponibles para este proyecto</p>
+            </div>
+          ) : (
+            <ul className="space-y-4">
+              {documents.map((document) => {
+                const documentTypeRoute = documentRoutes[document.tipo_document.nombre_documento] || 'default';
+                return (
+                  <li key={document.document_id}>
+                    <Link 
+                      to={`/clients/${documentTypeRoute}/${id}/${projectId}`}
+                      className="flex items-center p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                      <DocumentTextIcon className="h-10 w-10 text-[#700F23] mr-4" />
                       <div>
-                        <h3 className="text-md font-semibold text-gray-800">
+                        <h3 className="text-lg font-semibold text-gray-800">
                           {document.tipo_document.nombre_documento}
                         </h3>
-                        <p className="text-sm text-gray-500">
-                          {`Subido el: ${new Date(document.upload_date).toLocaleDateString()}`}
+                        <p className="text-sm text-gray-600">
+                          Subido el: {new Date(document.upload_date).toLocaleDateString()}
                         </p>
                       </div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
     </div>

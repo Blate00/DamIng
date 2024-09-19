@@ -14,34 +14,38 @@ const Pmaterial = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchClientAndJob();
   }, [id, projectId]);
 
   const fetchClientAndJob = async () => {
-    const { data: clientData, error: clientError } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('client_id', id)
-      .single();
+    try {
+      setLoading(true);
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('client_id', id)
+        .single();
 
-    if (clientError) {
-      console.error('Error fetching client:', clientError);
-    } else {
+      if (clientError) throw clientError;
       setClient(clientData);
-    }
 
-    const { data: jobData, error: jobError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('project_id', projectId)
-      .single();
+      const { data: jobData, error: jobError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('project_id', projectId)
+        .single();
 
-    if (jobError) {
-      console.error('Error fetching job:', jobError);
-    } else {
+      if (jobError) throw jobError;
       setJob(jobData);
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,7 +77,35 @@ const Pmaterial = () => {
     setDiscardedMaterials(discardedMaterials.filter((_, i) => i !== index));
   };
 
-  if (!client || !job) return <div>Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-800"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
+          <p className="text-gray-700">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!client || !job) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Datos no encontrados</h2>
+          <p className="text-gray-700">No se pudo cargar la información del cliente o del trabajo.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col p-3 bg-white h-full">

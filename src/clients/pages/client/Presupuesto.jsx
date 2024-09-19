@@ -4,10 +4,10 @@ import ClientInfo from './components/ClientInfo';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import Breadcrumb from '../../../general/Breadcrumb'; 
-import { supabase } from '../../../supabase/client'; // Importar supabase o tu cliente de backend
+import { supabase } from '../../../supabase/client';
 
 const Presupuesto = () => {
-  const { id, projectId } = useParams(); // Obtener id del cliente y projectId desde la URL
+  const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
   const [items, setItems] = useState([]);
@@ -19,45 +19,32 @@ const Presupuesto = () => {
   useEffect(() => {
     const fetchClientAndJob = async () => {
       try {
-        // Obtenemos los datos del cliente
         const { data: clientData, error: clientError } = await supabase
           .from('clients')
           .select('*')
           .eq('client_id', id)
           .single();
 
-        if (clientError) {
-          throw clientError;
-        }
-
+        if (clientError) throw clientError;
         setClient(clientData);
 
-        // Obtenemos el trabajo (proyecto) asociado al cliente
         const { data: jobData, error: jobError } = await supabase
           .from('projects')
           .select('*')
           .eq('project_id', projectId)
           .single();
 
-        if (jobError) {
-          throw jobError;
-        }
-
+        if (jobError) throw jobError;
         setJob(jobData);
 
-        // Obtenemos los presupuestos existentes para el proyecto
         const { data: budgetData, error: budgetError } = await supabase
           .from('description_budgets')
           .select('*')
           .eq('project_id', projectId);
 
-        if (budgetError) {
-          throw budgetError;
-        }
-
+        if (budgetError) throw budgetError;
         setItems(budgetData || []);
 
-        // Si hay datos de presupuesto, toma los porcentajes del primer elemento
         if (budgetData.length > 0) {
           setGgPercentage(budgetData[0].gg_percentage || 0);
           setGestionPercentage(budgetData[0].gestion_percentage || 0);
@@ -72,22 +59,6 @@ const Presupuesto = () => {
 
     fetchClientAndJob();
   }, [id, projectId]);
-
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!client) {
-    return <div>Cliente no encontrado</div>;
-  }
-
-  if (!job) {
-    return <div>Trabajo no encontrado</div>;
-  }
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
@@ -192,8 +163,47 @@ const Presupuesto = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-800"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
+          <p className="text-gray-700">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!client) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Cliente no encontrado</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!job) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Trabajo no encontrado</h2>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-3  h-full">
+    <div className="flex flex-col p-3 h-full">
       <div className="bg-white h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />          
@@ -207,8 +217,6 @@ const Presupuesto = () => {
             deleteItem={deleteItem}
           />
 
-         
-
           <Summary
             total={total}
             projectId={projectId}
@@ -216,11 +224,12 @@ const Presupuesto = () => {
           />
 
           <button 
-            className="mt-4 bg-red-800 text-white p-2 rounded"
+            className="mt-4 bg-red-800 text-white p-2 rounded mr-2"
             onClick={updateDatabase}
           >
             Guardar
-          </button> <button 
+          </button>
+          <button 
             className="mt-4 bg-red-700 text-white p-2 rounded"
             onClick={addNewItem}
           >
