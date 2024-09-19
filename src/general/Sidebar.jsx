@@ -62,7 +62,7 @@ const Sidebar = ({ isVisible, closeSidebar }) => {
         if (clientError || !clientData || clientData.length === 0) {
           throw clientError || new Error('No se pudo insertar el cliente');
         }
-  
+ 
         clientId = clientData[0].client_id;
   
         setClients(prevClients => [...prevClients, clientData[0]]);
