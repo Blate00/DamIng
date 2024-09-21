@@ -53,16 +53,16 @@ const TaskForm = ({ addTask }) => {
   };
 
   return (
-    <div className="p-4 rounded-md mb-4 sm:mb-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Añadir Tarea</h2>
+    <div className="mt-4 rounded-md mb-4 sm:mb-4">
+      <div className="flex  items-center mb-4">
+        <h2 className="text-lg font-semibold">Añadir</h2>
         <button onClick={toggleForm} className="focus:outline-none">
           {isFormOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
           )}

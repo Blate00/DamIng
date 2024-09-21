@@ -48,10 +48,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
               <div>
                 <h3 className="font-semibold">{trabajador.name || 'Sin apellido'}</h3>
                 <p className="text-sm text-gray-500">{trabajador.phone_number || 'Sin teléfono'}</p>
-                <p className="text-sm text-gray-500">{trabajador.email || 'Sin correo'}</p>
-                <p className="text-sm text-gray-500">Banco: {trabajador.banco?.nombre_banco || 'No especificado'}</p>
-                <p className="text-sm text-gray-500">Tipo de cuenta: {trabajador.tipocuenta?.nombre_tipo_cuenta || 'No especificado'}</p>
-                <p className="text-sm text-gray-500">Número de cuenta: {trabajador.account_number || 'No especificado'}</p>
+               
               </div>
             </div>
             <DotsVerticalIcon

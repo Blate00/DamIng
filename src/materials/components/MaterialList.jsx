@@ -62,51 +62,51 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-    <table className="min-w-full border-r border-l border-gray-300 shadow-lg rounded-lg overflow-hidden">
-  <thead>
-    <tr className="text-center py-1 px-2 text-white border-r border-gray-700 font-bold bg-red-800 uppercase text-sm leading-normal">
-      <th className="py-3 px-4 text-left rounded-tl-lg">Categoría</th>
-      <th className="py-3 px-4 text-center">Descripción</th>
-      <th className="py-3 px-4 text-center">Valor Actual</th>
-      <th className="py-3 px-4 text-center">Valor Actualizado</th>
-      <th className="py-3 px-4 text-center">Fecha de Entrada</th>
-      <th className="py-3 px-4 text-center">Última Actualización</th>
-      <th className="py-3 px-4 text-center rounded-tr-lg">Acciones</th>
-    </tr>
-  </thead>
-  <tbody className="text-gray-700 text-sm font-light">
-    {sortedMaterials.map((material) => (
-      <tr key={material.material_id} className={`border-b border-gray-200 hover:bg-red-50 transition duration-150 ease-in-out ${isUpdateNeeded(material.entry_date, material.last_update_date) ? 'bg-yellow-100' : ''}`}>
-        <td className="py-3 font-medium px-4 text-left whitespace-nowrap">{material.category}</td>
-        <td className="py-3 px-4 text-center">{material.description}</td>
-        <td className="py-3 px-4 text-center">{formatCLP(material.current_value)}</td>
-        <td className="py-3 px-4 text-center">{formatCLP(material.updated_value)}</td>
-        <td className="py-3 px-4 text-center">{new Date(material.entry_date).toLocaleDateString('es-CL')}</td>
-        <td className="py-3 px-4 text-center">{material.last_update_date ? new Date(material.last_update_date).toLocaleDateString('es-CL') : 'N/A'}</td>
-        <td className="py-3 px-4 text-center">
-          <button 
-            onClick={() => handleUpdateValue(material.material_id, material.current_value)}
-            className="text-black font-bold py-1 px-2 rounded transition duration-300 mr-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 cursor-pointer hover:text-red-600">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
-          </button>
-          <button 
-            onClick={() => handleDeleteMaterial(material.material_id)}
-            className="  text-black font-bold py-1 px-2 rounded transition duration-300"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 cursor-pointer hover:text-red-600 ">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-            </svg>
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-    </div>
+    <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-red-800">
+        <tr>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg">Categoría</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Descripción</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Actual</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Actualizado</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha de Entrada</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Última Actualización</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {sortedMaterials.map((material, index) => (
+          <tr key={material.material_id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${isUpdateNeeded(material.entry_date, material.last_update_date) ? 'bg-red-100' : ''} hover:bg-red-50 transition-colors duration-150`}>
+            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{material.category}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{material.description}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCLP(material.current_value)}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCLP(material.updated_value)}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(material.entry_date).toLocaleDateString('es-CL')}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{material.last_update_date ? new Date(material.last_update_date).toLocaleDateString('es-CL') : 'N/A'}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button 
+                onClick={() => handleUpdateValue(material.material_id, material.current_value)}
+                className="text-red-600 hover:text-red-900 mr-4"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <button 
+                onClick={() => handleDeleteMaterial(material.material_id)}
+                className="text-red-600 hover:text-red-900"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
   );
 };
 

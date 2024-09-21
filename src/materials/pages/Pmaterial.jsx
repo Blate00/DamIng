@@ -40,7 +40,7 @@ const Pmaterial = () => {
     <div className="flex flex-col p-3  min-h-full">
       <div className="bg-white rounded-lg  p-5">
         <Breadcrumb />
-        <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Gestión de Materiales</h1>
+        <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Materiales</h1>
 
         <NewMaterial onMaterialAdded={handleMaterialAdded} />
 

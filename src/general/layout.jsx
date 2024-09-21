@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Header from './Header';
 import Sidebar from './Sidebar';
 
 function Layout({ children }) {
-  const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [filteredClients, setFilteredClients] = useState([]);
 
   const toggleSidebar = () => {
-    setSidebarVisible(!isSidebarVisible);
-  };
-
-  const closeSidebar = () => {
-    setSidebarVisible(false);
+    setSidebarOpen(!isSidebarOpen);
   };
 
   const handleSearch = (nameQuery, phoneQuery, emailQuery) => {
@@ -23,10 +18,10 @@ function Layout({ children }) {
   };
 
   return (
-    <div className="flex flex-grow full-height">
-      <Sidebar isVisible={isSidebarVisible} closeSidebar={closeSidebar} />
-      <div className="flex flex-col flex-grow ml-64 bg-white full-height">
-        <main className="flex-grow overflow-y-auto">
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div className="flex-1 overflow-auto lg:ml-64">
+        <main className="p- ">
           {handleSearch(children)}
         </main>
       </div>
