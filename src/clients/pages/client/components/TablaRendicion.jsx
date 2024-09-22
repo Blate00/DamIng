@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem, proveedores }) => {
+const TablaRendicion = ({ items, handleChange, agregarFila, deleteItem, proveedores }) => {
   const handleTotalChange = (index, value) => {
     handleChange(index, 'total', value);
     if (value !== '' && value !== undefined && value !== null && index === items.length - 1) {
@@ -13,6 +13,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
   };
 
   const getSuggestions = (value) => {
+    if (!value) return [];
     const inputValue = value.trim().toLowerCase();
     return proveedores.filter(proveedor =>
       proveedor.nombre.toLowerCase().includes(inputValue)
@@ -40,7 +41,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="date"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.fecha}
+                  value={item.fecha || ''}
                   onChange={(e) => handleChange(index, 'fecha', e.target.value)}
                 />
               </td>
@@ -48,7 +49,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.detalle}
+                  value={item.detalle || ''}
                   onChange={(e) => handleChange(index, 'detalle', e.target.value)}
                 />
               </td>
@@ -56,7 +57,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.folio}
+                  value={item.folio || ''}
                   onChange={(e) => handleChange(index, 'folio', e.target.value)}
                 />
               </td>
@@ -64,7 +65,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.proveedor}
+                  value={item.proveedor || ''}
                   onChange={(e) => handleProveedorChange(index, e.target.value)}
                   list={`proveedores-${index}`}
                 />
@@ -78,7 +79,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.documento}
+                  value={item.documento || ''}
                   onChange={(e) => handleChange(index, 'documento', e.target.value)}
                 />
               </td>
@@ -86,7 +87,7 @@ const TablaRendicion = ({ items, handleChange, agregarFila, editItem, deleteItem
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-700"
-                  value={item.total}
+                  value={item.total || ''}
                   onChange={(e) => handleTotalChange(index, e.target.value)}
                 />
               </td>

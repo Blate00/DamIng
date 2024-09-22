@@ -11,44 +11,38 @@ const Rendicion = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
-  const [items, setItems] = useState([{ fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
-  const [asignacion, setAsignacion] = useState(0);
-  const [abonosAsignacion, setAbonosAsignacion] = useState([]);
-  const [nuevoAbonoAsignacion, setNuevoAbonoAsignacion] = useState(0);
-  const [manoObra, setManoObra] = useState(0);
-  const [subtotal, setSubtotal] = useState(0);
+  const [items, setItems] = useState([]);
+  const [asignacion, setAsignacion] = useState({ saldo_recibido: 0, saldo_actual: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [proveedores, setProveedores] = useState([]);
 
   useEffect(() => {
-    const fetchClientAndJob = async () => {
+    const fetchData = async () => {
       try {
-        const { data: clientData, error: clientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('client_id', id)
-          .single();
+        setLoading(true);
+        const [clientData, jobData, proveedoresData, rendicionesData, asignacionData] = await Promise.all([
+          supabase.from('clients').select('*').eq('client_id', id).single(),
+          supabase.from('projects').select('*').eq('project_id', projectId).single(),
+          supabase.from('proveedores').select('*'),
+          supabase.from('rendiciones').select('*').eq('project_id', projectId),
+          supabase.from('asignacion').select('*').eq('project_id', projectId).single()
+        ]);
 
-        if (clientError) throw clientError;
-        setClient(clientData);
+        if (clientData.error) throw clientData.error;
+        if (jobData.error) throw jobData.error;
+        if (proveedoresData.error) throw proveedoresData.error;
+        if (rendicionesData.error) throw rendicionesData.error;
 
-        const { data: jobData, error: jobError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('project_id', projectId)
-          .single();
+        setClient(clientData.data);
+        setJob(jobData.data);
+        setProveedores(proveedoresData.data);
+        setItems(rendicionesData.data || []);
+        setAsignacion(asignacionData.data || { saldo_recibido: 0, saldo_actual: 0 });
 
-        if (jobError) throw jobError;
-        setJob(jobData);
-
-        const { data: proveedoresData, error: proveedoresError } = await supabase
-          .from('proveedores')
-          .select('*');
-
-        if (proveedoresError) throw proveedoresError;
-        setProveedores(proveedoresData);
-
+        if (rendicionesData.data.length === 0) {
+          agregarFila();
+        }
       } catch (error) {
         console.error('Error fetching data:', error.message);
         setError(error.message);
@@ -57,75 +51,104 @@ const Rendicion = () => {
       }
     };
 
-    fetchClientAndJob();
+    fetchData();
   }, [id, projectId]);
 
-  const deleteItem = (index) => {
-    const updatedItems = items.filter((_, i) => i !== index);
-    setItems(updatedItems);
+  const deleteItem = async (index) => {
+    try {
+      const itemToDelete = items[index];
+      if (itemToDelete.rendicion_id) {
+        const { error } = await supabase
+          .from('rendiciones')
+          .delete()
+          .eq('rendicion_id', itemToDelete.rendicion_id);
+        if (error) throw error;
+      }
+
+      const updatedItems = items.filter((_, i) => i !== index);
+      setItems(updatedItems);
+    } catch (error) {
+      console.error('Error deleting item:', error.message);
+    }
   };
 
-  const handleChange = (index, field, value) => {
-    const updatedItems = [...items];
-    updatedItems[index][field] = value;
-    if (field === 'total') {
-      updatedItems[index].total = (parseFloat(updatedItems[index].total) || 0).toFixed(2);
+  const handleChange = async (index, field, value) => {
+    try {
+      const updatedItems = [...items];
+      updatedItems[index][field] = value;
+      if (field === 'total') {
+        updatedItems[index].total = parseFloat(value) || 0;
+      }
+
+      if (updatedItems[index].rendicion_id) {
+        const { error } = await supabase
+          .from('rendiciones')
+          .update({ [field]: value })
+          .eq('rendicion_id', updatedItems[index].rendicion_id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.rpc('insert_rendicion', {
+          p_project_id: projectId,
+          p_quote_number: job.quote_number,
+          p_fecha: updatedItems[index].fecha,
+          p_detalle: updatedItems[index].detalle,
+          p_folio: updatedItems[index].folio,
+          p_proveedor_nombre: updatedItems[index].proveedor,
+          p_documento: updatedItems[index].documento,
+          p_total: updatedItems[index].total
+        });
+        if (error) throw error;
+        updatedItems[index].rendicion_id = data;
+      }
+
+      setItems(updatedItems);
+    } catch (error) {
+      console.error('Error updating item:', error.message);
     }
-    setItems(updatedItems);
   };
 
   const agregarFila = () => {
-    setItems([...items, { fecha: '', detalle: '', folio: '', proveedor: '', documento: '', total: '' }]);
+    const newItem = { 
+      project_id: projectId, 
+      quote_number: job?.quote_number,
+      fecha: new Date().toISOString().split('T')[0], 
+      detalle: '', 
+      folio: '', 
+      proveedor: '', 
+      documento: '', 
+      total: 0 
+    };
+    setItems([...items, newItem]);
+  };
+
+  const handleProveedorChange = async (index, value) => {
+    try {
+      const updatedItems = [...items];
+      updatedItems[index].proveedor = value;
+
+      if (updatedItems[index].rendicion_id) {
+        const proveedor = proveedores.find(p => p.nombre === value);
+        const { error } = await supabase
+          .from('rendiciones')
+          .update({ proveedor_id: proveedor ? proveedor.proveedor_id : null })
+          .eq('rendicion_id', updatedItems[index].rendicion_id);
+        if (error) throw error;
+      }
+
+      setItems(updatedItems);
+    } catch (error) {
+      console.error('Error updating proveedor:', error.message);
+    }
   };
 
   const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
-  const totalRecibidoAsignacion = abonosAsignacion.reduce((total, abono) => total + abono.monto, 0);
-  const saldoActualAsignacion = totalRecibidoAsignacion;
-  const saldoFinalAsignacion = totalRecibidoAsignacion - totalRendicion;
-
-  const handleProveedorChange = (index, value) => {
-    const updatedItems = [...items];
-    updatedItems[index].proveedor = value;
-    setItems(updatedItems);
-  };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-800"></div>
-      </div>
-    );
+    return <div>Cargando...</div>;
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
-          <p className="text-gray-700">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!client) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-red-800 mb-4">Cliente no encontrado</h2>
-        </div>
-      </div>
-    );
-  }
-
-  if (!job) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-red-800 mb-4">Trabajo no encontrado</h2>
-        </div>
-      </div>
-    );
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -159,13 +182,13 @@ const Rendicion = () => {
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium text-black">Saldo Actual de Asignación:</span>
                 <p className="text-md text-black font-bold">
-                  {saldoActualAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  {asignacion.saldo_actual.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium text-black">Saldo Final de Asignación:</span>
                 <p className="text-md text-black font-bold">
-                  {saldoFinalAsignacion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  {(asignacion.saldo_actual - totalRendicion).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
             </div>
@@ -174,13 +197,10 @@ const Rendicion = () => {
           <Asignacion
             asignacion={asignacion}
             setAsignacion={setAsignacion}
-            abonosAsignacion={abonosAsignacion}
-            setAbonosAsignacion={setAbonosAsignacion}
-            nuevoAbonoAsignacion={nuevoAbonoAsignacion}
-            setNuevoAbonoAsignacion={setNuevoAbonoAsignacion}
+            projectId={projectId}
           />
 
-          <ManoObra manoObra={manoObra} setManoObra={setManoObra} subtotal={subtotal} />
+          <ManoObra manoObra={0} setManoObra={() => {}} subtotal={0} />
         </div>
       </div>
     </div>

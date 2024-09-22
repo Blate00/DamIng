@@ -76,17 +76,7 @@ const FlujoCaja = () => {
             <p>Cargando datos del cliente y trabajo...</p>
           )}
 
-          <table className="min-w-full rounded-lg shadow-lg">
-            <thead className="bg-red-800 rounded-lg">
-              <tr className="border border-white">
-                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">Cliente</th>
-                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">Trabajo</th>
-                <th className="text-center py-1 px-1 text-white border-r border-white font-bold">
-                  Dinero Disponible: {totalRecibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </th>
-              </tr>
-            </thead>
-          </table>
+       
 
           <AccesoPago
             trabajadores={trabajadores}
