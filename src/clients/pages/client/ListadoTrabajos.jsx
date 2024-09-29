@@ -158,7 +158,7 @@ const ListadoTrabajos = () => {
               <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#700F23]"></div>
             </div>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {filteredProjects.map((project, index) => (
                 <li key={project.project_id} className="bg-gray-50 rounded-lg hover:shadow-lg transition-shadow duration-300">
                   <div className="relative flex items-center justify-between p-4">

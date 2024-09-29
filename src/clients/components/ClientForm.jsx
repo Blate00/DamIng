@@ -83,17 +83,7 @@ const ClientForm = ({ clients, addClient, onClose }) => {
               />
             </div>
           ))}
-          {['startDate', 'endDate'].map((field) => (
-            <div key={field} className="relative">
-              <input
-                type="date"
-                id={field}
-                value={formData[field]}
-                onChange={handleInputChange}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-2 focus:ring-red-800 transition-all duration-300 ease-in-out"
-              />
-            </div>
-          ))}
+      
         </div>
         <div className="flex justify-between mt-8">
           <button

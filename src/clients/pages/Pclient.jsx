@@ -44,14 +44,121 @@ const Pclient = () => {
     setFilteredClients(filtered);
   }, [clients, searchTerm]);
 
-  const handleAddClient = async (clientName, email, phone, projectName, quoteNumber, status, startDate, endDate) => {
-    // ... (el resto de la función permanece igual)
-  };
-
   const handleDeleteClient = async (clientId) => {
-    // ... (el resto de la función permanece igual)
+    const isConfirmed = window.confirm("¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.");
+    if (!isConfirmed) return;
+  
+    try {
+      // Obtener todos los project_ids y quote_numbers relacionados con este cliente
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('projects')
+        .select('project_id, quote_number')
+        .eq('client_id', clientId);
+  
+      if (projectsError) throw projectsError;
+  
+      const projectIds = projectsData.map(project => project.project_id);
+      const quoteNumbers = projectsData.map(project => project.quote_number);
+  
+      if (projectIds.length > 0) {
+        // Primero, obtener todos los task_ids relacionados con estos proyectos
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('tasks')
+          .select('task_id')
+          .in('project_id', projectIds);
+  
+        if (tasksError) throw tasksError;
+  
+        const taskIds = tasksData.map(task => task.task_id);
+  
+        // Eliminar las asignaciones de tareas
+        if (taskIds.length > 0) {
+          const { error: taskAssignmentsError } = await supabase
+            .from('task_assignments')
+            .delete()
+            .in('task_id', taskIds);
+  
+          if (taskAssignmentsError) throw taskAssignmentsError;
+        }
+  
+        // Ahora podemos eliminar las tareas
+        const { error: tasksDeleteError } = await supabase
+          .from('tasks')
+          .delete()
+          .in('project_id', projectIds);
+  
+        if (tasksDeleteError) throw tasksDeleteError;
+  
+        // Eliminar documentos
+        const { error: documentsError } = await supabase
+          .from('documents')
+          .delete()
+          .in('project_id', projectIds);
+  
+        if (documentsError) throw documentsError;
+  
+        // Eliminar presupuestos
+        const { error: budgetsError } = await supabase
+          .from('description_budgets')
+          .delete()
+          .in('project_id', projectIds);
+  
+        if (budgetsError) throw budgetsError;
+  
+        // Eliminar rendiciones
+        const { error: rendicionesError } = await supabase
+          .from('rendiciones')
+          .delete()
+          .in('project_id', projectIds);
+  
+        if (rendicionesError) throw rendicionesError;
+      }
+  
+      if (quoteNumbers.length > 0) {
+        // Eliminar asignaciones
+        const { error: asignacionError } = await supabase
+          .from('asignacion')
+          .delete()
+          .in('quote_number', quoteNumbers);
+  
+        if (asignacionError) throw asignacionError;
+  
+        // Eliminar detalles de rendición
+        const { error: detalleRendicionError } = await supabase
+          .from('detalle_rendicion')
+          .delete()
+          .in('quote_number', quoteNumbers);
+  
+        if (detalleRendicionError) throw detalleRendicionError;
+      }
+  
+      // Eliminar proyectos relacionados
+      const { error: projectsDeleteError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('client_id', clientId);
+  
+      if (projectsDeleteError) throw projectsDeleteError;
+  
+      // Finalmente, eliminar el cliente
+      const { error: clientError } = await supabase
+        .from('clients')
+        .delete()
+        .eq('client_id', clientId);
+  
+      if (clientError) throw clientError;
+  
+      // Actualizar el estado local
+      setClients((prevClients) => prevClients.filter(client => client.client_id !== clientId));
+      setFilteredClients((prevFilteredClients) => prevFilteredClients.filter(client => client.client_id !== clientId));
+  
+      console.log('Cliente eliminado exitosamente');
+      // Aquí puedes agregar una notificación de éxito para el usuario
+    } catch (error) {
+      console.error('Error eliminando el cliente:', error.message);
+      // Aquí puedes agregar una notificación de error para el usuario
+    }
   };
-
   return (
     <div className="flex flex-col p-3 bg-white h-full">
       <div className="bg-white h-full rounded-lg">

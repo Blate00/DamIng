@@ -130,9 +130,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </svg> 
             <div className="ml-4 text-2xl font-bold tracking-wide">Dam Dashboard</div>
           </div>
-          <button onClick={toggleSidebar} className="lg:hidden text-white">
-            <XIcon className="h-6 w-6" />
-          </button>
+      
         </div>
         <nav className="mt-8">
           <ul className="space-y-2">
