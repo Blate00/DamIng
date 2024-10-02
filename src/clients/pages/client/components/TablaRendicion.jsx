@@ -1,15 +1,11 @@
 import React from 'react';
 
-const TablaRendicion = ({ items, handleChange, agregarFila, deleteItem, proveedores }) => {
+const TablaRendicion = ({ items, handleChange, agregarFila, deleteItem, proveedores, handleProveedorChange }) => {
   const handleTotalChange = (index, value) => {
     handleChange(index, 'total', value);
     if (value !== '' && value !== undefined && value !== null && index === items.length - 1) {
       agregarFila();
     }
-  };
-
-  const handleProveedorChange = (index, value) => {
-    handleChange(index, 'proveedor', value);
   };
 
   const getSuggestions = (value) => {

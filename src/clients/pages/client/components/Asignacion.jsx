@@ -2,38 +2,46 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 import { supabase } from '../../../../supabase/client';
 
-const Asignacion = ({ projectId, job }) => {
+const Asignacion = ({ job, updateAsignacion }) => {
   const [desplegado, setDesplegado] = useState(false);
   const [nuevoAbono, setNuevoAbono] = useState('');
   const [loading, setLoading] = useState(false);
-  const [asignacion, setAsignacion] = useState(null);
+  const [asignaciones, setAsignaciones] = useState([]);
 
   useEffect(() => {
-    const fetchAsignacion = async () => {
+    const fetchAsignaciones = async () => {
       if (!job || !job.quote_number) {
         console.error('Job or quote_number is undefined');
-        return; // Salir si job o quote_number no están definidos
+        return;
       }
 
       try {
-        const { data: asignacionData, error: asignacionError } = await supabase
+        const { data: asignacionesData, error } = await supabase
           .from('asignacion')
           .select('*')
-          .eq('quote_number', job.quote_number) // Usar quote_number
-          .single();
+          .eq('quote_number', job.quote_number)
+          .order('fecha_actualizacion', { ascending: false });
 
-        if (asignacionError) throw asignacionError;
+        if (error) throw error;
 
-        setAsignacion(asignacionData);
+        setAsignaciones(asignacionesData || []);
+        if (updateAsignacion && asignacionesData.length > 0) {
+          updateAsignacion(asignacionesData[0]); // Actualizar con la asignación más reciente
+        }
       } catch (error) {
-        console.error('Error fetching asignacion:', error);
+        console.error('Error fetching asignaciones:', error);
       }
     };
 
-    fetchAsignacion();
-  }, [job]); // Dependencia de job
+    fetchAsignaciones();
+  }, [job, updateAsignacion]);
 
   const handleGuardarAbono = async () => {
+    if (!job || !job.quote_number) {
+      alert('Datos de asignación incompletos. Verifique e intente de nuevo.');
+      return;
+    }
+
     try {
       setLoading(true);
       const monto = parseFloat(nuevoAbono);
@@ -42,23 +50,26 @@ const Asignacion = ({ projectId, job }) => {
         return;
       }
 
-      const nuevoSaldoRecibido = (asignacion?.saldo_recibido || 0) + monto;
+      const totalRendiciones = await calcularTotalRendiciones();
+      const ultimaAsignacion = asignaciones[0] || { saldo_recibido: 0, saldo_actual: 0 };
+      const nuevoSaldoRecibido = ultimaAsignacion.saldo_recibido + monto;
+      const nuevoSaldoActual = nuevoSaldoRecibido - totalRendiciones;
 
-      // Actualizar la asignación con el nuevo abono
-      const { data: asignacionActualizada, error: asignacionError } = await supabase
+      const { data: nuevaAsignacion, error } = await supabase
         .from('asignacion')
-        .update({
+        .insert({
+          quote_number: job.quote_number,
           saldo_recibido: nuevoSaldoRecibido,
-          saldo_actual: nuevoSaldoRecibido - (await calcularTotalRendiciones()), // Calcular saldo actual
+          saldo_actual: nuevoSaldoActual,
           fecha_actualizacion: new Date().toISOString()
         })
-        .eq('quote_number', job.quote_number) // Usar quote_number
         .select()
         .single();
 
-      if (asignacionError) throw asignacionError;
+      if (error) throw error;
 
-      setAsignacion(asignacionActualizada);
+      setAsignaciones([nuevaAsignacion, ...asignaciones]);
+      if (updateAsignacion) updateAsignacion(nuevaAsignacion);
       setNuevoAbono('');
       alert('Abono guardado con éxito');
     } catch (error) {
@@ -69,19 +80,20 @@ const Asignacion = ({ projectId, job }) => {
     }
   };
 
-  // Función para calcular el total de rendiciones
   const calcularTotalRendiciones = async () => {
-    const { data: rendicionesData, error } = await supabase
-      .from('rendiciones')
-      .select('total')
-      .eq('quote_number', job.quote_number);
+    try {
+      const { data: rendicionesData, error } = await supabase
+        .from('rendiciones')
+        .select('total')
+        .eq('quote_number', job.quote_number);
 
-    if (error) {
-      console.error('Error fetching rendiciones:', error);
+      if (error) throw error;
+
+      return rendicionesData.reduce((total, rendicion) => total + (rendicion.total || 0), 0);
+    } catch (error) {
+      console.error('Error calculating rendiciones:', error);
       return 0;
     }
-
-    return rendicionesData.reduce((total, rendicion) => total + rendicion.total, 0);
   };
 
   return (
@@ -120,21 +132,23 @@ const Asignacion = ({ projectId, job }) => {
               <tr>
                 <th className="py-3 px-6 text-left text-gray-100">Saldo Recibido</th>
                 <th className="py-3 px-6 text-left text-gray-100">Saldo Actual</th>
-                <th className="py-3 px-6 text-left text-gray-100">Última Actualización</th>
+                <th className="py-3 px-6 text-left text-gray-100">Fecha de Actualización</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              <tr className="border-b bg-white hover:bg-gray-100">
-                <td className="py-3 px-6">
-                  {(asignacion?.saldo_recibido || 0).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </td>
-                <td className="py-3 px-6">
-                  {(asignacion?.saldo_actual || 0).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
-                </td>
-                <td className="py-3 px-6">
-                  {asignacion?.fecha_actualizacion ? new Date(asignacion.fecha_actualizacion).toLocaleString() : 'N/A'}
-                </td>
-              </tr>
+              {asignaciones.map((asignacion, index) => (
+                <tr key={index} className="border-b bg-white hover:bg-gray-100">
+                  <td className="py-3 px-6">
+                    {asignacion.saldo_recibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  </td>
+                  <td className="py-3 px-6">
+                    {asignacion.saldo_actual.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  </td>
+                  <td className="py-3 px-6">
+                    {new Date(asignacion.fecha_actualizacion).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </>

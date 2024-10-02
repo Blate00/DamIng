@@ -8,6 +8,7 @@ import { supabase } from '../../../supabase/client';
 import TablaRendicion from './components/TablaRendicion';
 
 const Rendicion = () => {
+  
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
@@ -21,25 +22,25 @@ const Rendicion = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [clientData, jobData, proveedoresData, rendicionesData, asignacionData] = await Promise.all([
+        const [clientData, jobData, proveedoresData, rendicionesData] = await Promise.all([
           supabase.from('clients').select('*').eq('client_id', id).single(),
           supabase.from('projects').select('*').eq('project_id', projectId).single(),
           supabase.from('proveedores').select('*'),
           supabase.from('rendiciones').select('*').eq('project_id', projectId),
-          supabase.from('asignacion').select('*').eq('project_id', projectId).single()
         ]);
-
+  
         if (clientData.error) throw clientData.error;
         if (jobData.error) throw jobData.error;
         if (proveedoresData.error) throw proveedoresData.error;
         if (rendicionesData.error) throw rendicionesData.error;
-
+  
         setClient(clientData.data);
         setJob(jobData.data);
         setProveedores(proveedoresData.data);
         setItems(rendicionesData.data || []);
-        setAsignacion(asignacionData.data || { saldo_recibido: 0, saldo_actual: 0 });
-
+  
+        // La asignación se manejará en el componente Asignacion
+  
         if (rendicionesData.data.length === 0) {
           agregarFila();
         }
@@ -50,7 +51,7 @@ const Rendicion = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [id, projectId]);
 
@@ -79,13 +80,18 @@ const Rendicion = () => {
       if (field === 'total') {
         updatedItems[index].total = parseFloat(value) || 0;
       }
-
+  
       if (updatedItems[index].rendicion_id) {
-        const { error } = await supabase
-          .from('rendiciones')
-          .update({ [field]: value })
-          .eq('rendicion_id', updatedItems[index].rendicion_id);
-        if (error) throw error;
+        if (field === 'proveedor') {
+          // Si el campo es 'proveedor', usa handleProveedorChange en su lugar
+          await handleProveedorChange(index, value);
+        } else {
+          const { error } = await supabase
+            .from('rendiciones')
+            .update({ [field]: value })
+            .eq('rendicion_id', updatedItems[index].rendicion_id);
+          if (error) throw error;
+        }
       } else {
         const { data, error } = await supabase.rpc('insert_rendicion', {
           p_project_id: projectId,
@@ -106,7 +112,6 @@ const Rendicion = () => {
       console.error('Error updating item:', error.message);
     }
   };
-
   const agregarFila = () => {
     const newItem = { 
       project_id: projectId, 
@@ -125,22 +130,35 @@ const Rendicion = () => {
     try {
       const updatedItems = [...items];
       updatedItems[index].proveedor = value;
-
+  
+      // Buscar el proveedor por nombre
+      const proveedor = proveedores.find(p => p.nombre.toLowerCase() === value.toLowerCase());
+  
       if (updatedItems[index].rendicion_id) {
-        const proveedor = proveedores.find(p => p.nombre === value);
-        const { error } = await supabase
-          .from('rendiciones')
-          .update({ proveedor_id: proveedor ? proveedor.proveedor_id : null })
-          .eq('rendicion_id', updatedItems[index].rendicion_id);
-        if (error) throw error;
+        if (proveedor) {
+          // Si se encontró el proveedor, actualizar con su ID
+          const { error } = await supabase
+            .from('rendiciones')
+            .update({ proveedor_id: proveedor.proveedor_id })
+            .eq('rendicion_id', updatedItems[index].rendicion_id);
+          if (error) throw error;
+        } else {
+          // Si no se encontró el proveedor, puedes manejar esto de diferentes maneras:
+          // 1. No actualizar el proveedor_id en la base de datos
+          // 2. Crear un nuevo proveedor (si tu aplicación lo permite)
+          // 3. Mostrar un mensaje de error al usuario
+          console.warn(`Proveedor "${value}" no encontrado`);
+          // Opcionalmente, puedes lanzar un error aquí si quieres que se maneje como una excepción
+          // throw new Error(`Proveedor "${value}" no encontrado`);
+        }
       }
-
+  
       setItems(updatedItems);
     } catch (error) {
       console.error('Error updating proveedor:', error.message);
+      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
     }
   };
-
   const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
 
   if (loading) {
@@ -182,23 +200,22 @@ const Rendicion = () => {
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium text-black">Saldo Actual de Asignación:</span>
                 <p className="text-md text-black font-bold">
-                  {asignacion.saldo_actual.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  {asignacion.saldo_recibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-md font-medium text-black">Saldo Final de Asignación:</span>
                 <p className="text-md text-black font-bold">
-                  {(asignacion.saldo_actual - totalRendicion).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                  {(asignacion.saldo_recibido - totalRendicion).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
             </div>
           </div>
 
           <Asignacion
-            asignacion={asignacion}
-            setAsignacion={setAsignacion}
-            projectId={projectId}
-          />
+  job={job}
+  updateAsignacion={setAsignacion}
+/>
 
           <ManoObra manoObra={0} setManoObra={() => {}} subtotal={0} />
         </div>
