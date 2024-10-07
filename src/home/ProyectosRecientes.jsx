@@ -37,7 +37,7 @@ const ProyectosRecientes = () => {
 
 
   return (
-    <ul className="space-y-4 mt-6">
+    <ul className="space-y-4 mt-6 ">
       {projects.length > 0 ? (
         projects.map((project, index) => (
           <li key={project.project_id} className="bg-gray-50 rounded-lg hover:shadow-lg transition-shadow duration-300">
@@ -47,8 +47,7 @@ const ProyectosRecientes = () => {
                   <FolderIcon className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-black mb-1">{project.project_name}</h3>
-                  <p className="text-sm text-gray-600">{`Inicio: ${project.start_date}`}</p>
+                  <h3 className="text-m font-semibold text-black mb-1">{project.project_name}</h3>
                 </div>
               </Link>
              

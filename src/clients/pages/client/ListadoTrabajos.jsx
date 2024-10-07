@@ -77,6 +77,8 @@ const ListadoTrabajos = () => {
     }
   };
 
+  
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -86,16 +88,25 @@ const ListadoTrabajos = () => {
 
   const handleStatusChange = async (project_id, newStatus) => {
     try {
+      let updateData = { status: newStatus };
+      const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+      if (newStatus === 'Iniciado') {
+        updateData.start_date = currentDate;
+      } else if (newStatus === 'Finalizado') {
+        updateData.end_date = currentDate;
+      }
+
       const { error } = await supabase
         .from('projects')
-        .update({ status: newStatus })
+        .update(updateData)
         .eq('project_id', project_id);
 
       if (error) throw error;
 
       setProjects(prevProjects =>
         prevProjects.map(project =>
-          project.project_id === project_id ? { ...project, status: newStatus } : project
+          project.project_id === project_id ? { ...project, ...updateData } : project
         )
       );
     } catch (error) {
@@ -172,11 +183,11 @@ const ListadoTrabajos = () => {
                       </div>
                     </Link>
                     <div className="flex items-center space-x-4">
-                      <select
-                        value={project.status}
-                        onChange={(e) => handleStatusChange(project.project_id, e.target.value)}
-                        className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#700F23]"
-                      >
+                    <select
+      value={project.status}
+      onChange={(e) => handleStatusChange(project.project_id, e.target.value)}
+      className="p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#700F23]"
+    >
                         <option value="Iniciado">Iniciado</option>
                         <option value="No Iniciado">No Iniciado</option>
                         <option value="Finalizado">Finalizado</option>

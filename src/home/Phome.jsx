@@ -3,6 +3,8 @@ import TaskList from '../tasks/TaskList';
 import Breadcrumb from '../general/Breadcrumb'; 
 import { supabase } from '../supabase/client'
 import ProyectosRecientes from './ProyectosRecientes'
+import DashboardSummary from './DashboardSummary';
+
 import { AcademicCapIcon, BriefcaseIcon, ClipboardListIcon, UserGroupIcon } from '@heroicons/react/outline';
 
 const Home = () => {
@@ -10,6 +12,7 @@ const Home = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeProjectsCount, setActiveProjectsCount] = useState(0);
 
   const fetchTasks = async () => {
     try {
@@ -28,11 +31,28 @@ const Home = () => {
     }
   };
 
+  const fetchActiveProjectsCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'Iniciado');
+
+      if (error) throw error;
+      return count;
+    } catch (error) {
+      console.error('Error al obtener el conteo de proyectos activos:', error);
+      throw error;
+    }
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
       const tasksData = await fetchTasks();
+      const activeProjects = await fetchActiveProjectsCount();
       setTasks(tasksData);
+      setActiveProjectsCount(activeProjects);
     } catch (error) {
       setError('Error al cargar los datos: ' + error.message);
     } finally {
@@ -43,7 +63,6 @@ const Home = () => {
   useEffect(() => {
     loadData();
   }, []);
-
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
       const { error } = await supabase
@@ -96,48 +115,7 @@ const Home = () => {
     <div className="flex flex-col p-7 h-full">
       <Breadcrumb />
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Bienvenido David Millapan</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-10">
-      <div className="cuadro1 p-4 h-32 rounded-lg shadow-md flex items-center">
-        <div className="bg-red-900 p-3 rounded-lg flex items-center justify-center">
-          <AcademicCapIcon className="w-6 h-6 text-white" />
-        </div>
-        <div className="ml-4 text-left">
-          <h2 className="text-white font-medium">Balance Total</h2>
-          <p className="text-white text-2xl font-bold"> GG 0</p>
-          <p className="text-white text-2xl font-bold"> Gestión 0</p>
-        </div>
-      </div>
-
-      <div className="cuadro2 p-4 h-32 rounded-lg shadow-md flex items-center">
-        <div className="bg-gray-900 p-3 rounded-lg flex items-center justify-center">
-          <BriefcaseIcon className="w-6 h-6 text-white" />
-        </div>
-        <div className="ml-4 text-left">
-          <h2 className="text-black font-medium">Resumen Mano Obra</h2>
-          <p className="text-black text-2xl font-bold">0</p>
-        </div>
-      </div>
-
-      <div className="cuadro2 p-4 h-32 rounded-lg shadow-md flex items-center">
-        <div className="bg-gray-900 p-3 rounded-lg flex items-center justify-center">
-          <ClipboardListIcon className="w-6 h-6 text-white" />
-        </div>
-        <div className="ml-4 text-left">
-          <h2 className="text-black font-medium">Resumen Asignación</h2>
-          <p className="text-black text-2xl font-bold">0</p>
-        </div>
-      </div>
-
-      <div className="cuadro2 p-4 h-32 rounded-lg shadow-md flex items-center">
-        <div className="bg-gray-900 p-3 rounded-lg flex items-center justify-center">
-          <UserGroupIcon className="w-6 h-6 text-white" />
-        </div>
-        <div className="ml-4 text-left">
-          <h2 className="text-black font-medium">Proyectos Activos</h2>
-          <p className="text-black text-2xl font-bold">0</p>
-        </div>
-      </div>
-    </div>
+      <DashboardSummary activeProjectsCount={activeProjectsCount} />
 
       <div className="flex flex-col lg:flex-row gap-2">
         <div className="flex-grow p-3 bg-white  rounded-lg">
