@@ -13,7 +13,23 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
+  const [employees, setEmployees] = useState([]);
 
+
+  const fetchActiveProjectsCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'Iniciado');
+
+      if (error) throw error;
+      return count;
+    } catch (error) {
+      console.error('Error al obtener el conteo de proyectos activos:', error);
+      throw error;
+    }
+  };
   const fetchTasks = async () => {
     try {
       const { data, error } = await supabase
@@ -31,17 +47,16 @@ const Home = () => {
     }
   };
 
-  const fetchActiveProjectsCount = async () => {
+  const fetchEmployees = async () => {
     try {
-      const { count, error } = await supabase
-        .from('projects')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'Iniciado');
-
+      const { data, error } = await supabase
+        .from('employees')
+        .select('employee_id, name');
+  
       if (error) throw error;
-      return count;
+      return data;
     } catch (error) {
-      console.error('Error al obtener el conteo de proyectos activos:', error);
+      console.error('Error al obtener los empleados:', error);
       throw error;
     }
   };
@@ -49,12 +64,18 @@ const Home = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const tasksData = await fetchTasks();
-      const activeProjects = await fetchActiveProjectsCount();
-      setTasks(tasksData);
-      setActiveProjectsCount(activeProjects);
+      const [tasksData, employeesData] = await Promise.all([fetchTasks(), fetchEmployees()]);
+      
+      setEmployees(employeesData);
+
+      const tasksWithEmployeeNames = tasksData.map(task => ({
+        ...task,
+        responsible_employee_name: employeesData.find(emp => emp.employee_id === task.responsible_employee_id)?.name || 'Desconocido'
+      }));
+
+      setTasks(tasksWithEmployeeNames);
     } catch (error) {
-      setError('Error al cargar los datos: ' + error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -63,6 +84,22 @@ const Home = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const addTask = async (taskData) => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert([taskData])
+        .select();
+
+      if (error) throw error;
+      loadData(); // Refetch tasks after adding
+    } catch (error) {
+      console.error('Error al agregar la tarea:', error);
+      setError('Error al agregar la tarea: ' + error.message);
+    }
+  };
+
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
       const { error } = await supabase
@@ -112,18 +149,18 @@ const Home = () => {
     );
   }
   return (
-    <div className="flex flex-col p-7 h-full">
+    <div className="flex flex-col p-5 h-full">
       <Breadcrumb />
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Bienvenido David Millapan</h2>
       <DashboardSummary activeProjectsCount={activeProjectsCount} />
 
       <div className="flex flex-col lg:flex-row gap-2">
-        <div className="flex-grow p-3 bg-white  rounded-lg">
-          <h2 className="text-2xl font-bold mb-5">Tareas Pedientes</h2>
-          <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />        </div>
+        <div className="flex-grow p-5 bg-white  rounded-lg">
+          <h2 className="text-2xl font-bold mb-5 ">Tareas Pedientes</h2>
+          <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />
+             </div>
 
-        <div className="w-full lg:w-1/4 bg-white p-3 rounded-lg">
-        <h2 className="text-2xl font-bold mb-5">Proyectos Recientes</h2>
+        <div className="w-full lg:w-1/4 ">
 <ProyectosRecientes/>
         
 

@@ -46,7 +46,7 @@ const NewMaterial = ({ onMaterialAdded }) => {
   };
 
   return (
-    <div className="mt-4 bg-white rounded-md">
+    <div className="mt-4 rounded-md">
       <div className="flex items-center mb-4">
         <h2 className="text-lg font-semibold">Añadir</h2>
         <button onClick={toggleForm} className="focus:outline-none">

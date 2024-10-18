@@ -124,7 +124,8 @@ const Presupuesto = () => {
   };
 
   const formatCLP = (value) => {
-    return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+    if (value == null || isNaN(value)) return '\$0';
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   };
 
   const total = items.reduce((total, item) => total + parseFloat(item.total || 0), 0);
@@ -204,11 +205,10 @@ const Presupuesto = () => {
 
   return (
     <div className="flex flex-col p-3 h-full">
-      <div className="bg-white h-full rounded-lg">
+      <div className=" h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />          
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
-          <ClientInfo client={client} job={job} />
 
           <ItemsTable
             items={items}

@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase/client';
 import { Link } from 'react-router-dom';
-    import { FolderIcon } from '@heroicons/react/outline';
+import { FolderIcon, ChevronRightIcon } from '@heroicons/react/solid';
 
 const ProyectosRecientes = () => {
   const [projects, setProjects] = useState([]);
-  const [openIndex, setOpenIndex] = useState(null);
-  const dropdownRef = useRef(null);
 
-  // Función para obtener los proyectos desde la base de datos
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
@@ -21,7 +18,9 @@ const ProyectosRecientes = () => {
           start_date,
           end_date,
           clients:client_id (client_id, name)
-        `);
+        `)
+        .order('start_date', { ascending: false })
+        .limit(5);
 
       if (error) throw error;
       setProjects(data);
@@ -34,31 +33,37 @@ const ProyectosRecientes = () => {
     fetchProjects();
   }, []);
 
-
-
   return (
-    <ul className="space-y-4 mt-6 ">
-      {projects.length > 0 ? (
-        projects.map((project, index) => (
-          <li key={project.project_id} className="bg-gray-50 rounded-lg hover:shadow-lg transition-shadow duration-300">
-            <div className="relative flex items-center justify-between p-4">
-              <Link to={`/clients/archives/${project.clients.client_id}/${project.project_id}`} className="flex items-center flex-grow space-x-4">
-                <div className="bg-[#700F23] p-2 rounded-full">
-                  <FolderIcon className="h-6 w-6 text-white" />
+    <div className="bg-white rounded-lg shadow-md p-5">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Proyectos Recientes</h2>
+      <ul className="space-y-3">
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <li key={project.project_id} className="group">
+              <Link 
+                to={`/clients/archives/${project.clients.client_id}/${project.project_id}`} 
+                className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all duration-300"
+              >
+                <div className="flex-shrink-0">
+                  <div className="bg-gradient-to-r from-red-600 to-red-800 p-2 rounded-full group-hover:shadow-md transition-all duration-300">
+                    <FolderIcon className="h-5 w-5 text-white" />
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-m font-semibold text-black mb-1">{project.project_name}</h3>
+                <div className="ml-4 flex-grow">
+                  <h3 className="text-sm font-medium text-gray-800 group-hover:text-red-700 transition-colors duration-300">{project.project_name}</h3>
+                  <p className="text-xs text-gray-500">{project.clients.name}</p>
                 </div>
+                <ChevronRightIcon className="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-colors duration-300" />
               </Link>
-             
-          
-            </div>
+            </li>
+          ))
+        ) : (
+          <li className="text-center py-4">
+            <p className="text-gray-500">No hay proyectos disponibles.</p>
           </li>
-        ))
-      ) : (
-        <p className="text-gray-500 text-center">No hay proyectos disponibles.</p>
-      )}
-    </ul>
+        )}
+      </ul>
+    </div>
   );
 };
 

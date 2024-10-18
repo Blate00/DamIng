@@ -69,8 +69,8 @@ const Archives = () => {
   }
 
   return (
-    <div className="flex flex-col  bg-white h-full ">
-      <div className="bg-white rounded-xl ">
+    <div className="flex flex-col  h-full ">
+      <div className=" rounded-xl ">
         <div className="p-8">
           <Breadcrumb />
           <div className="flex items-center mb-6">

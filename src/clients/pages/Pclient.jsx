@@ -160,8 +160,8 @@ const Pclient = () => {
     }
   };
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white h-full rounded-lg">
+    <div className="flex flex-col  h-full">
+      <div className="  rounded-lg">
         <div className="p-5">
           <Breadcrumb items={['Inicio', 'Clientes']} />
           <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-2">
@@ -193,6 +193,7 @@ const Pclient = () => {
                 className="appearance-none w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#700F23] transition duration-150 ease-in-out"
               >
                 <option value="Mes">Filtrar por Mes</option>
+                
                 <option value="Julio">Julio</option>
                 <option value="Agosto">Agosto</option>
               </select>

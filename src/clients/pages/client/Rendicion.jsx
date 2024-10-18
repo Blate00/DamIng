@@ -55,6 +55,11 @@ const Rendicion = () => {
     fetchData();
   }, [id, projectId]);
 
+  const formatCLP = (value) => {
+    if (value == null || isNaN(value)) return '\$0';
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
+  };
+
   const deleteItem = async (index) => {
     try {
       const itemToDelete = items[index];
@@ -206,37 +211,35 @@ const Rendicion = () => {
         <div className="p-5">
           <Breadcrumb />   
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Rendición</h2>
-          <ClientInfo client={client} job={job} />
 
           <TablaRendicion
-            items={items}
-            handleChange={handleChange}
-            agregarFila={agregarFila}
-            deleteItem={deleteItem}
-            proveedores={proveedores}
-            handleProveedorChange={handleProveedorChange}
-          />
+        items={items}
+        handleChange={handleChange}
+        agregarFila={agregarFila}
+        deleteItem={deleteItem}
+        proveedores={proveedores}
+        handleProveedorChange={handleProveedorChange}
+        formatCLP={formatCLP}
+      />
 
           <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300  mb-10 rounded-b-lg shadow-lg space-y-4">
             <div className="flex flex-col space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-black">Resumen</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-md font-medium text-black">Total de Rendición:</span>
-                <p className="text-md text-black font-bold">
+           
+              <div className="flex justify-between items-center  border-gray-200">
+                <span className="text-md font-medium text-black">Total:</span>
+                <p className="text-base text-red-700 font-bold">
                   {totalRendicion.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-md font-medium text-black">Saldo Actual de Asignación:</span>
-                <p className="text-md text-black font-bold">
+                <span className="text-md font-medium text-black">Saldo Actual:</span>
+                <p className="text-base text-red-700 font-bold">
                   {asignacion.saldo_recibido.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-md font-medium text-black">Saldo Final de Asignación:</span>
-                <p className="text-md text-black font-bold">
+                <span className="text-md font-medium text-black">Saldo Final:</span>
+                <p className="text-base text-red-700 font-bold">
                   {(asignacion.saldo_recibido - totalRendicion).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                 </p>
               </div>

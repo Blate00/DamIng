@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DotsVerticalIcon } from '@heroicons/react/outline';
+import { DotsVerticalIcon, TrashIcon } from '@heroicons/react/outline';
 
-const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
+const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -29,45 +29,56 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador }) => {
   }, []);
 
   const handleTrabajadorClick = (trabajador) => {
-    navigate('/liquidaciones', { state: { nombre: trabajador.name, correo: trabajador.email, telefono: trabajador.phone_number } });
+    navigate('/empresa/liquidaciones', { state: { nombre: trabajador.name, correo: trabajador.email, telefono: trabajador.phone_number } });
   };
 
-  const getInitial = (lastName) => {
-    return lastName && typeof lastName === 'string' ? lastName.charAt(0).toUpperCase() : '?';
+  const getInitial = (name) => {
+    return name && typeof name === 'string' ? name.charAt(0).toUpperCase() : '?';
   };
 
   return (
-    <div className="relative rounded-lg">
-      <ul className="space-y-2">
-        {trabajadores.map((trabajador) => (
-          <li key={trabajador.employee_id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleTrabajadorClick(trabajador)}>
-            <div className="flex items-center w-full">
-              <div className="h-8 w-8 rounded-full bg-gray-500 text-white flex items-center justify-center mr-2">
-                {getInitial(trabajador._name)}
+    <div className="rounded-lg bg-white p-6 shadow-md">
+      <h1 className="text-2xl font-semibold text-gray-900 mb-4">Trabajadores</h1>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#700F23]"></div>
+        </div>
+      ) : (
+        <ul className="divide-y divide-gray-200">
+          {trabajadores.map((trabajador) => (
+            <li key={trabajador.employee_id} 
+                className="flex items-center justify-between py-4 hover:bg-gray-100 p-3 rounded-lg transition-colors duration-200 cursor-pointer"
+                onClick={() => handleTrabajadorClick(trabajador)}>
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 rounded-full bg-[#700F23] text-white flex items-center justify-center text-lg font-medium">
+                  {getInitial(trabajador.name)}
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900">{trabajador.name || 'Sin nombre'}</h3>
+                  <p className="text-sm text-gray-500">{trabajador.phone_number || 'Sin teléfono'}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold">{trabajador.name || 'Sin apellido'}</h3>
-                <p className="text-sm text-gray-500">{trabajador.phone_number || 'Sin teléfono'}</p>
-               
-              </div>
-            </div>
-            <DotsVerticalIcon
-              className="h-6 w-6 text-gray-500 cursor-pointer"
-              onClick={(e) => handleDotsClick(trabajador.employee_id, e)}
-            />
-            {openIndex === trabajador.employee_id && (
-              <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                <button
-                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-                  onClick={(e) => handleDeleteTrabajador(trabajador.employee_id, e)}
-                >
-                  Eliminar Trabajador
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+              <button
+                onClick={(e) => handleDotsClick(trabajador.employee_id, e)}
+                className="text-gray-500 hover:text-[#700F23] transition-colors duration-200"
+              >
+                <DotsVerticalIcon className="h-6 w-6" />
+              </button>
+              {openIndex === trabajador.employee_id && (
+                <div ref={dropdownRef} className="absolute right-8 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20">
+                  <button
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-150 ease-in-out"
+                    onClick={(e) => handleDeleteTrabajador(trabajador.employee_id, e)}
+                  >
+                    <TrashIcon className="h-5 w-5 mr-2" />
+                    Eliminar Trabajador
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

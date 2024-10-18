@@ -32,22 +32,20 @@ function App() {
               <Route path="/materials" element={<Pmaterial />} />
               <Route path="/clients/trabajos/:id" element={<ListadoTrabajos />} />
               <Route path="/clients/materiales/:id/:projectId" element={<MaterialesPage />} />
-              
-              {/* Rutas para cada tipo de documento */}
               <Route path="/clients/presupuesto/:id/:projectId" element={<PresupuestoPage />} />
               <Route path="/clients/rendicion/:id/:projectId" element={<RendicionPage />} />
               <Route path="/clients/flujo/:id/:projectId" element={<FlujoPage />} />
-              
-              {/* Otras rutas */}
               <Route path="/clients/archives/:id/:projectId" element={<Archives />} />
+
               <Route path="/home" element={<Phome />} />
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/tasks" element={<Ptasks />} />
               <Route path="/empresa" element={<Pempresa />} />
-              <Route path="*" element={<div>Página no encontrada (404)</div>} />
+           
               <Route path="/pago" element={<Pagos />} />
-              <Route path="/liquidaciones" element={<ListaPagos />} />
+              <Route path="/empresa/liquidaciones" element={<ListaPagos />} />
               <Route path="/pagos" element={<RegistroPagos />} />
+              <Route path="*" element={<div>Página no encontrada (404)</div>} />
             </Routes>
           </Layout>
         </Router>

@@ -18,10 +18,10 @@ function Layout({ children }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex-1 overflow-auto lg:ml-64">
-        <main className="p- ">
+        <main className="  ">
           {handleSearch(children)}
         </main>
       </div>

@@ -130,13 +130,14 @@ const Ptasks = () => {
   }
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white h-full rounded-lg">
+    <div className="flex flex-col  h-full">
+      <div className=" h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
           <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Tareas</h1>
           <TaskForm addTask={addTask} />
           <h2 className="text-xl font-semibold mb-4">Lista de Tareas</h2>
+          
           <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />
         </div>
       </div>

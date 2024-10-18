@@ -70,41 +70,47 @@ const Summary = ({ total, formatCLP, projectId }) => {
   };
 
   return (
-<div className="flex flex-col border-r border-l border-b border-gray-300 bg-gray-100 p-6 mb- rounded-b-lg shadow-lg space-y-4">
-  <div className="flex flex-col space-y-2">
-    <div className="flex justify-between items-center">
-      <span className="text-lg font-medium text-gray-800">Total:</span>
-      <p className="text-lg text-black font-bold">{formatCLP(total)}</p>
+<div className="bg-gray-100 border border-r-l-b  rounded-b-lg shadow-xl p-5 space-y-4">
+  <div className="space-y-3">
+    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+      <span className="text-sm font-medium text-gray-600">Total:</span>
+      <p className="text-base text-red-700 font-semibold">{formatCLP(total)}</p>
     </div>
     <div className="flex justify-between items-center">
-      <span className="text-lg font-medium text-gray-800">GG (%):</span>
-      <div className="flex items-center space-x-2">
-        <input
-          type="number"
-          value={localGgPercentage}
-          onChange={(e) => setLocalGgPercentage(parseFloat(e.target.value) || 0)}
-          className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onBlur={handleSave}
-        />
-        <p className="text-lg text-black font-bold">{formatCLP(ggValue)}</p>
+      <span className="text-sm font-medium text-gray-600">GG (%):</span>
+      <div className="flex items-center space-x-3">
+        <div className="relative">
+          <input
+            type="number"
+            value={localGgPercentage}
+            onChange={(e) => setLocalGgPercentage(parseFloat(e.target.value) || 0)}
+            className="w-16 px-2 py-1 text-sm bg-transparent border-b border-gray-300 focus:border-red-600 focus:outline-none transition-colors duration-300"
+            onBlur={handleSave}
+          />
+          <span className="absolute right-1 top-1 text-xs text-gray-400">%</span>
+        </div>
+        <p className="text-sm text-gray-700 font-semibold">{formatCLP(ggValue)}</p>
       </div>
     </div>
     <div className="flex justify-between items-center">
-      <span className="text-lg font-medium text-gray-800">Gestión (%):</span>
-      <div className="flex items-center space-x-2">
-        <input
-          type="number"
-          value={localGestionPercentage}
-          onChange={(e) => setLocalGestionPercentage(parseFloat(e.target.value) || 0)}
-          className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onBlur={handleSave}
-        />
-        <p className="text-lg text-black   font-bold">{formatCLP(gestionValue)}</p>
+      <span className="text-sm font-medium text-gray-600">Gestión (%):</span>
+      <div className="flex items-center space-x-3">
+        <div className="relative">
+          <input
+            type="number"
+            value={localGestionPercentage}
+            onChange={(e) => setLocalGestionPercentage(parseFloat(e.target.value) || 0)}
+            className="w-16 px-2 py-1 text-sm bg-transparent border-b border-gray-300 focus:border-red-600 focus:outline-none transition-colors duration-300"
+            onBlur={handleSave}
+          />
+          <span className="absolute right-1 top-1 text-xs text-gray-400">%</span>
+        </div>
+        <p className="text-sm text-gray-700 font-semibold">{formatCLP(gestionValue)}</p>
       </div>
     </div>
-    <div className="flex justify-between items-center">
-      <span className="text-lg font-medium text-gray-800">Subtotal:</span>
-      <p className="text-lg text-black font-bold">{formatCLP(subtotal)}</p>
+    <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+      <span className="text-base font-medium text-gray-700">Subtotal:</span>
+      <p className="text-base text-red-700 font-bold">{formatCLP(subtotal)}</p>
     </div>
   </div>
 </div>

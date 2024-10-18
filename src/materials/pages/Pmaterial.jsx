@@ -62,8 +62,8 @@ const Pmaterial = () => {
   }
 
   return (
-    <div className="flex flex-col p-3 min-h-full">
-      <div className="bg-white rounded-lg p-5">
+    <div className="flex flex-col min-h-full">
+      <div className="rounded-lg p-5">
         <Breadcrumb />
         <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Materiales</h1>
 

@@ -96,7 +96,7 @@ const ClientForm = ({ clients, addClient, onClose }) => {
             onClick={handleAddClient}
             className="bg-red-800 text-white py-2 px-6 rounded-lg hover:bg-red-900 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            Guardar Cliente y Proyecto
+            Guardar
           </button>
         </div>
       </div>

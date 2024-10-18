@@ -257,7 +257,6 @@ const Pmaterial = () => {
 
           <MaterialSearch handleAddMaterialWithQuantity={handleAddMaterialWithQuantity} />
 
-          <ClientInfo client={client} job={job} />
 
           {selectedMaterials.length > 0 && (
             <>
@@ -275,7 +274,7 @@ const Pmaterial = () => {
               onClick={saveMaterialList}
               disabled={selectedMaterials.length === 0}
             >
-              Guardar lista de materiales
+              Guardar
             </button>
           </div>
         </div>

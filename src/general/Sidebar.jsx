@@ -111,6 +111,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
   };
 
+  const isActive = (path) => {
+    if (path === '/clients') {
+      return location.pathname.startsWith('/clients');
+    }
+    if (path === '/empresa') {
+      return location.pathname.startsWith('/empresa');
+    }
+    return location.pathname === path;
+  };
+
   const navItems = [
     { name: 'Inicio', path: '/home', icon: HomeIcon },
     { name: 'Clientes', path: '/clients', icon: UsersIcon },
@@ -122,7 +132,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      <div className={`fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-[#700F23] to-[#8B1D34] text-white shadow-lg transition-transform duration-300 ease-in-out transform lg:translate-x-0 ${isOpen ? 'translate-x-0 z-50' : '-translate-x-full'} overflow-y-auto`}>
+      <div className={`fixed inset-y-0 left-0 w-64  bg-red-800 text-white transition-transform duration-300 ease-in-out transform lg:translate-x-0 ${isOpen ? 'translate-x-0 z-50' : '-translate-x-full'} overflow-y-auto`}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#8B1D34]">
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="40px" fill="#e8eaed" className="transform hover:rotate-180 transition-transform duration-500">
@@ -130,18 +140,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </svg> 
             <div className="ml-4 text-2xl font-bold tracking-wide">Dam Dashboard</div>
           </div>
-      
         </div>
         <nav className="mt-8">
           <ul className="space-y-2">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              const active = isActive(item.path);
               return (
                 <li key={item.name}>
                   <Link
                     to={item.path}
                     className={`flex items-center space-x-3 px-6 py-3 text-sm font-medium rounded-r-full transition-all duration-200 ${
-                      isActive 
+                      active 
                         ? 'bg-white text-[#700F23] shadow-md transform -translate-x-2' 
                         : 'text-gray-300 hover:bg-[#8B1D34] hover:text-white'
                     }`}
@@ -151,7 +160,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                       }
                     }}
                   >
-                    <item.icon className={`h-5 w-5 ${isActive ? 'text-[#700F23]' : 'text-gray-300'}`} />
+                    <item.icon className={`h-5 w-5 ${active ? 'text-[#700F23]' : 'text-gray-300'}`} />
                     <span>{item.name}</span>
                   </Link>
                 </li>
@@ -205,7 +214,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               onClose={() => setIsModalOpen(false)} 
             />
           </div>
-        </div>
+        </div>  
       )}
     </>
   );

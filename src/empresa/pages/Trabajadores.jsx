@@ -75,14 +75,13 @@ const Trabajadores = () => {
   }
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white h-full rounded-lg">
+    <div className="flex flex-col  h-full">
+      <div className="h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
           <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Empresa</h1>
 
           <TrabajadorForm onTrabajadorAdded={handleTrabajadorAdded} />
-          <h2 className="text-xl font-semibold mb-4">Lista de Trabajadores</h2>
 
           <TrabajadoresList trabajadores={trabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
         </div>
