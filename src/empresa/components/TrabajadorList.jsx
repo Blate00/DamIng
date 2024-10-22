@@ -37,7 +37,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading }) => {
   };
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
+    <div className="rounded-lg bg-white p-5 shadow-md">
       <h1 className="text-2xl font-semibold text-gray-900 mb-4">Trabajadores</h1>
       {loading ? (
         <div className="flex items-center justify-center h-64">

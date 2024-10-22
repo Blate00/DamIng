@@ -34,8 +34,7 @@ const ProyectosRecientes = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-5">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Proyectos Recientes</h2>
+    <div className="">
       <ul className="space-y-3">
         {projects.length > 0 ? (
           projects.map((project) => (

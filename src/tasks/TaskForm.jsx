@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabase/client'; // Asegúrate de que la ruta sea correcta
+import { supabase } from '../supabase/client';
 
-const TaskForm = ({ addTask }) => {
+const TaskForm = ({ addTask, isOpen, onClose }) => {
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     project_id: '',
     task_name: '',
@@ -13,9 +12,11 @@ const TaskForm = ({ addTask }) => {
   });
 
   useEffect(() => {
-    fetchProjects();
-    fetchEmployees();
-  }, []);
+    if (isOpen) {
+      fetchProjects();
+      fetchEmployees();
+    }
+  }, [isOpen]);
 
   const fetchProjects = async () => {
     const { data, error } = await supabase.from('projects').select('project_id, project_name');
@@ -44,81 +45,95 @@ const TaskForm = ({ addTask }) => {
         responsible_employee_id: '',
         status: 'Pendiente'
       });
-      setIsFormOpen(false);
+      onClose();
     }
   };
 
-  const toggleForm = () => {
-    setIsFormOpen(!isFormOpen);
-  };
-
   return (
-    <div className="mt-4 mb-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Agregar</h2>
-        <button onClick={toggleForm} className="focus:outline-none transition-transform transform hover:scale-110">
-          {isFormOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-red-800 hover:text-red-900">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-green-800 hover:text-green-900">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-          )}
+    <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] to-white shadow-2xl transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center p-6 border-b border-red-100">
+        <h3 className="text-2xl font-bold text-red-800"></h3>
+        <button onClick={onClose} className="text-red-500 hover:text-red-700 transition-colors duration-200">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
-
-      {isFormOpen && (
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg shadow-md sm:grid-cols-2 md:grid-cols-1">
-          <select
-            name="project_id"
-            value={formData.project_id}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-200"
-            required
+      <div className="flex-grow overflow-y-auto p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 mb-1">Proyecto</label>
+            <select
+              id="project_id"
+              name="project_id"
+              value={formData.project_id}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              required
+            >
+              <option value="">Seleccione Proyecto</option>
+              {projects.map((project) => (
+                <option key={project.project_id} value={project.project_id}>
+                  {project.project_name}
+                </option>
+              ))}
+            </select>
+          </div>
+  
+          <div>
+            <label htmlFor="responsible_employee_id" className="block text-sm font-medium text-gray-700 mb-1">Responsable</label>
+            <select
+              id="responsible_employee_id"
+              name="responsible_employee_id"
+              value={formData.responsible_employee_id}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+            >
+              <option value="">Seleccione Responsable</option>
+              {employees.map((employee) => (
+                <option key={employee.employee_id} value={employee.employee_id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+          </div>
+  
+          <div>
+            <label htmlFor="task_name" className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Tarea</label>
+            <input
+              type="text"
+              id="task_name"
+              name="task_name"
+              placeholder="Ingrese el nombre de la tarea"
+              value={formData.task_name}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div className="border-t border-red-100 p-6">
+        <div className="flex justify-end space-x-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
-            <option value="">Seleccione Proyecto</option>
-            {projects.map((project) => (
-              <option key={project.project_id} value={project.project_id}>
-                {project.project_name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="responsible_employee_id"
-            value={formData.responsible_employee_id}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-200"
-          >
-            <option value="">Seleccione Responsable</option>
-            {employees.map((employee) => (
-              <option key={employee.employee_id} value={employee.employee_id}>
-                {employee.name}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            name="task_name"
-            placeholder="Nombre de la Tarea"
-            value={formData.task_name}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-200"
-            required
-          />
-
+            Cancelar
+          </button>
           <button
             type="submit"
-            className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900 transition-colors duration-200"
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Añadir Tarea
           </button>
-        </form>
-      )}
+        </div>
+      </div>
     </div>
+  </div>
   );
 };
 

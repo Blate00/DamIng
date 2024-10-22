@@ -22,27 +22,27 @@ const TaskList = ({ tasks, updateTaskStatus, deleteTask }) => {
   };
 
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="overflow-x-auto bg-white rounded-lg  border border-gray-200">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-red-800">
-          <tr>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg">Nombre de la tarea</th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Responsable</th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Estado</th>
-            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>
-          </tr>
-        </thead>
+      <thead className="bg-gradient-to-r from-red-700 to-red-900">
+      <tr>
+        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider rounded-tl-lg">Nombre de la tarea</th>
+        <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Responsable</th>
+        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">Estado</th>
+        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>
+      </tr>
+    </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {tasks.map((task, index) => (
             <tr key={task.task_id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-red-50 transition-colors duration-150`}>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{task.task_name}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.responsible_employee_name}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                 {renderStatusIcon(task.status)}
                 <select
                   value={task.status}
                   onChange={(e) => updateTaskStatus(task.task_id, e.target.value)}
-                  className="ml-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-red-200 focus:border-red-500 text-gray-900 text-sm cursor-pointer"
+                  className="ml-2 text-center bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-red-200 focus:border-red-500 text-gray-900 text-sm cursor-pointer"
                 >
                   <option value="Pendiente">Pendiente</option>
                   <option value="En Progreso">En Progreso</option>

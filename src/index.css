@@ -9,10 +9,10 @@
 
 
 
-body{
-    background-color: #f1f7fc;
+body {
+  background: linear-gradient(to bottom right, #F3E7E9, #E3EEFF);
+  min-height: 100vh; /* Esto asegura que el gradiente cubra toda la altura de la ventana */
 }
-
 
 .but{
     border: 1px solid rgba(255, 255, 255, 0.295);

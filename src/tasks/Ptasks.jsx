@@ -9,6 +9,7 @@ const Ptasks = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -74,6 +75,7 @@ const Ptasks = () => {
 
       if (error) throw error;
       loadData(); // Refetch tasks after adding
+      setIsModalOpen(false); // Close the modal after adding a task
     } catch (error) {
       console.error('Error al agregar la tarea:', error);
       setError('Error al agregar la tarea: ' + error.message);
@@ -130,14 +132,27 @@ const Ptasks = () => {
   }
 
   return (
-    <div className="flex flex-col  h-full">
-      <div className=" h-full rounded-lg">
+    <div className="flex flex-col h-full">
+      <div className="h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
-          <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Tareas</h1>
-          <TaskForm addTask={addTask} />
-          <h2 className="text-xl font-semibold mb-4">Lista de Tareas</h2>
-          
+         
+          <div className="flex justify-between items-center mb-4">
+  <h2 className="text-xl font-semibold">Lista de Tareas</h2>
+  <button 
+    onClick={() => setIsModalOpen(true)}
+    className="bg-red-800 text-white px-4 py-2  rounded hover:bg-red-900 transition-colors duration-200 flex items-center"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+    </svg>
+  </button>
+</div>
+<TaskForm 
+  addTask={addTask} 
+  isOpen={isModalOpen} 
+  onClose={() => setIsModalOpen(false)}
+/>
           <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />
         </div>
       </div>

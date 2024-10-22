@@ -149,22 +149,20 @@ const Home = () => {
     );
   }
   return (
-    <div className="flex flex-col p-5 h-full">
+    <div className="flex flex-col p-3 h-full">
       <Breadcrumb />
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Bienvenido David Millapan</h2>
       <DashboardSummary activeProjectsCount={activeProjectsCount} />
 
-      <div className="flex flex-col lg:flex-row gap-2">
-        <div className="flex-grow p-5 bg-white  rounded-lg">
-          <h2 className="text-2xl font-bold mb-5 ">Tareas Pedientes</h2>
+      <div className="flex flex-col lg:flex-row bg-white rounded-lg p-4">
+        <div className="flex-grow p- rounded-lg">    
+          <h2 className="text-2xl font-bold mb-5 ">Pedientes</h2>
           <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />
+          <h2 className="text-2xl font-bold mb-5 mt-5 ">Recientes</h2>
+          <ProyectosRecientes/>
              </div>
 
-        <div className="w-full lg:w-1/4 ">
-<ProyectosRecientes/>
-        
-
-        </div>
+       
       </div>
     </div>
   );

@@ -69,39 +69,51 @@ const Archives = () => {
   }
 
   return (
-    <div className="flex flex-col  h-full ">
-      <div className=" rounded-xl ">
-        <div className="p-8">
-          <Breadcrumb />
-          <div className="flex items-center mb-6">
-            <FolderIcon className="h-10 w-10 text-gray-800 mr-4" />
-            <h2 className="text-3xl font-bold text-gray-800">
-              Documentos: {projectName}
+    <div className="min-h-screen bg-gradient-to-br from-[#F3E7E9] to-[#E3EEFF]  ">
+    <div className="max-w-6xl mx-auto">
+      <div className=" rounded-2xl  overflow-hidden">
+        <div className="p-5  ">
+          <Breadcrumb className="mb-6 text-sm text-gray-500" />
+          <div className="flex items-center mb-5 pb-3">
+            <div className="bg-[#700F23] rounded-full p-3 mr-4">
+              <FolderIcon className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Documentos: <span className="text-[#700F23]">{projectName}</span>
             </h2>
           </div>
           {documents.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-xl text-gray-600">No hay documentos disponibles para este proyecto</p>
+            <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+              <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-4 text-xl font-medium text-gray-600">No hay documentos disponibles para este proyecto</p>
+              <p className="mt-2 text-sm text-gray-500">Los documentos aparecerán aquí una vez que se añadan al proyecto.</p>
             </div>
           ) : (
-            <ul className="space-y-4">
+            <ul className="space-y-4 bg-white rounded-lg p-4">
               {documents.map((document) => {
                 const documentTypeRoute = documentRoutes[document.tipo_document.nombre_documento] || 'default';
                 return (
-                  <li key={document.document_id}>
+                  <li key={document.document_id} className="group ">
                     <Link 
                       to={`/clients/${documentTypeRoute}/${id}/${projectId}`}
-                      className="flex items-center p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+                      className="flex  items-center p-5 bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:bg-white group-hover:ring-2 group-hover:ring-[#700F23] group-hover:ring-opacity-50"
                     >
-                      <DocumentTextIcon className="h-10 w-10 text-[#700F23] mr-4" />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800">
+                      <div className="flex-shrink-0 mr-4">
+                        <div className="bg-white rounded-lg p-2 shadow-md group-hover:shadow-lg transition-all duration-300">
+                          <DocumentTextIcon className="h-8 w-8 text-[#700F23]" />
+                        </div>
+                      </div>
+                      <div className="flex-grow ">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1 group-hover:text-[#700F23] transition-colors duration-300">
                           {document.tipo_document.nombre_documento}
                         </h3>
                         <p className="text-sm text-gray-600">
                           Subido el: {new Date(document.upload_date).toLocaleDateString()}
                         </p>
                       </div>
+                      <svg className="h-6 w-6 text-gray-400 group-hover:text-[#700F23] group-hover:transform group-hover:translate-x-1 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </li>
                 );
@@ -111,6 +123,7 @@ const Archives = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
