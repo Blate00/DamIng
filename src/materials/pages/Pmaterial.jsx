@@ -9,6 +9,7 @@ const Pmaterial = () => {
   const [filterGroup, setFilterGroup] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchMaterials = async () => {
     try {
@@ -40,6 +41,7 @@ const Pmaterial = () => {
 
   const handleMaterialAdded = (newMaterial) => {
     setMaterials([newMaterial, ...materials]);
+    setIsModalOpen(false);
   };
 
   if (loading) {
@@ -65,12 +67,9 @@ const Pmaterial = () => {
     <div className="flex flex-col min-h-full">
       <div className="rounded-lg p-5">
         <Breadcrumb />
-        <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Materiales</h1>
 
-        <NewMaterial onMaterialAdded={handleMaterialAdded} />
-
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Filtrar por Grupo</h2>
+        <div className="mb-4 flex justify-between items-center">
+          <h2 className="text-lg font-semibold mb-2"></h2>
           <select
             value={filterGroup}
             onChange={(e) => setFilterGroup(e.target.value)}
@@ -82,12 +81,30 @@ const Pmaterial = () => {
             ))}
           </select>
         </div>
+<div className='bg-white p-5 rounded-lg' >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Lista de Materiales</h2>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 transition-colors duration-200 flex items-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 " viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
 
-        <h2 className="text-xl font-semibold mb-4">Lista de Materiales</h2>
+          </button>
+        </div>
+
+        <NewMaterial 
+          onMaterialAdded={handleMaterialAdded}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+
         <MaterialList 
           materials={filteredMaterials} 
           onMaterialUpdated={fetchMaterials}
-        />
+        /></div>
       </div>
     </div>
   );

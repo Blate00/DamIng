@@ -69,7 +69,7 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg">Categoría</th>
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Descripción</th>
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Actual</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Actualizado</th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Anterior</th>
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha de Entrada</th>
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Última Actualización</th>
           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>

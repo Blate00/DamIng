@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { UserIcon, CheckCircleIcon } from '@heroicons/react/outline';
+import { UserIcon, CheckCircleIcon, MailIcon, PhoneIcon, BriefcaseIcon, CalendarIcon } from '@heroicons/react/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ClientForm = ({ clients, addClient, onClose }) => {
+const ClientForm = ({ clients, addClient, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     clientName: '',
     email: '',
@@ -46,10 +46,11 @@ const ClientForm = ({ clients, addClient, onClose }) => {
     setClientMatches([]);
   };
 
-  const handleAddClient = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const { clientName, email, phone, projectName, startDate, endDate } = formData;
     if (clientName.trim()) {
-      addClient(clientName, email, phone, projectName, startDate, endDate);
+      await addClient(clientName, email, phone, projectName, startDate, endDate);
       setShowConfirmation(true);
       setTimeout(() => {
         setShowConfirmation(false);
@@ -58,46 +59,58 @@ const ClientForm = ({ clients, addClient, onClose }) => {
     }
   };
 
+  const inputFields = [
+    { id: 'clientName', icon: UserIcon, placeholder: 'Nombre del Cliente' },
+    { id: 'email', icon: MailIcon, placeholder: 'Correo Electrónico', type: 'email' },
+    { id: 'phone', icon: PhoneIcon, placeholder: 'Teléfono' },
+    { id: 'projectName', icon: BriefcaseIcon, placeholder: 'Nombre del Proyecto' },
+
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
-    >
-      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full">
-        <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800">
-          <UserIcon className="h-8 w-8 text-red-800 mr-3" />
-          Nuevo Cliente y Proyecto
-        </h2>
-        <div className="space-y-4">
-          {['clientName', 'email', 'phone', 'projectName'].map((field) => (
-            <div key={field} className="relative">
-              <input
-                type={field === 'email' ? 'email' : 'text'}
-                id={field}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' \$1')}
-                value={formData[field]}
-                onChange={handleInputChange}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg bg-white focus:outline-none focus:border-red-800 focus:ring-2 focus:ring-red-800 transition-all duration-300 ease-in-out"
-              />
-            </div>
-          ))}
-      
+    <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] shadow-2xl transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+      <div className="h-full flex flex-col">
+        <div className="flex justify-between items-center p-6 border-b border-red-100">
+          <h3 className="text-2xl font-bold text-red-800"></h3>
+          <button onClick={onClose} className="text-red-500 hover:text-red-700 transition-colors duration-200">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Cerrar
-          </button>
-          <button
-            onClick={handleAddClient}
-            className="bg-red-800 text-white py-2 px-6 rounded-lg hover:bg-red-900 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Guardar
-          </button>
+        <div className="flex-grow overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {inputFields.map((field) => (
+              <div key={field.id} className="relative">
+                <input
+                  type={field.type || 'text'}
+                  id={field.id}
+                  placeholder={field.placeholder}
+                  value={formData[field.id]}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+            ))}
+          </form>
+        </div>
+        <div className="border-t border-red-100 p-6">
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Guardar Cliente
+            </button>
+          </div>
         </div>
       </div>
 
@@ -114,7 +127,7 @@ const ClientForm = ({ clients, addClient, onClose }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 

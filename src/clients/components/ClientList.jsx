@@ -26,8 +26,7 @@ const ClientList = ({ clients, onDeleteClient, loading }) => {
   }, []);
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-4">Clientes</h1>
+    <div className="">
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#700F23]"></div>

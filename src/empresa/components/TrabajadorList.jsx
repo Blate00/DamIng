@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DotsVerticalIcon, TrashIcon } from '@heroicons/react/outline';
 
-const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading }) => {
+const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading, onOpenModal }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -37,8 +37,18 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading }) => {
   };
 
   return (
-    <div className="rounded-lg bg-white p-5 shadow-md">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-4">Trabajadores</h1>
+    <div className="rounded-lg bg-white p-6 shadow-md">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Trabajadores</h1>
+        <button 
+          onClick={onOpenModal}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 transition-colors duration-200 flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 " viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+        </button>
+      </div>
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#700F23]"></div>
@@ -50,7 +60,7 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading }) => {
                 className="flex items-center justify-between py-4 hover:bg-gray-100 p-3 rounded-lg transition-colors duration-200 cursor-pointer"
                 onClick={() => handleTrabajadorClick(trabajador)}>
               <div className="flex items-center space-x-4">
-                <div className="h-12 w-12 rounded-full bg-[#700F23] text-white flex items-center justify-center text-lg font-medium">
+                <div className="h-12 w-12 rounded-full bg-red-600 text-white flex items-center justify-center text-lg font-medium">
                   {getInitial(trabajador.name)}
                 </div>
                 <div>

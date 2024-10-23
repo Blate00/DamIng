@@ -22,14 +22,14 @@ const TaskList = ({ tasks, updateTaskStatus, deleteTask }) => {
   };
 
   return (
-    <div className="overflow-x-auto bg-white rounded-lg  border border-gray-200">
+    <div className="overflow-x-auto bg-white rounded-lg shadow-lg  border border-gray-300">
       <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gradient-to-r from-red-700 to-red-900">
+      <thead className="bg-gradient-to-r from-red-800 to-red-900">
       <tr>
-        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider rounded-tl-lg">Nombre de la tarea</th>
+        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">Nombre de la tarea</th>
         <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Responsable</th>
         <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">Estado</th>
-        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>
+        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider ">Acciones</th>
       </tr>
     </thead>
         <tbody className="bg-white divide-y divide-gray-200">

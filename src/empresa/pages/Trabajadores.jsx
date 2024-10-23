@@ -8,6 +8,7 @@ const Trabajadores = () => {
   const [trabajadores, setTrabajadores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchTrabajadores = async () => {
     try {
@@ -44,7 +45,7 @@ const Trabajadores = () => {
 
       if (error) throw error;
 
-      fetchTrabajadores(); // Refetch the list after deletion
+      fetchTrabajadores();
     } catch (error) {
       console.error('Error al eliminar el trabajador:', error);
       setError('Error al eliminar el trabajador: ' + error.message);
@@ -52,7 +53,8 @@ const Trabajadores = () => {
   };
 
   const handleTrabajadorAdded = () => {
-    fetchTrabajadores(); // Refetch the list after adding a new employee
+    fetchTrabajadores();
+    setIsModalOpen(false);
   };
 
   if (loading) {
@@ -75,15 +77,23 @@ const Trabajadores = () => {
   }
 
   return (
-    <div className="flex flex-col  h-full">
+    <div className="flex flex-col h-full">
       <div className="h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
-          <h1 className="text-2xl font-bold mb-1 text-center md:text-left">Empresa</h1>
 
-          <TrabajadorForm onTrabajadorAdded={handleTrabajadorAdded} />
+          <TrabajadorForm 
+            onTrabajadorAdded={handleTrabajadorAdded} 
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
 
-          <TrabajadoresList trabajadores={trabajadores} onDeleteTrabajador={handleDeleteTrabajador} />
+          <TrabajadoresList 
+            trabajadores={trabajadores} 
+            onDeleteTrabajador={handleDeleteTrabajador}
+            loading={loading}
+            onOpenModal={() => setIsModalOpen(true)}
+          />
         </div>
       </div>
     </div>

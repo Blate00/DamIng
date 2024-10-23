@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabase/client';
 
-const TrabajadorForm = ({ onTrabajadorAdded }) => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone_number: '',
@@ -15,22 +14,20 @@ const TrabajadorForm = ({ onTrabajadorAdded }) => {
   const [tiposCuenta, setTiposCuenta] = useState([]);
 
   useEffect(() => {
-    fetchBancos();
-    fetchTiposCuenta();
-  }, []);
+    if (isOpen) {
+      fetchBancos();
+      fetchTiposCuenta();
+    }
+  }, [isOpen]);
 
   const fetchBancos = async () => {
-    const { data, error } = await supabase
-      .from('banco')
-      .select('banco_id, nombre_banco');
+    const { data, error } = await supabase.from('banco').select('banco_id, nombre_banco');
     if (error) console.error('Error fetching bancos:', error);
     else setBancos(data);
   };
 
   const fetchTiposCuenta = async () => {
-    const { data, error } = await supabase
-      .from('tipocuenta')
-      .select('tipo_cuenta_id, nombre_tipo_cuenta');
+    const { data, error } = await supabase.from('tipocuenta').select('tipo_cuenta_id, nombre_tipo_cuenta');
     if (error) console.error('Error fetching tipos de cuenta:', error);
     else setTiposCuenta(data);
   };
@@ -40,17 +37,12 @@ const TrabajadorForm = ({ onTrabajadorAdded }) => {
     setFormData(prevState => ({ ...prevState, [id]: value }));
   };
 
-  const handleAddTrabajador = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.name.trim()) {
       try {
-        const { data, error } = await supabase
-          .from('employees')
-          .insert([formData])
-          .select();
-
+        const { data, error } = await supabase.from('employees').insert([formData]).select();
         if (error) throw error;
-
         console.log('Trabajador añadido:', data);
         onTrabajadorAdded();
         setFormData({
@@ -61,103 +53,120 @@ const TrabajadorForm = ({ onTrabajadorAdded }) => {
           tipo_cuenta_id: '',
           account_number: '',
         });
-        setIsFormOpen(false);
+        onClose();
       } catch (error) {
         console.error('Error al añadir trabajador:', error);
       }
     }
   };
 
-  const toggleForm = () => {
-    setIsFormOpen(!isFormOpen);
-  };
-
   return (
-    <div className="rounded-md mt-4  sm:mb-4">
-      <div className="flex justify-start items-center mb-4">
-        <h2 className="text-lg font-semibold">Añadir </h2>
-        <button onClick={toggleForm} className="focus:outline-none">
-          {isFormOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] to-white shadow-2xl transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+      <div className="h-full flex flex-col">
+        <div className="flex justify-between items-center p-6 border-b border-red-100">
+          <h3 className="text-2xl font-bold text-red-800">  </h3>
+          <button onClick={onClose} className="text-red-500 hover:text-red-700 transition-colors duration-200">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8  h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {isFormOpen && (
-        <form onSubmit={handleAddTrabajador} className="grid grid-cols-3 gap-4">
-          <input
-            type="text"
-            id="name"
-            placeholder="Nombre del Trabajador"
-            value={formData.name}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-          <input
-            type="text"
-            id="phone_number"
-            placeholder="Teléfono"
-            value={formData.phone_number}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <input
-            type="email"
-            id="email"
-            placeholder="Correo"
-            value={formData.email}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <select
-            id="banco_id"
-            value={formData.banco_id}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Seleccione un banco</option>
-            {bancos.map(banco => (
-              <option key={banco.banco_id} value={banco.banco_id}>
-                {banco.nombre_banco}
-              </option>
-            ))}
-          </select>
-          <select
-            id="tipo_cuenta_id"
-            value={formData.tipo_cuenta_id}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Seleccione tipo de cuenta</option>
-            {tiposCuenta.map(tipo => (
-              <option key={tipo.tipo_cuenta_id} value={tipo.tipo_cuenta_id}>
-                {tipo.nombre_tipo_cuenta}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            id="account_number"
-            placeholder="Número de Cuenta"
-            value={formData.account_number}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <button
-            type="submit"
-            className="w-full bg-red-800 text-white p-2 rounded hover:bg-red-900 sm:col-span-3"
-          >
-            Guardar Trabajador
           </button>
-        </form>
-      )}
+        </div>
+        <div className="flex-grow overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nombre del Trabajador</label>
+              <input
+                type="text"
+                id="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Ingrese el nombre completo"
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <input
+                type="text"
+                id="phone_number"
+                value={formData.phone_number}
+                onChange={handleInputChange}
+                placeholder="Ej: +56 9 1234 5678"
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+              <input
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="ejemplo@correo.com"
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label htmlFor="banco_id" className="block text-sm font-medium text-gray-700 mb-1">Banco</label>
+              <select
+                id="banco_id"
+                value={formData.banco_id}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              >
+                <option value="">Seleccione un banco</option>
+                {bancos.map(banco => (
+                  <option key={banco.banco_id} value={banco.banco_id}>{banco.nombre_banco}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="tipo_cuenta_id" className="block text-sm font-medium text-gray-700 mb-1">Tipo de Cuenta</label>
+              <select
+                id="tipo_cuenta_id"
+                value={formData.tipo_cuenta_id}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              >
+                <option value="">Seleccione tipo de cuenta</option>
+                {tiposCuenta.map(tipo => (
+                  <option key={tipo.tipo_cuenta_id} value={tipo.tipo_cuenta_id}>{tipo.nombre_tipo_cuenta}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="account_number" className="block text-sm font-medium text-gray-700 mb-1">Número de Cuenta</label>
+              <input
+                type="text"
+                id="account_number"
+                value={formData.account_number}
+                onChange={handleInputChange}
+                placeholder="Ingrese el número de cuenta"
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+              />
+            </div>
+          </form>
+        </div>
+        <div className="border-t border-red-100 p-6">
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Guardar Trabajador
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
