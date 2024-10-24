@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { UserIcon, CheckCircleIcon, MailIcon, PhoneIcon, BriefcaseIcon, CalendarIcon } from '@heroicons/react/outline';
+import { UserIcon, CheckCircleIcon, MailIcon, PhoneIcon, BriefcaseIcon } from '@heroicons/react/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ClientForm = ({ clients, addClient, isOpen, onClose }) => {
+const ClientForm = ({ clients = [], addClient, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     clientName: '',
     email: '',
@@ -64,7 +64,6 @@ const ClientForm = ({ clients, addClient, isOpen, onClose }) => {
     { id: 'email', icon: MailIcon, placeholder: 'Correo Electrónico', type: 'email' },
     { id: 'phone', icon: PhoneIcon, placeholder: 'Teléfono' },
     { id: 'projectName', icon: BriefcaseIcon, placeholder: 'Nombre del Proyecto' },
-
   ];
 
   return (

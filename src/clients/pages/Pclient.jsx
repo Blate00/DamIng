@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ClientList from '../components/ClientList';
 import ClientForm from '../components/ClientForm';
 import Breadcrumb from '../../general/Breadcrumb';
-import { supabase } from '../../supabase/client';
 import { SearchIcon, CalendarIcon, FilterIcon, PlusIcon } from '@heroicons/react/outline';
 
 const Pclient = () => {
@@ -28,16 +28,11 @@ const Pclient = () => {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*');
-
-      if (error) {
-        throw error;
-      }
-
-      setClients(data);
-      setFilteredClients(data);
+      // Asegúrate de que esta URL sea correcta
+      const response = await axios.get('http://localhost:5000/api/clients'); 
+      console.log(response.data); // Verifica que sea un array
+      setClients(Array.isArray(response.data) ? response.data : []);
+      setFilteredClients(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching clients:', error.message);
     } finally {
@@ -45,54 +40,18 @@ const Pclient = () => {
     }
   };
 
-  const handleAddClient = async (clientName, email, phone, projectName, quoteNumber, status, startDate, endDate) => {
+  const handleAddClient = async (clientName, email, phone, projectName, startDate, endDate) => {
     try {
-      const { data: existingClients, error: fetchError } = await supabase
-        .from('clients')
-        .select('client_id')
-        .eq('name', clientName);
-  
-      if (fetchError) {
-        throw fetchError;
-      }
-  
-      let clientId;
-  
-      if (existingClients && existingClients.length > 0) {
-        clientId = existingClients[0].client_id;
-      } else {
-        const { data: clientData, error: clientError } = await supabase
-          .from('clients')
-          .insert([{ name: clientName, email, phone_number: phone, project_count: 1 }])
-          .select('client_id');
-  
-        if (clientError || !clientData || clientData.length === 0) {
-          throw clientError || new Error('No se pudo insertar el cliente');
-        }
- 
-        clientId = clientData[0].client_id;
-  
-        setClients(prevClients => [...prevClients, clientData[0]]);
-        setFilteredClients(prevClients => [...prevClients, clientData[0]]);
-      }
-  
-      const { error: projectError } = await supabase
-        .from('projects')
-        .insert([{ 
-          client_id: clientId, 
-          project_name: projectName, 
-          quote_number: quoteNumber, 
-          status, 
-          start_date: startDate, 
-          end_date: endDate 
-        }]);
-  
-      if (projectError) {
-        throw projectError;
-      }
-  
-      setIsModalOpen(false);
+      await axios.post('http://localhost:5000/api/clients', { // Asegúrate de que esta URL sea correcta
+        clientName,
+        email,
+        phone,
+        projectName,
+        startDate,
+        endDate,
+      });
       fetchClients(); // Refetch clients to update the list
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error adding client and project:', error.message);
     }
@@ -101,57 +60,12 @@ const Pclient = () => {
   const handleDeleteClient = async (clientId) => {
     const isConfirmed = window.confirm("¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.");
     if (!isConfirmed) return;
-  
+
     try {
-      // Obtener todos los project_ids y quote_numbers relacionados con este cliente
-      const { data: projectsData, error: projectsError } = await supabase
-        .from('projects')
-        .select('project_id, quote_number')
-        .eq('client_id', clientId);
-  
-      if (projectsError) throw projectsError;
-  
-      const projectIds = projectsData.map(project => project.project_id);
-      const quoteNumbers = projectsData.map(project => project.quote_number);
-  
-      if (projectIds.length > 0) {
-        // Eliminar tareas, documentos, presupuestos y rendiciones relacionados con los proyectos
-        await Promise.all([
-          supabase.from('tasks').delete().in('project_id', projectIds),
-          supabase.from('documents').delete().in('project_id', projectIds),
-          supabase.from('description_budgets').delete().in('project_id', projectIds),
-          supabase.from('rendiciones').delete().in('project_id', projectIds),
-        ]);
-      }
-  
-      if (quoteNumbers.length > 0) {
-        // Eliminar asignaciones y detalles de rendición relacionados con los números de cotización
-        await Promise.all([
-          supabase.from('asignacion').delete().in('quote_number', quoteNumbers),
-          supabase.from('detalle_rendicion').delete().in('quote_number', quoteNumbers),
-        ]);
-      }
-  
-      // Eliminar proyectos relacionados
-      await supabase.from('projects').delete().eq('client_id', clientId);
-  
-      // Finalmente, eliminar el cliente
-      const { error: clientError } = await supabase
-        .from('clients')
-        .delete()
-        .eq('client_id', clientId);
-  
-      if (clientError) throw clientError;
-  
-      // Actualizar el estado local
-      setClients((prevClients) => prevClients.filter(client => client.client_id !== clientId));
-      setFilteredClients((prevFilteredClients) => prevFilteredClients.filter(client => client.client_id !== clientId));
-  
-      console.log('Cliente eliminado exitosamente');
-      // Aquí puedes agregar una notificación de éxito para el usuario
+      await axios.delete(`http://localhost:5000/api/clients/${clientId}`); // Asegúrate de que esta URL sea correcta
+      fetchClients(); // Refetch clients to update the list
     } catch (error) {
       console.error('Error eliminando el cliente:', error.message);
-      // Aquí puedes agregar una notificación de error para el usuario
     }
   };
 
@@ -195,28 +109,28 @@ const Pclient = () => {
               <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
           </div>
-          <div className='mt-4 p-6 rounded-lg bg-white  shadow-md'>
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-colors duration-200 flex items-center"
-            >
-              <PlusIcon className="h-5 w-5" />
-            
-            </button>
+          <div className='mt-4 p-6 rounded-lg bg-white shadow-md'>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-colors duration-200 flex items-center"
+              >
+                <PlusIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <ClientList 
+              clients={filteredClients} 
+              onDeleteClient={handleDeleteClient}
+              loading={loading} 
+            />
+            <ClientForm 
+              clients={clients}
+              addClient={handleAddClient}
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+            />
           </div>
-          <ClientList 
-            clients={filteredClients} 
-            onDeleteClient={handleDeleteClient}
-            loading={loading} 
-          />
-          <ClientForm 
-            clients={clients}
-            addClient={handleAddClient}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          /></div>
         </div>
       </div>
     </div>

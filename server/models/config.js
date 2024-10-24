@@ -1,20 +1,13 @@
 const { Pool } = require('pg');
 
-export const dbConfig = {
-    user: 'root',
-    host: 'localhost',
-    database: 'daming',
-    password: '',
-    port: 5432,
-};
+const pool = new Pool({
+  user: 'postgres', // tu usuario de PostgreSQL
+  host: 'localhost',
+  database: 'daming',
+  password: '3214',
+  port: 5432, // puerto por defecto de PostgreSQL
+});
 
-export async function createConnection() {
-    const pool = new Pool(dbConfig);
-    try {
-        const client = await pool.connect();
-        console.log('Connected to the database');
-        return client;
-    } catch (error) {
-        console.error('Error connecting to the database: ', error);
-    }
-}
+module.exports = pool;
+
+
