@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
-import Breadcrumb from '../../../general/Breadcrumb'; 
-import ClientInfo from './components/ClientInfo';
-import { supabase } from '../../../supabase/client';
+import Breadcrumb from '../../../../general/Breadcrumb';
+import { supabase } from '../../../../supabase/client';
 import TablaRendicion from './components/TablaRendicion';
 
 const Rendicion = () => {

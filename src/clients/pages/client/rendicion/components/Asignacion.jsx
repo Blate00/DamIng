@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
-import { supabase } from '../../../../supabase/client';
+import { supabase } from '../../../../../supabase/client';
 
 const Asignacion = ({ job, updateAsignacion }) => {
   const [desplegado, setDesplegado] = useState(false);

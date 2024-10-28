@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FolderIcon, DotsVerticalIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
-import Breadcrumb from '../../../general/Breadcrumb';
-import { supabase } from '../../../supabase/client';
-
+import Breadcrumb from '../../../../general/Breadcrumb';
+import ProjectForm from './components/ProjectForm';
 const ListadoTrabajos = () => {
   const { id } = useParams();
   const [client, setClient] = useState(null);
@@ -25,7 +24,6 @@ const ListadoTrabajos = () => {
           .single();
 
         if (clientError) throw clientError;
-
         setClient(clientData);
 
         const { data: projectData, error: projectError } = await supabase
@@ -46,74 +44,9 @@ const ListadoTrabajos = () => {
     fetchClientAndProjects();
   }, [id]);
 
-  const handleDotsClick = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const onProjectAdded = (newProject) => {
+    setProjects((prevProjects) => [...prevProjects, newProject]);
   };
-
-  const handleDelete = async (project_id) => {
-    try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('project_id', project_id);
-
-      if (error) throw error;
-
-      setProjects(prevProjects => prevProjects.filter(project => project.project_id !== project_id));
-      setOpenIndex(null);
-    } catch (error) {
-      console.error('Error deleting project:', error.message);
-    }
-  };
-
-  const handleDownload = (project_id) => {
-    alert(`Descargar archivos para el proyecto: ${project_id}`);
-    setOpenIndex(null);
-  };
-
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setOpenIndex(null);
-    }
-  };
-
-
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const handleStatusChange = async (project_id, newStatus) => {
-    try {
-      let updateData = { status: newStatus };
-      const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-
-      if (newStatus === 'Iniciado') {
-        updateData.start_date = currentDate;
-      } else if (newStatus === 'Finalizado') {
-        updateData.end_date = currentDate;
-      }
-
-      const { error } = await supabase
-        .from('projects')
-        .update(updateData)
-        .eq('project_id', project_id);
-
-      if (error) throw error;
-
-      setProjects(prevProjects =>
-        prevProjects.map(project =>
-          project.project_id === project_id ? { ...project, ...updateData } : project
-        )
-      );
-    } catch (error) {
-      console.error('Error updating project status:', error.message);
-    }
-  };
-
   const filteredProjects = projects
     .filter(project => project.project_name.toLowerCase().includes(searchQuery.toLowerCase()))
     .filter(project => selectedFilter === 'Estado' || project.status === selectedFilter);

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../../supabase/client';
-import Breadcrumb from '../../../general/Breadcrumb';
-import ClientInfo from './components/ClientInfo';
+import { supabase } from '../../../../supabase/client';
+import Breadcrumb from '../../../../general/Breadcrumb';
 import SelectedMaterialsTable from './components/SelectedMaterialsTable';
 import MaterialSearch from './components/MaterialSearch';
 import MaterialSummary from './components/MaterialSummary';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../supabase/client'; // Asegúrate de importar tu cliente de Supabase
+import { supabase } from '../../../../../supabase/client'; // Asegúrate de importar tu cliente de Supabase
 
 const Summary = ({ total, formatCLP, projectId }) => {
   const [localGgPercentage, setLocalGgPercentage] = useState(0);

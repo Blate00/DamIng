@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../supabase/client';
+import { supabase } from '../../../../../supabase/client';
 
 const MaterialSearch = ({ handleAddMaterialWithQuantity }) => {
   const [searchTerm, setSearchTerm] = useState('');

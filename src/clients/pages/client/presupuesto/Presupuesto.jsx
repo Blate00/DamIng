@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import ClientInfo from './components/ClientInfo';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
-import Breadcrumb from '../../../general/Breadcrumb'; 
-import { supabase } from '../../../supabase/client';
+import Breadcrumb from '../../../../general/Breadcrumb';
+import { supabase } from '../../../../supabase/client';
 
 const Presupuesto = () => {
   const { id, projectId } = useParams();

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import AccesoPago from './components/ListaTrabajador';
-import Breadcrumb from '../../../general/Breadcrumb';
-import { supabase } from '../../../supabase/client';
+import Breadcrumb from '../../../../general/Breadcrumb';
+import { supabase } from '../../../../supabase/client';
 import SummaryFlujo from './components/SummaryFlujo'; // Import the SummaryFlujo component
 
 const FlujoCaja = () => {
