@@ -39,21 +39,22 @@ const Pclient = () => {
       setLoading(false);
     }
   };
-
-  const handleAddClient = async (clientName, email, phone, projectName, startDate, endDate) => {
+  const handleAddClient = async (clientName, email, phone, projectName) => {
     try {
-      await axios.post('http://localhost:5000/api/clients', { // Asegúrate de que esta URL sea correcta
+      const response = await axios.post('http://localhost:5000/api/clients', {
         clientName,
         email,
         phone,
-        projectName,
-        startDate,
-        endDate,
+        projectName
       });
-      fetchClients(); // Refetch clients to update the list
-      setIsModalOpen(false);
+      
+      if (response.data) {
+        await fetchClients();
+        setIsModalOpen(false);
+      }
     } catch (error) {
-      console.error('Error adding client and project:', error.message);
+      console.error('Error adding client and project:', error.response?.data?.error || error.message);
+      alert('Error al crear el cliente y proyecto: ' + (error.response?.data?.error || 'Error desconocido'));
     }
   };
 
