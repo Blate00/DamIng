@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TrabajadorForm from '../components/TrabajadorForm';
 import TrabajadoresList from '../components/TrabajadorList';
 import Breadcrumb from '../../general/Breadcrumb';
-import { supabase } from '../../supabase/client';
+import axios from 'axios';
 
 const Trabajadores = () => {
   const [trabajadores, setTrabajadores] = useState([]);
@@ -13,17 +13,8 @@ const Trabajadores = () => {
   const fetchTrabajadores = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('employees')
-        .select(`
-          *,
-          banco (banco_id, nombre_banco),
-          tipocuenta (tipo_cuenta_id, nombre_tipo_cuenta)
-        `);
-
-      if (error) throw error;
-
-      setTrabajadores(data);
+      const response = await axios.get('http://localhost:5000/api/empleados');
+      setTrabajadores(response.data);
     } catch (error) {
       console.error('Error al obtener los trabajadores:', error);
       setError('Error al cargar los trabajadores: ' + error.message);
@@ -38,13 +29,7 @@ const Trabajadores = () => {
 
   const handleDeleteTrabajador = async (id) => {
     try {
-      const { error } = await supabase
-        .from('employees')
-        .delete()
-        .eq('employee_id', id);
-
-      if (error) throw error;
-
+      await axios.delete(`http://localhost:5000/api/empleados/${id}`);
       fetchTrabajadores();
     } catch (error) {
       console.error('Error al eliminar el trabajador:', error);
@@ -81,13 +66,11 @@ const Trabajadores = () => {
       <div className="h-full rounded-lg">
         <div className="p-5">
           <Breadcrumb />
-
           <TrabajadorForm 
             onTrabajadorAdded={handleTrabajadorAdded} 
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
           />
-
           <TrabajadoresList 
             trabajadores={trabajadores} 
             onDeleteTrabajador={handleDeleteTrabajador}

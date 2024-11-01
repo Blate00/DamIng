@@ -1,4 +1,3 @@
-// ClientList.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
@@ -31,7 +30,7 @@ const ClientList = ({ clients = [], onDeleteClient, loading }) => {
         </div>
       ) : (
         <ul className="divide-y divide-gray-200">
-          {Array.isArray(clients) && clients.map((client, index) => (
+          {Array.isArray(clients) && clients.map((client) => (
             <li key={client.client_id} className="flex items-center justify-between py-4 hover:bg-gray-100 p-3 rounded-lg transition-colors duration-200">
               <Link to={`/clients/trabajos/${client.client_id}`} className="flex items-center space-x-4">
                 {client.image ? (

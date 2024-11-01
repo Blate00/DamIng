@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { FolderIcon, DotsVerticalIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
+import { Link, useParams } from 'react-router-dom';
+import { FolderIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import axios from 'axios'; // Asegúrate de importar axios
+import axios from 'axios';
 
 const ListadoTrabajos = () => {
-  const { id } = useParams(); // Este ID debe ser el client_id
-  const [client, setClient] = useState(null);
+  const { client_id } = useParams(); // Obtener client_id de la URL
   const [projects, setProjects] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   const dropdownRef = useRef(null);
@@ -16,26 +15,24 @@ const ListadoTrabajos = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchClientAndProjects = async () => {
+    const fetchProjects = async () => {
       try {
         setLoading(true);
-        
-        // Obtener datos del cliente
-        const clientResponse = await axios.get(`http://localhost:5000/api/clients/${id}`);
-        setClient(clientResponse.data);
 
-        // Obtener proyectos del cliente usando el client_id
-        const projectsResponse = await axios.get(`http://localhost:5000/api/projects?client_id=${id}`);
+        // Llama a la nueva ruta para obtener proyectos filtrados por client_id
+        const projectsResponse = await axios.get(`http://localhost:5000/api/projects`, {
+          params: { client_id } // Pasar client_id como parámetro de consulta
+        });
         setProjects(projectsResponse.data);
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        console.error('Error fetching projects:', error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClientAndProjects();
-  }, [id]);
+    fetchProjects();
+  }, [client_id]); // Dependencia de client_id para volver a ejecutar el efecto si cambia
 
   const filteredProjects = projects
     .filter(project => project.project_name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -96,7 +93,7 @@ const ListadoTrabajos = () => {
             <ul className="divide-y divide-gray-200">
               {filteredProjects.map((project) => (
                 <li key={project.project_id} className="flex items-center justify-between py-4 hover:bg-gray-100 p-3 rounded-lg transition-colors duration-200">
-                  <Link to={`/clients/archives/${id}/${project.project_id}`} className="flex items-center space-x-4">
+                  <Link to={`/clients/archives/${project.client_id}/${project.project_id}`} className="flex items-center space-x-4">
                     <div className="bg-red-600 p-3 rounded-full">
                       <FolderIcon className="h-6 w-6 text-white" />
                     </div>

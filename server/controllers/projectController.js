@@ -1,9 +1,20 @@
+// controllers/projectController.js
 const projectModel = require('../models/db/projectModel');
 
+// Nueva función para obtener proyectos por client_id
 const getProjectsByClientId = async (req, res) => {
+  const { client_id } = req.query; // Obtener client_id de los parámetros de la consulta
   try {
-    const clientId = req.query.client_id; // Obtener client_id de la consulta
-    const projects = await projectModel.getProjectsByClientId(clientId); // Asegúrate de que esta función esté definida
+    let projects;
+
+    if (client_id) {
+      // Filtrar proyectos por client_id si se proporciona
+      projects = await projectModel.getProjectsByClientId(client_id);
+    } else {
+      // Obtener todos los proyectos si no se proporciona client_id
+      projects = await projectModel.getAllProjects();
+    }
+
     res.json(projects);
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -12,6 +23,5 @@ const getProjectsByClientId = async (req, res) => {
 };
 
 module.exports = {
-  getProjectsByClientId,
-  // Otras funciones...
+  getProjectsByClientId, // Exportar la nueva función
 };

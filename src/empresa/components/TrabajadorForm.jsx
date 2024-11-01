@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabase/client';
+import axios from 'axios';
 
 const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -21,15 +21,21 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
   }, [isOpen]);
 
   const fetchBancos = async () => {
-    const { data, error } = await supabase.from('banco').select('banco_id, nombre_banco');
-    if (error) console.error('Error fetching bancos:', error);
-    else setBancos(data);
+    try {
+      const response = await axios.get('http://localhost:5000/api/banco'); // Asegúrate de que esta ruta exista
+      setBancos(response.data);
+    } catch (error) {
+      console.error('Error fetching bancos:', error);
+    }
   };
 
   const fetchTiposCuenta = async () => {
-    const { data, error } = await supabase.from('tipocuenta').select('tipo_cuenta_id, nombre_tipo_cuenta');
-    if (error) console.error('Error fetching tipos de cuenta:', error);
-    else setTiposCuenta(data);
+    try {
+      const response = await axios.get('http://localhost:5000/api/tipocuenta'); // Asegúrate de que esta ruta exista
+      setTiposCuenta(response.data);
+    } catch (error) {
+      console.error('Error fetching tipos de cuenta:', error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -41,9 +47,8 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
     e.preventDefault();
     if (formData.name.trim()) {
       try {
-        const { data, error } = await supabase.from('employees').insert([formData]).select();
-        if (error) throw error;
-        console.log('Trabajador añadido:', data);
+        const response = await axios.post('http://localhost:5000/api/empleados', formData);
+        console.log('Trabajador añadido:', response.data);
         onTrabajadorAdded();
         setFormData({
           name: '',
@@ -61,10 +66,10 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
   };
 
   return (
-    <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] to-white shadow-2xl transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+    <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] shadow-2xl transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
       <div className="h-full flex flex-col">
         <div className="flex justify-between items-center p-6 border-b border-red-100">
-          <h3 className="text-2xl font-bold text-red-800">  </h3>
+          <h3 className="text-2xl font-bold text-red-800">Nuevo Trabajador</h3>
           <button onClick={onClose} className="text-red-500 hover:text-red-700 transition-colors duration-200">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -146,25 +151,22 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
                 className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
               />
             </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Guardar Trabajador
+              </button>
+            </div>
           </form>
-        </div>
-        <div className="border-t border-red-100 p-6">
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Guardar Trabajador
-            </button>
-          </div>
         </div>
       </div>
     </div>
