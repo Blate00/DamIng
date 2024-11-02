@@ -27,7 +27,7 @@ function App() {
         <Router>
           <Layout>
             <Routes>
-              {/* Rutas Generales */}
+
               <Route path="/clients" element={<Pclient />} />
               <Route path="/materials" element={<Pmaterial />} />
               <Route path="/clients/trabajos/:client_id" element={<ListadoTrabajos />} />

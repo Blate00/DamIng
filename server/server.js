@@ -10,6 +10,7 @@ const empleadoRoutes = require('./routes/empleadoRoutes');
 const bancoRoutes = require('./routes/bancoRoutes');
 const tipoCuentaRoutes = require('./routes/tipoCuentaRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const archivesRoutes = require('./routes/archivesRoutes'); // Add this line
 
 app.use(cors());
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use('/api', bancoRoutes);
 app.use('/api', tipoCuentaRoutes);
 app.use('/api', projectRoutes);
 app.use('/api', taskRoutes);
+app.use('/api', archivesRoutes); // Add this line
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
