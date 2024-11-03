@@ -1,4 +1,3 @@
-// clientController.js
 const clientModel = require('../models/db/clientModel');
 
 const createClient = async (req, res) => {

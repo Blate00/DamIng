@@ -1,4 +1,3 @@
-// models/db/projectModel.js
 const pool = require('../config');
 
 // Función para obtener todos los proyectos

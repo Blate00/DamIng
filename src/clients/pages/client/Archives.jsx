@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/react/solid';
 import Breadcrumb from '../../../general/Breadcrumb';
-import axios from 'axios'; // Ensure Axios is imported
+import axios from 'axios';
 
 const Archives = () => {
   const { projectId, id } = useParams();
@@ -16,7 +16,6 @@ const Archives = () => {
     Rendición: 'rendicion',
     ListaMateriales: 'materiales',
     Flujo: 'flujo',
-    
   };
 
   useEffect(() => {
@@ -26,12 +25,10 @@ const Archives = () => {
           throw new Error('ID del proyecto o cliente no proporcionado');
         }
 
-        // Fetch documents and project name from the local API
         const response = await axios.get(`http://localhost:5000/api/archives/${projectId}`);
         const { documents, projectName } = response.data;
 
-        // Log the response to verify the structure
-        console.log(documents); // Check the structure of documents
+        console.log(documents);
 
         setDocuments(documents);
         setProjectName(projectName);
@@ -66,8 +63,8 @@ const Archives = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F3E7E9] to-[#E3EEFF]">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-gradient-to-br from-[#F3E7E9] to-[#E3EEFF]">
+      <div className="mx-auto">
         <div className="rounded-2xl overflow-hidden">
           <div className="p-5">
             <Breadcrumb className="mb-6 text-sm text-gray-500" />
@@ -88,9 +85,9 @@ const Archives = () => {
             ) : (
               <ul className="space-y-4 bg-white rounded-lg p-4">
                 {documents.map((document) => {
-                  // Accessing the correct property for document name
                   const documentName = document.nombre_documento || 'Documento sin tipo';
                   const documentTypeRoute = documentRoutes[document.nombre_documento] || 'default';
+                  
                   return (
                     <li key={document.document_id} className="group">
                       <Link
@@ -127,3 +124,4 @@ const Archives = () => {
 };
 
 export default Archives;
+

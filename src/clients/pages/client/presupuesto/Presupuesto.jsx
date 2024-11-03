@@ -1,12 +1,13 @@
+// Presupuesto.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import { supabase } from '../../../../supabase/client';
 
 const Presupuesto = () => {
-  const { id, projectId } = useParams();
+  const { projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
   const [items, setItems] = useState([]);
@@ -16,57 +17,39 @@ const Presupuesto = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchClientAndJob = async () => {
+    const fetchData = async () => {
       try {
-        const { data: clientData, error: clientError } = await supabase
-          .from('clients')
-          .select('*')
-          .eq('client_id', id)
-          .single();
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
+        setClient(clientResponse.data);
 
-        if (clientError) throw clientError;
-        setClient(clientData);
+        const jobResponse = await axios.get(`http://localhost:5000/api/projects/`);
+        setJob(jobResponse.data);
 
-        const { data: jobData, error: jobError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('project_id', projectId)
-          .single();
-
-        if (jobError) throw jobError;
-        setJob(jobData);
-
-        const { data: budgetData, error: budgetError } = await supabase
-          .from('description_budgets')
-          .select('*')
-          .eq('project_id', projectId);
-
-        if (budgetError) throw budgetError;
-        setItems(budgetData || []);
-
-        if (budgetData.length > 0) {
-          setGgPercentage(budgetData[0].gg_percentage || 0);
-          setGestionPercentage(budgetData[0].gestion_percentage || 0);
+        const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
+        setItems(budgetResponse.data);
+        if (budgetResponse.data.length > 0) {
+          setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
+          setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error.message);
-        setError(error.message);
+      } catch (err) {
+        console.error('Error fetching data:', err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClientAndJob();
-  }, [id, projectId]);
+    fetchData();
+  }, [projectId]);
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
 
-    if (field === 'quantity' || field === 'unitValue') {
+    if (field === 'quantity' || field === 'unit_price') {
       const quantity = parseFloat(updatedItems[index].quantity) || 0;
-      const unitValue = parseFloat(updatedItems[index].unitValue) || 0;
-      updatedItems[index].total = (quantity * unitValue).toFixed(2);
+      const unitPrice = parseFloat(updatedItems[index].unit_price) || 0;
+      updatedItems[index].total = (quantity * unitPrice).toFixed(2);
     }
 
     setItems(updatedItems);
@@ -75,57 +58,45 @@ const Presupuesto = () => {
   const deleteItem = async (index) => {
     const itemToDelete = items[index];
     try {
-      const { error } = await supabase
-        .from('description_budgets')
-        .delete()
-        .eq('budget_id', itemToDelete.budget_id);
-
-      if (error) {
-        throw error;
-      }
-
-      const updatedItems = items.filter((_, i) => i !== index);
-      setItems(updatedItems);
-    } catch (error) {
-      console.error('Error deleting budget:', error.message);
+      await axios.delete(`http://localhost:5000/api/presupuesto/${itemToDelete.budget_id}`);
+      setItems(items.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error('Error deleting budget:', err.message);
       alert('Error al eliminar el presupuesto.');
     }
   };
 
   const addNewItem = async () => {
+    const newItem = {
+      project_id: projectId,
+      quote_number: job.quote_number || '', // Asegúrate de que este campo tenga un valor válido
+      description: '', // Puede estar vacío al crear un nuevo ítem
+      quantity: 0, // Valores numéricos inicializados a 0
+      unit_price: 0,
+      total: 0,
+      gg_percentage: ggPercentage || 0, // Asegúrate de que no sean `undefined`
+      gestion_percentage: gestionPercentage || 0,
+      gg_amount: 0,
+      gestion_amount: 0,
+      subtotal: 0
+   
+    };
+  
+    console.log('Sending new item:', newItem);  // Revisa los valores enviados
+  
     try {
-      const { data, error } = await supabase
-        .from('description_budgets')
-        .insert({
-          project_id: projectId,
-          quote_number: job.quote_number,
-          description: '',
-          quantity: 0,
-          unit_price: 0,
-          total: 0,
-          gg_percentage: ggPercentage,
-          gestion_percentage: gestionPercentage,
-          gg_amount: 0,
-          gestion_amount: 0,
-          subtotal: 0
-        })
-        .select();
-
-      if (error) {
-        throw error;
-      }
-
-      setItems([...items, ...data]);
-    } catch (error) {
-      console.error('Error adding new budget item:', error.message);
+      const response = await axios.post('http://localhost:5000/api/presupuesto', newItem);
+      setItems([...items, response.data]);
+    } catch (err) {
+      console.error('Error adding new budget item:', err.message);
       alert('Error al añadir una nueva fila.');
     }
   };
-
+  
   const formatCLP = (value) => {
-    if (value == null || isNaN(value)) return '\$0';
+    if (value == null || isNaN(value)) return '$0';
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-  };
+  };  
 
   const total = items.reduce((total, item) => total + parseFloat(item.total || 0), 0);
   const ggValue = (total * ggPercentage) / 100;
@@ -134,31 +105,32 @@ const Presupuesto = () => {
 
   const updateDatabase = async () => {
     try {
-      for (const item of items) {
-        if (item.description && item.quantity > 0 && item.unitValue > 0) {
-          const { error } = await supabase
-            .from('description_budgets')
-            .update({
-              description: item.description,
-              quantity: item.quantity,
-              unit_price: item.unitValue,
-              total: item.total,
-              gg_percentage: ggPercentage,
-              gestion_percentage: gestionPercentage,
-              gg_amount: ggValue,
-              gestion_amount: gestionValue,
-              subtotal: subtotal
-            })
-            .eq('budget_id', item.budget_id);
+      await axios.put(`http://localhost:5000/api/presupuesto/${items[0]?.budget_id}`, {
+        gg_percentage: ggPercentage,
+        gestion_percentage: gestionPercentage,
+        gg_amount: ggValue,
+        gestion_amount: gestionValue,
+        subtotal: subtotal,
+      });
 
-          if (error) {
-            throw error;
-          }
+      for (const item of items) {
+        if (item.description && item.quantity > 0 && item.unit_price > 0) {
+          await axios.put(`http://localhost:5000/api/presupuesto/${item.budget_id}`, {
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            total: item.total,
+            gg_percentage: ggPercentage,
+            gestion_percentage: gestionPercentage,
+            gg_amount: ggValue,
+            gestion_amount: gestionValue,
+            subtotal: subtotal,
+          });
         }
       }
       alert('Presupuesto actualizado exitosamente en la base de datos.');
-    } catch (error) {
-      console.error('Error updating budget:', error.message);
+    } catch (err) {
+      console.error('Error updating budget:', err.message);
       alert('Error al actualizar el presupuesto.');
     }
   };
@@ -204,9 +176,9 @@ const Presupuesto = () => {
 
   return (
     <div className="flex flex-col p-3 h-full">
-      <div className=" h-full rounded-lg">
+      <div className="h-full rounded-lg">
         <div className="p-5">
-          <Breadcrumb />          
+          <Breadcrumb />
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
 
           <ItemsTable
@@ -216,19 +188,23 @@ const Presupuesto = () => {
             deleteItem={deleteItem}
           />
 
-          <Summary
-            total={total}
-            projectId={projectId}
-            formatCLP={formatCLP}
+          <Summary 
+            total={total} 
+            formatCLP={formatCLP} 
+            budgetId={items.length > 0 ? items[0].budget_id : null} 
+            ggPercentage={ggPercentage} 
+            setGgPercentage={setGgPercentage} 
+            gestionPercentage={gestionPercentage} 
+            setGestionPercentage={setGestionPercentage} 
           />
 
-          <button 
+          <button
             className="mt-4 bg-red-800 text-white p-2 rounded mr-2"
             onClick={updateDatabase}
           >
             Guardar
           </button>
-          <button 
+          <button
             className="mt-4 bg-red-700 text-white p-2 rounded"
             onClick={addNewItem}
           >

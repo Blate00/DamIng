@@ -1,4 +1,3 @@
-// server/models/db/empleadoModel.js
 const pool = require('../config');
 
 const addEmpleado = async (empleadoData) => {

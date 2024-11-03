@@ -1,4 +1,3 @@
-   // server/routes/bancoRoutes.js
    const express = require('express');
    const bancoController = require('../controllers/bancoController');
 

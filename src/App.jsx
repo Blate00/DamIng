@@ -31,8 +31,9 @@ function App() {
               <Route path="/clients" element={<Pclient />} />
               <Route path="/materials" element={<Pmaterial />} />
               <Route path="/clients/trabajos/:client_id" element={<ListadoTrabajos />} />
+                 {'rutas archives'}
               <Route path="/clients/materiales/:id/:projectId" element={<MaterialesPage />} />
-              <Route path="/clients/presupuesto/:id/:projectId" element={<PresupuestoPage />} />
+                <Route path="/clients/presupuesto/:id/:projectId" element={<PresupuestoPage />} />
               <Route path="/clients/rendicion/:id/:projectId" element={<RendicionPage />} />
               <Route path="/clients/flujo/:id/:projectId" element={<FlujoPage />} />
               <Route path="/clients/archives/:id/:projectId" element={<Archives />} />

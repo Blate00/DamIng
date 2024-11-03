@@ -1,4 +1,3 @@
-   // server/models/db/tipoCuentaModel.js
    const pool = require('../config');
 
    const getTiposCuenta = async () => {

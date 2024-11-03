@@ -1,4 +1,3 @@
-   // server/controllers/tipoCuentaController.js
    const tipoCuentaModel = require('../models/db/tipoCuentaModel');
 
    const fetchTiposCuenta = async (req, res) => {

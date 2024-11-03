@@ -1,4 +1,3 @@
-// routes/archivesRoutes.js
 const express = require('express');
 const { getArchives } = require('../controllers/archivesController');
 

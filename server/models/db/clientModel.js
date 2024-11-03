@@ -1,4 +1,3 @@
-// clientModel.js
 const pool = require('../config');
 
 const addClientWithProject = async (clientData) => {

@@ -1,4 +1,3 @@
-// server/routes/empleadoRoutes.js
 const express = require('express');
 const empleadoController = require('../controllers/empleadoController');
 

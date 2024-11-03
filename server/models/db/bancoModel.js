@@ -1,4 +1,3 @@
-   // server/models/db/bancoModel.js
    const pool = require('../config');
 
    const getBancos = async () => {

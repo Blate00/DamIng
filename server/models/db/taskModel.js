@@ -1,4 +1,3 @@
-// models/db/taskModel.js
 const pool = require('../config');
 
 const addTask = async (taskData) => {

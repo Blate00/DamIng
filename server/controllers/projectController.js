@@ -1,7 +1,6 @@
-// controllers/projectController.js
 const projectModel = require('../models/db/projectModel');
 
-// Nueva función para obtener proyectos por client_id
+//función para obtener proyectos por client_id
 const getProjectsByClientId = async (req, res) => {
   const { client_id } = req.query; // Obtener client_id de los parámetros de la consulta
   try {

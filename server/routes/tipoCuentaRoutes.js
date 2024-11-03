@@ -1,4 +1,3 @@
-   // server/routes/tipoCuentaRoutes.js
    const express = require('express');
    const tipoCuentaController = require('../controllers/tipoCuentaController');
 

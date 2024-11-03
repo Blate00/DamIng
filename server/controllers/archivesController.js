@@ -1,7 +1,7 @@
-// controllers/archivesController.js
+
 const archivesModel = require('../models/db/archivesModel');
 
-   // controllers/archivesController.js
+
    const getArchives = async (req, res) => {
      const { projectId } = req.params;
 

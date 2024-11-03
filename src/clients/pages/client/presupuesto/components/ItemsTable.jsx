@@ -1,3 +1,4 @@
+// ItemsTable.js
 import React from 'react';
 
 const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
@@ -12,7 +13,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
     // Convertir a número
     const newUnitValue = parseFloat(numericValue) || 0;
     // Actualizar el valor unitario
-    handleChange(index, 'unitValue', newUnitValue);
+    handleChange(index, 'unit_price', newUnitValue);
   };
 
   return (
@@ -63,10 +64,10 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
               <td className="py-4 px-6 text-center">
                 <input
                   type="text"
-                  value={formatCLP(item.unitValue)}
+                  value={formatCLP(item.unit_price)}
                   onChange={(e) => handleUnitValueChange(index, e.target.value)}
                   className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  placeholder="\$0"
+                  placeholder="\\\$0"
                 />
               </td>
               <td className="py-4 px-6 text-center">

@@ -1,4 +1,3 @@
-// models/db/archivesModel.js
 const pool = require('../config');
 
 const getDocumentsByProjectId = async (projectId) => {

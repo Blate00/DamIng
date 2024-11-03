@@ -1,4 +1,3 @@
-// server/controllers/empleadoController.js
 const empleadoModel = require('../models/db/empleadoModel');
 
 const createEmpleado = async (req, res) => {

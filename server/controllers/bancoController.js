@@ -1,4 +1,3 @@
-   // server/controllers/bancoController.js
    const bancoModel = require('../models/db/bancoModel');
 
    const fetchBancos = async (req, res) => {
