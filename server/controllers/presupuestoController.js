@@ -12,6 +12,7 @@
 
   const addBudget = async (req, res) => {
     try {
+      
       const newBudget = await presupuestoModel.addBudgetItem(req.body);
       res.status(201).json(newBudget);
     } catch (error) {

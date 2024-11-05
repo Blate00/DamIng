@@ -6,21 +6,49 @@ const getBudgetsByProjectId = async (projectId) => {
   return rows;
 };
 const addBudgetItem = async (item) => {
-  const values = [
-     item.project_id, item.quote_number, item.description, item.quantity,
-     item.unit_price, item.total, item.gg_percentage || 0, item.gestion_percentage || 0,
-     item.gg_amount || 0, item.gestion_amount || 0, item.subtotal || 0
-  ];
+  const query = `
+    INSERT INTO description_budgets (
+      project_id, 
+      quote_number, 
+      description, 
+      quantity, 
+      unit_price, 
+      total, 
+      gg_percentage, 
+      gestion_percentage,
+      gg_amount, 
+      gestion_amount, 
+      subtotal
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *;
+  `;
 
   try {
-     const { rows } = await pool.query(query, values);
-     return rows[0];
+    const values = [
+      item.project_id,
+      item.quote_number,
+      item.description,
+      item.quantity,
+      item.unit_price,
+      item.total,
+      item.gg_percentage,
+      item.gestion_percentage,
+      item.gg_amount,
+      item.gestion_amount,
+      item.subtotal
+    ];
+
+    const { rows } = await pool.query(query, values);
+    return rows[0];
   } catch (error) {
-     console.error('Error adding budget item:', error); // Para verificar errores específicos
-     throw new Error('Error al agregar el ítem de presupuesto');
+    console.error('Error detallado:', error);
+    if (error.code === '23503') {
+      throw new Error(`Error de referencia: Asegúrate de que el proyecto y la cotización existan.`);
+    }
+    throw new Error('Error al agregar el ítem de presupuesto');
   }
 };
-
 const updateBudgetItem = async (budgetId, data) => {
   const query = `
     UPDATE description_budgets

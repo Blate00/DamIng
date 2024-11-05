@@ -24,7 +24,7 @@ const Asignacion = ({ job, updateAsignacion }) => {
 
         if (error) throw error;
 
-        setAsignaciones(asignacionesData || []);
+        setAsignaciones(asignacionesData ||  []);
         if (updateAsignacion && asignacionesData.length > 0) {
           updateAsignacion(asignacionesData[0]); // Actualizar con la asignación más reciente
         }

@@ -19,20 +19,31 @@ const Presupuesto = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
-        setClient(clientResponse.data);
+        setLoading(true);
+        
+        // Obtener datos del proyecto
+        const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
+        const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
+        if (!projectData) {
+          throw new Error('No se encontró el proyecto');
+        }
+        setJob(projectData);
 
-        const jobResponse = await axios.get(`http://localhost:5000/api/projects/`);
-        setJob(jobResponse.data);
-
+        // Obtener presupuestos
         const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
         setItems(budgetResponse.data);
+        
         if (budgetResponse.data.length > 0) {
           setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
           setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
         }
+
+        // Obtener datos del cliente si es necesario
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
+        setClient(clientResponse.data);
+
       } catch (err) {
-        console.error('Error fetching data:', err.message);
+        console.error('Error fetching data:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -65,33 +76,45 @@ const Presupuesto = () => {
       alert('Error al eliminar el presupuesto.');
     }
   };
-
   const addNewItem = async () => {
+    if (!job) {
+      alert('Error: Información del trabajo no disponible');
+      return;
+    }
+
+    if (!job.quote_number) {
+      alert('Error: No hay un número de cotización válido para este proyecto');
+      return;
+    }
+
     const newItem = {
-      project_id: projectId,
-      quote_number: job.quote_number || '', // Asegúrate de que este campo tenga un valor válido
-      description: '', // Puede estar vacío al crear un nuevo ítem
-      quantity: 0, // Valores numéricos inicializados a 0
+      project_id: parseInt(projectId),
+      quote_number: job.quote_number,
+      description: '',
+      quantity: 0,
       unit_price: 0,
       total: 0,
-      gg_percentage: ggPercentage || 0, // Asegúrate de que no sean `undefined`
+      gg_percentage: ggPercentage || 0,
       gestion_percentage: gestionPercentage || 0,
       gg_amount: 0,
       gestion_amount: 0,
       subtotal: 0
-   
     };
-  
-    console.log('Sending new item:', newItem);  // Revisa los valores enviados
-  
+
     try {
+      console.log('Enviando nuevo item:', newItem);
       const response = await axios.post('http://localhost:5000/api/presupuesto', newItem);
-      setItems([...items, response.data]);
+      if (response.data) {
+        setItems(prevItems => [...prevItems, response.data]);
+        console.log('Item agregado exitosamente:', response.data);
+      }
     } catch (err) {
-      console.error('Error adding new budget item:', err.message);
-      alert('Error al añadir una nueva fila.');
+      console.error('Error adding new budget item:', err.response?.data?.error || err.message);
+      alert(`Error al añadir nueva fila: ${err.response?.data?.error || err.message}`);
     }
   };
+
+  // Modificar también el useEffect para asegurar que obtenemos el quote_number
   
   const formatCLP = (value) => {
     if (value == null || isNaN(value)) return '$0';
@@ -176,36 +199,37 @@ const Presupuesto = () => {
 
   return (
     <div className="flex flex-col p-3 h-full">
-      <div className="h-full rounded-lg">
-        <div className="p-5">
-          <Breadcrumb />
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
+    <div className="h-full rounded-lg">
+      <div className="p-5">
+        <Breadcrumb />
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
 
-          <ItemsTable
-            items={items}
-            handleChange={handleChange}
-            formatCLP={formatCLP}
-            deleteItem={deleteItem}
-          />
+        <ItemsTable
+          items={items}
+          handleChange={handleChange}
+          formatCLP={formatCLP}
+          deleteItem={deleteItem}
+        />
 
-          <Summary 
-            total={total} 
-            formatCLP={formatCLP} 
-            budgetId={items.length > 0 ? items[0].budget_id : null} 
-            ggPercentage={ggPercentage} 
-            setGgPercentage={setGgPercentage} 
-            gestionPercentage={gestionPercentage} 
-            setGestionPercentage={setGestionPercentage} 
-          />
+        <Summary 
+          total={total} 
+          formatCLP={formatCLP} 
+          budgetId={items.length > 0 ? items[0].budget_id : null} 
+          ggPercentage={ggPercentage} 
+          setGgPercentage={setGgPercentage} 
+          gestionPercentage={gestionPercentage} 
+          setGestionPercentage={setGestionPercentage} 
+        />
 
+        <div className="mt-4 space-x-2">
           <button
-            className="mt-4 bg-red-800 text-white p-2 rounded mr-2"
+            className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
             onClick={updateDatabase}
           >
             Guardar
           </button>
           <button
-            className="mt-4 bg-red-700 text-white p-2 rounded"
+            className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
             onClick={addNewItem}
           >
             Añadir Nueva Fila
@@ -213,6 +237,7 @@ const Presupuesto = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
