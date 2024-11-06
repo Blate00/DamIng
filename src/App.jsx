@@ -17,7 +17,7 @@ import Pagos from './clients/pages/client/components/PagoTrabajador';
 import ListaPagos from './empresa/components/Liquidaciones';
 import RegistroPagos from './clients/pages/client/components/RegistroPagos';
 import { DarkModeProvider } from './general/DarkModeContext';
-
+import { Toaster } from 'react-hot-toast';
 import './index.css';
 
 function App() {

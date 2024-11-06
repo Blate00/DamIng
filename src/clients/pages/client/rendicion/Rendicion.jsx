@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import { supabase } from '../../../../supabase/client';
 import TablaRendicion from './components/TablaRendicion';
 
 const Rendicion = () => {
-  
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
@@ -21,28 +20,32 @@ const Rendicion = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [clientData, jobData, proveedoresData, rendicionesData] = await Promise.all([
-          supabase.from('clients').select('*').eq('client_id', id).single(),
-          supabase.from('projects').select('*').eq('project_id', projectId).single(),
-          supabase.from('proveedores').select('*'),
-          supabase.from('rendiciones').select('*').eq('project_id', projectId),
-        ]);
-  
-        if (clientData.error) throw clientData.error;
-        if (jobData.error) throw jobData.error;
-        if (proveedoresData.error) throw proveedoresData.error;
-        if (rendicionesData.error) throw rendicionesData.error;
-  
-        setClient(clientData.data);
-        setJob(jobData.data);
-        setProveedores(proveedoresData.data);
-        setItems(rendicionesData.data || []);
-  
-        // La asignación se manejará en el componente Asignacion
-  
-        if (rendicionesData.data.length === 0) {
+        
+        // Obtener datos del proyecto
+        const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
+        const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
+        if (!projectData) {
+          throw new Error('No se encontró el proyecto');
+        }
+        setJob(projectData);
+
+        // Obtener rendiciones
+        const rendicionesResponse = await axios.get(`http://localhost:5000/api/rendiciones/project/${projectId}`);
+        setItems(rendicionesResponse.data);
+
+        // Obtener proveedores
+        const proveedoresResponse = await axios.get(`http://localhost:5000/api/proveedores`);
+        setProveedores(proveedoresResponse.data);
+
+        // Obtener datos del cliente
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
+        const clientData = clientResponse.data.find(client => client.client_id === parseInt(id));
+        setClient(clientData);
+
+        if (rendicionesResponse.data.length === 0) {
           agregarFila();
         }
+
       } catch (error) {
         console.error('Error fetching data:', error.message);
         setError(error.message);
@@ -50,26 +53,16 @@ const Rendicion = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [id, projectId]);
-
-  const formatCLP = (value) => {
-    if (value == null || isNaN(value)) return '\$0';
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-  };
 
   const deleteItem = async (index) => {
     try {
       const itemToDelete = items[index];
       if (itemToDelete.rendicion_id) {
-        const { error } = await supabase
-          .from('rendiciones')
-          .delete()
-          .eq('rendicion_id', itemToDelete.rendicion_id);
-        if (error) throw error;
+        await axios.delete(`http://localhost:5000/api/rendiciones/${itemToDelete.rendicion_id}`);
       }
-
       const updatedItems = items.filter((_, i) => i !== index);
       setItems(updatedItems);
     } catch (error) {
@@ -81,34 +74,23 @@ const Rendicion = () => {
     try {
       const updatedItems = [...items];
       updatedItems[index][field] = value;
+      
       if (field === 'total') {
         updatedItems[index].total = parseFloat(value) || 0;
       }
-  
+
       if (updatedItems[index].rendicion_id) {
-        if (field === 'proveedor') {
-          // Si el campo es 'proveedor', usa handleProveedorChange en su lugar
-          await handleProveedorChange(index, value);
-        } else {
-          const { error } = await supabase
-            .from('rendiciones')
-            .update({ [field]: value })
-            .eq('rendicion_id', updatedItems[index].rendicion_id);
-          if (error) throw error;
-        }
-      } else {
-        const { data, error } = await supabase.rpc('insert_rendicion', {
-          p_project_id: projectId,
-          p_quote_number: job.quote_number,
-          p_fecha: updatedItems[index].fecha,
-          p_detalle: updatedItems[index].detalle,
-          p_folio: updatedItems[index].folio,
-          p_proveedor_nombre: updatedItems[index].proveedor,
-          p_documento: updatedItems[index].documento,
-          p_total: updatedItems[index].total
+        await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
+          ...updatedItems[index],
+          [field]: value
         });
-        if (error) throw error;
-        updatedItems[index].rendicion_id = data;
+      } else {
+        const response = await axios.post(`http://localhost:5000/api/rendiciones`, {
+          project_id: projectId,
+          quote_number: job.quote_number,
+          ...updatedItems[index]
+        });
+        updatedItems[index] = response.data;
       }
 
       setItems(updatedItems);
@@ -116,16 +98,17 @@ const Rendicion = () => {
       console.error('Error updating item:', error.message);
     }
   };
+
   const agregarFila = () => {
-    const newItem = { 
-      project_id: projectId, 
+    const newItem = {
+      project_id: projectId,
       quote_number: job?.quote_number,
-      fecha: new Date().toISOString().split('T')[0], 
-      detalle: '', 
-      folio: '', 
-      proveedor: '', 
-      documento: '', 
-      total: 0 
+      fecha: new Date().toISOString().split('T')[0],
+      detalle: '',
+      folio: '',
+      proveedor: '',
+      documento: '',
+      total: 0
     };
     setItems([...items, newItem]);
   };
@@ -133,38 +116,26 @@ const Rendicion = () => {
   const handleProveedorChange = async (index, value) => {
     try {
       const updatedItems = [...items];
-      updatedItems[index].proveedor = value;
-  
-      // Buscar el proveedor por nombre
       const proveedor = proveedores.find(p => p.nombre.toLowerCase() === value.toLowerCase());
-  
-      if (updatedItems[index].rendicion_id) {
-        if (proveedor) {
-          // Si se encontró el proveedor, actualizar con su ID
-          const { error } = await supabase
-            .from('rendiciones')
-            .update({ proveedor_id: proveedor.proveedor_id })
-            .eq('rendicion_id', updatedItems[index].rendicion_id);
-          if (error) throw error;
-        } else {
-          // Si no se encontró el proveedor, puedes manejar esto de diferentes maneras:
-          // 1. No actualizar el proveedor_id en la base de datos
-          // 2. Crear un nuevo proveedor (si tu aplicación lo permite)
-          // 3. Mostrar un mensaje de error al usuario
-          console.warn(`Proveedor "${value}" no encontrado`);
-          // Opcionalmente, puedes lanzar un error aquí si quieres que se maneje como una excepción
-          // throw new Error(`Proveedor "${value}" no encontrado`);
-        }
+      
+      if (proveedor && updatedItems[index].rendicion_id) {
+        await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
+          proveedor_id: proveedor.proveedor_id
+        });
+        updatedItems[index].proveedor = value;
+        setItems(updatedItems);
       }
-  
-      setItems(updatedItems);
     } catch (error) {
       console.error('Error updating proveedor:', error.message);
-      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
     }
   };
-  const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
 
+  const formatCLP = (value) => {
+    if (value == null || isNaN(value)) return '\$0';
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
+  };
+
+  const totalRendicion = items.reduce((total, item) => total + (parseFloat(item.total) || 0), 0);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">

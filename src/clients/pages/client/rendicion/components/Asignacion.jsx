@@ -1,6 +1,7 @@
+// Asignacion.jsx
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
-import { supabase } from '../../../../../supabase/client';
+import axios from 'axios';
 
 const Asignacion = ({ job, updateAsignacion }) => {
   const [desplegado, setDesplegado] = useState(false);
@@ -10,23 +11,14 @@ const Asignacion = ({ job, updateAsignacion }) => {
 
   useEffect(() => {
     const fetchAsignaciones = async () => {
-      if (!job || !job.quote_number) {
-        console.error('Job or quote_number is undefined');
-        return;
-      }
+      if (!job?.quote_number) return;
 
       try {
-        const { data: asignacionesData, error } = await supabase
-          .from('asignacion')
-          .select('*')
-          .eq('quote_number', job.quote_number)
-          .order('fecha_actualizacion', { ascending: false });
-
-        if (error) throw error;
-
-        setAsignaciones(asignacionesData ||  []);
-        if (updateAsignacion && asignacionesData.length > 0) {
-          updateAsignacion(asignacionesData[0]); // Actualizar con la asignación más reciente
+        const response = await axios.get(`http://localhost:5000/api/asignacion/${job.quote_number}`);
+        setAsignaciones(response.data || []);
+        
+        if (updateAsignacion && response.data.length > 0) {
+          updateAsignacion(response.data[0]);
         }
       } catch (error) {
         console.error('Error fetching asignaciones:', error);
@@ -37,65 +29,36 @@ const Asignacion = ({ job, updateAsignacion }) => {
   }, [job, updateAsignacion]);
 
   const handleGuardarAbono = async () => {
-    if (!job || !job.quote_number) {
-      alert('Datos de asignación incompletos. Verifique e intente de nuevo.');
+    if (!job?.quote_number) {
+      alert('Datos de asignación incompletos');
       return;
     }
 
     try {
       setLoading(true);
       const monto = parseFloat(nuevoAbono);
+      
       if (isNaN(monto) || monto <= 0) {
-        alert('Por favor, ingrese un monto válido.');
+        alert('Por favor, ingrese un monto válido');
         return;
       }
 
-      const totalRendiciones = await calcularTotalRendiciones();
-      const ultimaAsignacion = asignaciones[0] || { saldo_recibido: 0, saldo_actual: 0 };
-      const nuevoSaldoRecibido = ultimaAsignacion.saldo_recibido + monto;
-      const nuevoSaldoActual = nuevoSaldoRecibido - totalRendiciones;
+      const response = await axios.post(`http://localhost:5000/api/asignacion`, {
+        quote_number: job.quote_number,
+        saldo_recibido: monto
+      });
 
-      const { data: nuevaAsignacion, error } = await supabase
-        .from('asignacion')
-        .insert({
-          quote_number: job.quote_number,
-          saldo_recibido: nuevoSaldoRecibido,
-          saldo_actual: nuevoSaldoActual,
-          fecha_actualizacion: new Date().toISOString()
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setAsignaciones([nuevaAsignacion, ...asignaciones]);
-      if (updateAsignacion) updateAsignacion(nuevaAsignacion);
+      setAsignaciones([response.data, ...asignaciones]);
+      if (updateAsignacion) updateAsignacion(response.data);
       setNuevoAbono('');
       alert('Abono guardado con éxito');
     } catch (error) {
-      console.error('Error saving abono:', error.message);
-      alert('Hubo un error al guardar el abono. Por favor, intente de nuevo.');
+      console.error('Error saving abono:', error);
+      alert('Error al guardar el abono');
     } finally {
       setLoading(false);
     }
   };
-
-  const calcularTotalRendiciones = async () => {
-    try {
-      const { data: rendicionesData, error } = await supabase
-        .from('rendiciones')
-        .select('total')
-        .eq('quote_number', job.quote_number);
-
-      if (error) throw error;
-
-      return rendicionesData.reduce((total, rendicion) => total + (rendicion.total || 0), 0);
-    } catch (error) {
-      console.error('Error calculating rendiciones:', error);
-      return 0;
-    }
-  };
-
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
