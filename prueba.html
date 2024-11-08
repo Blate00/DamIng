@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendición de Gastos</title>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <h2 class="text-2xl font-bold mb-6">Tabla de Rendición de Gastos del Proyecto</h2>
+
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead>
+            <tr class="bg-gray-200 text-gray-700">
+                <th class="py-3 px-4 text-left">Fecha</th>
+                <th class="py-3 px-4 text-left">Descripción</th>
+                <th class="py-3 px-4 text-left">Monto Rendición</th>
+                <th class="py-3 px-4 text-left">Total Rendición</th>
+                <th class="py-3 px-4 text-left">Total Asignación (Abonado)</th>
+                <th class="py-3 px-4 text-left">Saldo Actual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Fila de ejemplo para cada gasto -->
+            <tr class="border-b">
+                <td class="py-3 px-4">2024-11-07</td>
+                <td class="py-3 px-4">Compra de Materiales</td>
+                <td class="py-3 px-4">$500</td>
+                <td class="py-3 px-4">$500</td>
+                <td class="py-3 px-4">$1000</td>
+                <td class="py-3 px-4 text-green-600 font-semibold">$500</td>
+            </tr>
+            <tr class="bg-gray-50 border-b">
+                <td class="py-3 px-4">2024-11-08</td>
+                <td class="py-3 px-4">Herramientas</td>
+                <td class="py-3 px-4">$300</td>
+                <td class="py-3 px-4">$800</td>
+                <td class="py-3 px-4">$1000</td>
+                <td class="py-3 px-4 text-green-600 font-semibold">$200</td>
+            </tr>
+            <tr class="border-b">
+                <td class="py-3 px-4">2024-11-09</td>
+                <td class="py-3 px-4">Transporte</td>
+                <td class="py-3 px-4">$250</td>
+                <td class="py-3 px-4">$1050</td>
+                <td class="py-3 px-4">$1000</td>
+                <td class="py-3 px-4 text-red-600 font-semibold">-$50</td> <!-- Saldo en negativo -->
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="bg-gray-200 text-gray-700 font-semibold">
+                <td colspan="3" class="py-3 px-4 text-right">Totales</td>
+                <td class="py-3 px-4">$1050</td> <!-- Total de rendición acumulado -->
+                <td class="py-3 px-4">$1000</td> <!-- Total asignado -->
+                <td class="py-3 px-4 text-red-600">-$50</td> <!-- Saldo actual -->
+            </tr>
+        </tfoot>
+    </table>
+
+</body>
+</html>

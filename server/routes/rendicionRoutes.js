@@ -6,28 +6,31 @@ const {
   updateRendicion,
   deleteRendicion,
   getTotalRendiciones,
-  getAsignaciones,
-  createAsignacion,
   getProveedores
 } = require('../controllers/rendicionController');
 
-// Rutas base
+// Middleware para validar IDs numéricos
+const validateNumericId = (req, res, next) => {
+  const id = req.params.projectId || req.params.rendicionId;
+  if (!id || isNaN(parseInt(id))) {
+    return res.status(400).json({ error: 'Se requiere un ID válido' });
+  }
+  next();
+};
+
+// Ruta de prueba
 router.get('/test', (req, res) => {
-  res.json({ message: 'API funcionando correctamente' });
+  res.json({ message: 'API de rendiciones funcionando correctamente' });
 });
 
 // Rutas para proveedores
 router.get('/proveedores', getProveedores);
 
-// Rutas para asignaciones
-router.get('/asignacion/:quoteNumber', getAsignaciones);
-router.post('/asignacion', createAsignacion);
-
 // Rutas para rendiciones
-router.get('/rendiciones/project/:projectId', getRendiciones);
+router.get('/rendiciones/project/:projectId', validateNumericId, getRendiciones);
 router.get('/rendiciones/total/:quoteNumber', getTotalRendiciones);
 router.post('/rendiciones', createRendicion);
-router.put('/rendiciones/:rendicionId', updateRendicion);
-router.delete('/rendiciones/:rendicionId', deleteRendicion);
+router.put('/rendiciones/:rendicionId', validateNumericId, updateRendicion);
+router.delete('/rendiciones/:rendicionId', validateNumericId, deleteRendicion);
 
 module.exports = router;
