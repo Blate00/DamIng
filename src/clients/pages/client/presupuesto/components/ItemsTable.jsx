@@ -17,7 +17,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
   };
 
   return (
-    <div className="overflow-x-auto rounded-t-lg border border-r-l bg-white shadow-xl">
+    <div className="overflow-x-auto rounded-t-lg border border-r-l bg-white ">
       <table className="min-w-full">
         <thead className="bg-red-800">
           <tr>

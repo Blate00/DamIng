@@ -198,10 +198,11 @@ const Presupuesto = () => {
   }
 
   return (
-    <div className="flex flex-col p-3 h-full">
-    <div className="h-full rounded-lg">
-      <div className="p-5">
-        <Breadcrumb />
+    <div className="flex flex-col p-5 h-full">
+    <div className="h-full rounded-xl">
+      <Breadcrumb />
+      <div className="p-4 bg-white rounded-lg" >
+        
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Presupuesto</h2>
 
         <ItemsTable

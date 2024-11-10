@@ -20,7 +20,7 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
   }, [total, ggPercentage, gestionPercentage]);
 
   return (
-    <div className="bg-gray-100 border border-r-l-b rounded-b-lg shadow-xl p-5 space-y-4">
+    <div className="bg-gray-100 border border-r-l-b rounded-b-xl  p-5 space-y-4">
       <div className="space-y-3">
         <div className="flex justify-between items-center pb-2 border-b border-gray-200">
           <span className="text-sm font-medium text-gray-600">Total:</span>

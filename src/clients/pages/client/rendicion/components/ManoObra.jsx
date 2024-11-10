@@ -42,16 +42,9 @@ const ManoObra = ({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer  " onClick={() => setDesplegado(!desplegado)}>
         <h4 className="text-xl font-bold text-gray-800">Resumen Mano de Obra</h4>
-        {desplegado ? (
-          <ChevronUpIcon className="w-6 h-6 text-gray-800" />
-        ) : (
-          <ChevronDownIcon className="w-6 h-6 text-gray-800" />
-        )}
-      </div>
-
-      {desplegado && (
+        
+   
         <>
           <div className="mt-3">
             <div className="grid grid-cols-2 gap-4">
@@ -137,7 +130,6 @@ const ManoObra = ({
             </tbody>
           </table>
         </>
-      )}
     </div>
   );
 };

@@ -60,32 +60,35 @@ const Rendicion = () => {
       console.error('Error deleting item:', error.message);
     }
   };
-
   const agregarFila = useCallback(() => {
     if (!job) return; // Asegurarse de que el trabajo esté definido antes de agregar la fila
-
+  
     const newItem = {
       project_id: projectId,
       quote_number: job.quote_number || '',
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: new Date().toISOString().split('T')[0],  // Aquí extraemos solo la fecha
       detalle: '',
       folio: '',
       proveedor_id: '', // Inicialmente vacío, se debe establecer más tarde
       documento: '',
       total: 0
     };
-
+  
     setItems(prevItems => [...prevItems, newItem]);
   }, [projectId, job]);
-
+  
   const handleChange = async (index, field, value) => {
     try {
       const updatedItems = [...items];
-      updatedItems[index][field] = field === 'total' ? parseFloat(value) || 0 : value;
-
+      if (field === 'fecha') {
+        updatedItems[index][field] = value.split('T')[0]; // Asegura el formato yyyy-MM-dd
+      } else {
+        updatedItems[index][field] = field === 'total' ? parseFloat(value) || 0 : value;
+      }
+  
       // Actualiza el estado local
       setItems(updatedItems);
-
+  
       if (updatedItems[index].rendicion_id) {
         await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, updatedItems[index]);
       }
@@ -93,24 +96,23 @@ const Rendicion = () => {
       console.error('Error updating item:', error.message);
     }
   };
+  
+  
 
-  const handleProveedorChange = async (index, value) => {
+  const handleProveedorChange = async (index, proveedorId) => {
     try {
-      const proveedor = proveedores.find(p => p.nombre.toLowerCase() === value.toLowerCase());
-      
-      if (proveedor) {
-        const updatedItems = [...items];
-        updatedItems[index].proveedor_id = proveedor.proveedor_id; // Establece el proveedor_id
-        setItems(updatedItems);
-
-        if (updatedItems[index].rendicion_id) {
-          await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
-            proveedor_id: proveedor.proveedor_id
-          });
-        }
+      const updatedItems = [...items];
+      updatedItems[index].proveedor_id = proveedorId;
+      setItems(updatedItems);
+  
+      if (updatedItems[index].rendicion_id) {
+        await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
+          ...updatedItems[index],
+          proveedor_id: proveedorId
+        });
       }
     } catch (error) {
-      console.error('Error updating proveedor:', error.message);
+      console.error('Error updating proveedor:', error);
     }
   };
 
@@ -166,10 +168,11 @@ const Rendicion = () => {
   }
 
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white h-full rounded-lg">
-        <div className="p-5">
-          <Breadcrumb />   
+    <div className="flex flex-col p-5 h-full">
+      <div className=" h-full rounded-lg">
+        <Breadcrumb />   
+        <div className="p-3 bg-white rounded-xl">
+          
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Rendición</h2>
 
           <TablaRendicion
@@ -179,26 +182,11 @@ const Rendicion = () => {
             proveedores={proveedores}
             handleProveedorChange={handleProveedorChange}
             formatCLP={formatCLP}
-            agregarFila={agregarFila} // Asegúrate de pasar la función aquí
+            agregarFila={agregarFila} // Aegúrate de pasar la función aquí
           />
-
-          {/* Botón para agregar una nueva fila */}
-          <button 
-            onClick={agregarFila} 
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Añadir Fila
-          </button>
-
-          {/* Botón para guardar todas las rendiciones */}
-          <button 
-            onClick={guardarRendiciones} 
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            Guardar
-          </button>
-
-          <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300 mb-10 rounded-b-lg shadow-lg space-y-4">
+       
+     
+          <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300  rounded-b-xl  space-y-4">
             <div className="flex flex-col space-y-3">
               <div className="flex justify-between items-center border-gray-200">
                 <span className="text-md font-medium text-black">Total:</span>
@@ -221,12 +209,40 @@ const Rendicion = () => {
             </div>
           </div>
 
-          <Asignacion
-            job={job}
-            updateAsignacion={setAsignacion}
-          />
+   <div className="mt-4 space-x-2">
 
-          <ManoObra manoObra={0} setManoObra={() => {}} subtotal={0} />
+          {/* Botón para agregar una nueva fila */}
+          <button 
+            onClick={agregarFila} 
+            className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
+          >
+            Añadir Fila
+          </button>
+
+          {/* Botón para guardar todas las rendiciones */}
+          <button 
+            onClick={guardarRendiciones} 
+            className=" bg-red-700 text-white p-2 rounded hover:bg-red-600"
+          >
+            Guardar
+          </button>
+          </div>
+          <div className="flex w-full gap-4">
+  <div className="w-1/2">
+    <Asignacion
+      job={job}
+      updateAsignacion={setAsignacion}
+    />
+  </div>
+  
+  <div className="w-1/2">
+    <ManoObra 
+      manoObra={0} 
+      setManoObra={() => {}} 
+      subtotal={0} 
+    />
+  </div>
+</div>
         </div>
       </div>
     </div>

@@ -145,7 +145,7 @@ const getTotalRendiciones = async (quoteNumber) => {
 
 const getProveedores = async () => {
   try {
-    const query = 'SELECT * FROM proveedores ORDER BY nombre';
+    const query = 'SELECT * FROM proveedores ORDER BY proveedor_id';
     const { rows } = await pool.query(query);
     return rows;
   } catch (error) {

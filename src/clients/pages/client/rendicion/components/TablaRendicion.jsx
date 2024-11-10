@@ -1,32 +1,78 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const TablaRendicion = ({ 
   items, 
   handleChange, 
-  agregarFila, 
   deleteItem, 
   proveedores, 
   handleProveedorChange,
   formatCLP 
 }) => {
+  const [proveedorSearchText, setProveedorSearchText] = useState({});
+
   const handleTotalChange = (index, value) => {
     const numericValue = value.replace(/[^0-9]/g, '');
     handleChange(index, 'total', numericValue);
-    if (numericValue !== '' && index === items.length - 1) {
-      agregarFila();
+  };
+
+  const handleProveedorInputChange = (index, value) => {
+    setProveedorSearchText({ ...proveedorSearchText, [index]: value });
+    
+    // Solo actualiza el ID cuando hay una coincidencia exacta
+    const proveedor = proveedores.find(p => 
+      p.nombre.toLowerCase() === value.toLowerCase()
+    );
+
+    if (proveedor) {
+      handleProveedorChange(index, proveedor.proveedor_id);
+    }
+    // Si no hay coincidencia exacta, solo actualizamos el texto de búsqueda
+    // sin modificar el ID del proveedor
+  };
+
+  const getProveedorDisplayText = (index, item) => {
+    // Si hay texto de búsqueda, muestra ese texto
+    if (proveedorSearchText.hasOwnProperty(index)) {
+      return proveedorSearchText[index];
+    }
+    
+    // Si no hay texto de búsqueda pero hay un ID, muestra el nombre del proveedor
+    if (item.proveedor_id) {
+      const proveedor = proveedores.find(p => p.proveedor_id === item.proveedor_id);
+      return proveedor ? proveedor.nombre : '';
+    }
+
+    return '';
+  };
+
+  const handleProveedorBlur = (index) => {
+    // Cuando el input pierde el foco, verificamos si el texto coincide con algún proveedor
+    const currentText = proveedorSearchText[index] || '';
+    const proveedor = proveedores.find(p => 
+      p.nombre.toLowerCase() === currentText.toLowerCase()
+    );
+
+    if (!proveedor) {
+      // Si no hay coincidencia, restauramos el nombre del proveedor original
+      const originalProveedor = items[index].proveedor_id ? 
+        proveedores.find(p => p.proveedor_id === items[index].proveedor_id) : null;
+      
+      setProveedorSearchText({
+        ...proveedorSearchText,
+        [index]: originalProveedor ? originalProveedor.nombre : ''
+      });
     }
   };
 
-  const getSuggestions = (value) => {
-    if (typeof value !== 'string') return []; // Verifica que value sea una cadena
-    const inputValue = value.trim().toLowerCase();
-    return proveedores.filter(proveedor =>
+  const getSuggestions = (searchText) => {
+    if (!searchText) return [];
+    const inputValue = searchText.trim().toLowerCase();
+    return proveedores.filter(proveedor => 
       proveedor.nombre.toLowerCase().includes(inputValue)
     );
   };
-
   return (
-    <div className="overflow-x-auto rounded-t-lg border border-r-l bg-white shadow-xl">
+    <div className="overflow-x-auto rounded-t-xl border border-r-l bg-white">
       <table className="min-w-full">
         <thead className="bg-red-800">
           <tr>
@@ -46,7 +92,7 @@ const TablaRendicion = ({
                 <input
                   type="date"
                   className="w-full bg-transparent text-gray-700 focus:outline-none"
-                  value={item.fecha || ''}
+                  value={item.fecha ? item.fecha.split('T')[0] : ''}
                   onChange={(e) => handleChange(index, 'fecha', e.target.value)}
                   placeholder="Selecciona una fecha"
                 />
@@ -69,18 +115,22 @@ const TablaRendicion = ({
                   placeholder="Ingresa el folio"
                 />
               </td>
-              <td className="py-4 px-6 text-center">
+              <td className="py-4 px-6 text-center relative">
                 <input
                   type="text"
                   className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  value={item.proveedor_id || ''} // Cambiado a proveedor_id
-                  onChange={(e) => handleProveedorChange(index, e.target.value)} // Cambiado para manejar el ID del proveedor
+                  value={getProveedorDisplayText(index, item)}
+                  onChange={(e) => handleProveedorInputChange(index, e.target.value)}
+                  onBlur={() => handleProveedorBlur(index)}
+                  placeholder="Buscar proveedor..."
                   list={`proveedores-${index}`}
-                  placeholder="Selecciona un proveedor"
                 />
                 <datalist id={`proveedores-${index}`}>
-                  {getSuggestions(item.proveedor_id).map((suggestion, i) => (
-                    <option key={i} value={suggestion.nombre} />
+                  {getSuggestions(proveedorSearchText[index]).map((proveedor) => (
+                    <option 
+                      key={proveedor.proveedor_id} 
+                      value={proveedor.nombre}
+                    />
                   ))}
                 </datalist>
               </td>

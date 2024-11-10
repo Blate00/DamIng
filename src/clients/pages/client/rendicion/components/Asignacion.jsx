@@ -60,17 +60,12 @@ const Asignacion = ({ job, updateAsignacion }) => {
     }
   };
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between cursor-pointer" onClick={() => setDesplegado(!desplegado)}>
+    <div className="mb-6 mt-5">
+     
         <h4 className="text-xl font-bold text-gray-800">Asignación</h4>
-        {desplegado ? (
-          <ChevronUpIcon className="w-6 h-6 text-gray-800" />
-        ) : (
-          <ChevronDownIcon className="w-6 h-6 text-gray-800" />
-        )}
-      </div>
+       
 
-      {desplegado && (
+      
         <>
           <div className="mt-3 grid grid-cols-2 mb-5 gap-4">
             <input
@@ -115,7 +110,6 @@ const Asignacion = ({ job, updateAsignacion }) => {
             </tbody>
           </table>
         </>
-      )}
     </div>
   );
 };
