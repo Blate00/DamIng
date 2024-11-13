@@ -15,7 +15,7 @@ const Rendicion = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [proveedores, setProveedores] = useState([]);
-
+  const [asignacionesData, setAsignacionesData] = useState([]);
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -37,6 +37,12 @@ const Rendicion = () => {
       setItems(rendicionesResponse.data);
       setProveedores(proveedoresResponse.data);
       setClient(clientData);
+
+      // Obtener asignaciones si hay un quote_number
+      if (projectData.quote_number) {
+        const asignacionesResponse = await axios.get(`http://localhost:5000/api/asignacion/${projectData.quote_number}`);
+        setAsignacionesData(asignacionesResponse.data || []);
+      }
     } catch (error) {
       console.error('Error fetching data:', error.message);
       setError(error.message);
@@ -228,22 +234,28 @@ const Rendicion = () => {
           </button>
           </div>
           <div className="flex w-full gap-4">
-  <div className="w-1/2">
-    <Asignacion
-      job={job}
-      updateAsignacion={setAsignacion}
-    />
-  </div>
+
+
   
-  <div className="w-1/2">
-    <ManoObra 
-      manoObra={0} 
-      setManoObra={() => {}} 
-      subtotal={0} 
-    />
-  </div>
 </div>
         </div>
+        <div className="w-1/2 p-4">
+          <Asignacion
+            job={job}
+            updateAsignacion={setAsignacion}
+            asignaciones={asignacionesData}
+            setAsignaciones={setAsignacionesData}
+          />
+        </div>
+        
+        <div className="w-1/2 p-4">
+          <ManoObra 
+            manoObra={0} 
+            setManoObra={() => {}} 
+            subtotal={0} 
+          />
+        </div>
+
       </div>
     </div>
   );
