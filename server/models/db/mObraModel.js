@@ -3,7 +3,7 @@ const getManoObra = async (quoteNumber) => {
     const query = `
       WITH total_mano_obra AS (
         SELECT 
-          (subtotal - gestion_amount) as valor_total
+          subtotal as valor_total
         FROM description_budgets 
         WHERE quote_number = \$1
         ORDER BY budget_date DESC 
@@ -32,9 +32,9 @@ const getManoObra = async (quoteNumber) => {
     if (rows.length === 0) {
       const initialQuery = `
         SELECT 
-          (subtotal - gestion_amount) as total_mano_obra,
+          subtotal as total_mano_obra,
           0 as total_recibido,
-          (subtotal - gestion_amount) as saldo_actual
+          subtotal as saldo_actual
         FROM description_budgets 
         WHERE quote_number = \$1
         ORDER BY budget_date DESC 
@@ -45,16 +45,16 @@ const getManoObra = async (quoteNumber) => {
     }
     
     return rows;
-  };
-  const createManoObra = async (manoObra) => {
+};
+const createManoObra = async (manoObra) => {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
   
-      // Obtener el total del presupuesto (subtotal - gestion_amount)
+      // Obtener el total del presupuesto (subtotal)
       const { rows: [presupuesto] } = await client.query(`
         SELECT 
-          (subtotal - gestion_amount) as total_mano_obra
+          subtotal as total_mano_obra
         FROM description_budgets 
         WHERE quote_number = \$1
         ORDER BY budget_date DESC 
@@ -100,7 +100,7 @@ const getManoObra = async (quoteNumber) => {
     } finally {
       client.release();
     }
-  };
+};
   
   module.exports = {
     getManoObra,
