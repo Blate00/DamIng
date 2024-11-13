@@ -13,6 +13,7 @@ const archivesRoutes = require('./routes/archivesRoutes');
 const presupuestoRoutes = require('./routes/presupuestoRoutes');
 const rendicionRoutes = require('./routes/rendicionRoutes');
 const asignacionRoutes = require('./routes/asignacionRoutes');
+const manoObraRoutes = require('./routes/mObraRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use('/api', archivesRoutes);
 app.use('/api', presupuestoRoutes);
 app.use('/api', rendicionRoutes);
 app.use('/api', asignacionRoutes);
+app.use('/api', manoObraRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
