@@ -1,10 +1,28 @@
 const pool = require('../config');
 
 const getBudgetsByProjectId = async (projectId) => {
-  const query = 'SELECT * FROM description_budgets WHERE project_id = $1';
+  const query = `
+    SELECT 
+      budget_id,
+      project_id,
+      quote_number,
+      description,
+      quantity,
+      unit_price,
+      total,
+      ROUND(gg_percentage::numeric)::integer as gg_percentage,
+      ROUND(gestion_percentage::numeric)::integer as gestion_percentage,
+      gg_amount,
+      gestion_amount,
+      subtotal,
+      budget_date
+    FROM description_budgets 
+    WHERE project_id = \$1
+  `;
   const { rows } = await pool.query(query, [projectId]);
   return rows;
 };
+
 const addBudgetItem = async (item) => {
   const query = `
     INSERT INTO description_budgets (
@@ -20,8 +38,24 @@ const addBudgetItem = async (item) => {
       gestion_amount, 
       subtotal
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-    RETURNING *;
+    VALUES (\$1, \$2, \$3, \$4, \$5, \$6, 
+      ROUND(\$7::numeric)::integer, 
+      ROUND(\$8::numeric)::integer, 
+      \$9, \$10, \$11)
+    RETURNING 
+      budget_id,
+      project_id,
+      quote_number,
+      description,
+      quantity,
+      unit_price,
+      total,
+      ROUND(gg_percentage::numeric)::integer as gg_percentage,
+      ROUND(gestion_percentage::numeric)::integer as gestion_percentage,
+      gg_amount,
+      gestion_amount,
+      subtotal,
+      budget_date;
   `;
 
   try {
@@ -49,18 +83,50 @@ const addBudgetItem = async (item) => {
     throw new Error('Error al agregar el ítem de presupuesto');
   }
 };
+
 const updateBudgetItem = async (budgetId, data) => {
   const query = `
     UPDATE description_budgets
-    SET description = \$1, quantity = \$2, unit_price = \$3, total = \$4, gg_percentage = \$5, gestion_percentage = \$6, gg_amount = \$7, gestion_amount = \$8, subtotal = \$9
+    SET 
+      description = \$1, 
+      quantity = \$2, 
+      unit_price = \$3, 
+      total = \$4, 
+      gg_percentage = ROUND(\$5::numeric)::integer, 
+      gestion_percentage = ROUND(\$6::numeric)::integer, 
+      gg_amount = \$7, 
+      gestion_amount = \$8, 
+      subtotal = \$9
     WHERE budget_id = \$10
-    RETURNING *;
+    RETURNING 
+      budget_id,
+      project_id,
+      quote_number,
+      description,
+      quantity,
+      unit_price,
+      total,
+      ROUND(gg_percentage::numeric)::integer as gg_percentage,
+      ROUND(gestion_percentage::numeric)::integer as gestion_percentage,
+      gg_amount,
+      gestion_amount,
+      subtotal,
+      budget_date;
   `;
+  
   const values = [
-    data.description, data.quantity, data.unit_price, data.total,
-    data.gg_percentage, data.gestion_percentage, data.gg_amount,
-    data.gestion_amount, data.subtotal, budgetId
+    data.description, 
+    data.quantity, 
+    data.unit_price, 
+    data.total,
+    data.gg_percentage, 
+    data.gestion_percentage, 
+    data.gg_amount,
+    data.gestion_amount, 
+    data.subtotal, 
+    budgetId
   ];
+  
   const { rows } = await pool.query(query, values);
   if (rows.length === 0) {
     throw new Error(`Budget with ID ${budgetId} not found`);
@@ -69,7 +135,7 @@ const updateBudgetItem = async (budgetId, data) => {
 };
 
 const deleteBudgetItem = async (budgetId) => {
-  const query = 'DELETE FROM description_budgets WHERE budget_id = $1 RETURNING *;';
+  const query = 'DELETE FROM description_budgets WHERE budget_id = \$1 RETURNING *;';
   const { rows } = await pool.query(query, [budgetId]);
   return rows[0];
 };

@@ -9,8 +9,8 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
 
   useEffect(() => {
     const calculateValues = () => {
-      const gg = (total * ggPercentage) / 100;
-      const gestion = (total * gestionPercentage) / 100;
+      const gg = (total * (ggPercentage || 0)) / 100;
+      const gestion = (total * (gestionPercentage || 0)) / 100;
       setGgValue(gg);
       setGestionValue(gestion);
       setSubtotal(total + gg + gestion);
@@ -19,8 +19,24 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
     calculateValues();
   }, [total, ggPercentage, gestionPercentage]);
 
+  const handleGgChange = (e) => {
+    const value = e.target.value;
+    // Permitir campo vacío o números enteros
+    if (value === '' || /^\d+$/.test(value)) {
+      setGgPercentage(value === '' ? '' : Number(value));
+    }
+  };
+
+  const handleGestionChange = (e) => {
+    const value = e.target.value;
+    // Permitir campo vacío o números enteros
+    if (value === '' || /^\d+$/.test(value)) {
+      setGestionPercentage(value === '' ? '' : Number(value));
+    }
+  };
+
   return (
-    <div className="bg-gray-100 border border-r-l-b rounded-b-xl  p-5 space-y-4">
+    <div className="bg-gray-100 border border-r-l-b rounded-b-xl p-5 space-y-4">
       <div className="space-y-3">
         <div className="flex justify-between items-center pb-2 border-b border-gray-200">
           <span className="text-sm font-medium text-gray-600">Total:</span>
@@ -31,9 +47,14 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
           <div className="flex items-center space-x-3">
             <div className="relative">
               <input
-                type="number"
-                value={ggPercentage}
-                onChange={(e) => setGgPercentage(parseFloat(e.target.value) || 0)}
+                type="text" // Cambiado de "number" a "text"
+                value={ggPercentage === 0 ? '' : ggPercentage}
+                onChange={handleGgChange}
+                onKeyDown={(e) => {
+                  if (e.key === '.' || e.key === ',') {
+                    e.preventDefault();
+                  }
+                }}
                 className="w-16 px-2 py-1 text-sm bg-transparent border-b border-gray-300 focus:border-red-600 focus:outline-none transition-colors duration-300"
               />
               <span className="absolute right-1 top-1 text-xs text-gray-400">%</span>
@@ -46,9 +67,14 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
           <div className="flex items-center space-x-3">
             <div className="relative">
               <input
-                type="number"
-                value={gestionPercentage}
-                onChange={(e) => setGestionPercentage(parseFloat(e.target.value) || 0)}
+                type="text" // Cambiado de "number" a "text"
+                value={gestionPercentage === 0 ? '' : gestionPercentage}
+                onChange={handleGestionChange}
+                onKeyDown={(e) => {
+                  if (e.key === '.' || e.key === ',') {
+                    e.preventDefault();
+                  }
+                }}
                 className="w-16 px-2 py-1 text-sm bg-transparent border-b border-gray-300 focus:border-red-600 focus:outline-none transition-colors duration-300"
               />
               <span className="absolute right-1 top-1 text-xs text-gray-400">%</span>

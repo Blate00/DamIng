@@ -45,8 +45,7 @@ const getManoObra = async (quoteNumber) => {
     }
     
     return rows;
-};
-const createManoObra = async (manoObra) => {
+};const createManoObra = async (manoObra) => {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
