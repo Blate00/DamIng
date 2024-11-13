@@ -14,11 +14,24 @@ const getAsignaciones = async (req, res) => {
   }
 };
 
+const getTiposPago = async (req, res) => {
+  try {
+    const tiposPago = await asignacionModel.getTiposPago();
+    res.status(200).json(tiposPago);
+  } catch (error) {
+    console.error('Error en getTiposPago:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener tipos de pago',
+      details: error.message 
+    });
+  }
+};
+
 const createAsignacion = async (req, res) => {
   try {
-    const { saldo_recibido, quote_number } = req.body;
+    const { saldo_recibido, quote_number, tipo_pago_id } = req.body;
 
-    if (!saldo_recibido || !quote_number) {
+    if (!saldo_recibido || !quote_number || !tipo_pago_id) {
       return res.status(400).json({ 
         error: 'Faltan datos requeridos' 
       });
@@ -32,7 +45,8 @@ const createAsignacion = async (req, res) => {
 
     const newAsignacion = await asignacionModel.createAsignacion({
       quote_number,
-      saldo_recibido: parseFloat(saldo_recibido)
+      saldo_recibido: parseFloat(saldo_recibido),
+      tipo_pago_id
     });
 
     res.status(201).json(newAsignacion);
@@ -47,5 +61,6 @@ const createAsignacion = async (req, res) => {
 
 module.exports = {
   getAsignaciones,
-  createAsignacion
+  createAsignacion,
+  getTiposPago
 };

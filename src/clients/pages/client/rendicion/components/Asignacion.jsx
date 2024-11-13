@@ -3,9 +3,32 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) => {
-  const [desplegado, setDesplegado] = useState(false);
-  const [nuevoAbono, setNuevoAbono] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tiposPago, setTiposPago] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    monto: '',
+    tipo_pago_id: ''
+  });
+
+  useEffect(() => {
+    const fetchTiposPago = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/tipo-pago');
+        setTiposPago(response.data);
+        if (response.data.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            tipo_pago_id: response.data[0].tipo_pago_id
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching tipos de pago:', error);
+      }
+    };
+
+    fetchTiposPago();
+  }, []);
 
   useEffect(() => {
     const fetchAsignaciones = async () => {
@@ -33,7 +56,13 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
     fetchAsignaciones();
   }, [job?.quote_number, updateAsignacion, setAsignaciones]);
 
-  const handleGuardarAbono = async () => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleGuardarAbono = async (e) => {
+    e.preventDefault();
     if (!job?.quote_number) {
       alert('Datos de asignación incompletos');
       return;
@@ -41,35 +70,33 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
 
     try {
       setLoading(true);
-      const monto = parseFloat(nuevoAbono);
+      const monto = parseFloat(formData.monto);
       
       if (isNaN(monto) || monto <= 0) {
         alert('Por favor, ingrese un monto válido');
         return;
       }
 
-      const response = await axios.post(`http://localhost:5000/api/asignacion`, {
+      await axios.post(`http://localhost:5000/api/asignacion`, {
         quote_number: job.quote_number,
-        saldo_recibido: monto
+        saldo_recibido: monto,
+        tipo_pago_id: formData.tipo_pago_id
       });
 
-      // Después de guardar, obtener las asignaciones actualizadas
       const updatedResponse = await axios.get(`http://localhost:5000/api/asignacion/${job.quote_number}`);
       const updatedAsignaciones = updatedResponse.data || [];
       
       setAsignaciones(updatedAsignaciones);
       
       if (updateAsignacion && updatedAsignaciones.length > 0) {
-        const totalAsignaciones = updatedAsignaciones[0].total_asignaciones || 0;
-        const ultimoSaldoActual = updatedAsignaciones[0].saldo_actual || 0;
-        
         updateAsignacion({
-          saldo_recibido: totalAsignaciones,
-          saldo_actual: ultimoSaldoActual
+          saldo_recibido: updatedAsignaciones[0].total_asignaciones || 0,
+          saldo_actual: updatedAsignaciones[0].saldo_actual || 0
         });
       }
 
-      setNuevoAbono('');
+      setFormData({ monto: '', tipo_pago_id: tiposPago[0]?.tipo_pago_id || '' });
+      setIsModalOpen(false);
       alert('Abono guardado con éxito');
     } catch (error) {
       console.error('Error saving abono:', error);
@@ -97,9 +124,88 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
   };
 
   return (
-    <div className="mb-6 mt-5">
-      <h4 className="text-xl font-bold text-gray-800">Asignación</h4>
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h4 className="text-xl font-bold text-gray-800">Asignación</h4>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 transition-colors duration-200 flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+        </button>
+      </div>
       
+      {/* Modal */}
+      <div className={`fixed inset-y-0 right-0 w-96 bg-[#f1f7fc] to-white shadow-2xl transform ${isModalOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+        <div className="h-full flex flex-col">
+          <div className="flex justify-between items-center p-6 border-b border-red-100">
+            <h3 className="text-2xl font-bold text-red-800">Agregar Abono</h3>
+            <button onClick={() => setIsModalOpen(false)} className="text-red-500 hover:text-red-700 transition-colors duration-200">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-grow overflow-y-auto p-6">
+            <form onSubmit={handleGuardarAbono} className="space-y-6">
+              <div>
+                <label htmlFor="monto" className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
+                <input
+                  type="number"
+                  id="monto"
+                  name="monto"
+                  placeholder="Ingrese el monto del abono"
+                  value={formData.monto}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="tipo_pago_id" className="block text-sm font-medium text-gray-700 mb-1">Tipo de Pago</label>
+                <select
+                  id="tipo_pago_id"
+                  name="tipo_pago_id"
+                  value={formData.tipo_pago_id}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                  required
+                >
+                  <option value="">Seleccione Tipo de Pago</option>
+                  {tiposPago.map((tipo) => (
+                    <option key={tipo.tipo_pago_id} value={tipo.tipo_pago_id}>
+                      {tipo.nombre_pago}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </div>
+          <div className="border-t border-red-100 p-6">
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                onClick={handleGuardarAbono}
+                disabled={loading}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                {loading ? 'Guardando...' : 'Guardar Abono'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Resumen de totales */}
       {Array.isArray(asignaciones) && asignaciones.length > 0 && (
         <div className="grid grid-cols-3 gap-4 mb-4 mt-2">
@@ -124,46 +230,21 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
         </div>
       )}
 
-      <div className="mt-3 grid grid-cols-2 mb-5 gap-4">
-        <input
-          type="number"
-          value={nuevoAbono}
-          placeholder="Ingrese el monto del abono"
-          onChange={(e) => setNuevoAbono(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md bg-white"
-        />
-        
-        <button
-          onClick={handleGuardarAbono}
-          disabled={loading}
-          className={`bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {loading ? 'Guardando...' : 'Guardar Abono'}
-        </button>
-      </div>
-
+      {/* Tabla de asignaciones */}
       <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden mb-4">
         <thead className="bg-red-800 border-b border-gray-300">
           <tr>
-            <th className="py-3 px-6 text-left text-gray-100">Saldo Recibido</th>
-            <th className="py-3 px-6 text-left text-gray-100">Saldo Actual</th>
-            <th className="py-3 px-6 text-left text-gray-100">Total Acumulado</th>
-            <th className="py-3 px-6 text-left text-gray-100">Total Rendiciones</th>
-            <th className="py-3 px-6 text-left text-gray-100">Saldo Final</th>
-            <th className="py-3 px-6 text-left text-gray-100">Fecha</th>
+            <th className="py-3 px-6 text-left text-gray-100">Monto Recibido</th>
+            <th className="py-3 px-6 text-left text-gray-100">Medio</th>
+            <th className="py-3 px-6 text-left text-gray-100 text-center">Fecha</th>
           </tr>
         </thead>
         <tbody className="text-gray-700">
           {Array.isArray(asignaciones) && asignaciones.map((asignacion, index) => (
             <tr key={index} className="border-b bg-white hover:bg-gray-100">
               <td className="py-3 px-6">{formatCurrency(asignacion?.saldo_recibido)}</td>
-              <td className="py-3 px-6">{formatCurrency(asignacion?.saldo_actual)}</td>
-              <td className="py-3 px-6">{formatCurrency(asignacion?.total_asignaciones)}</td>
-              <td className="py-3 px-6">{formatCurrency(asignacion?.total_rendiciones)}</td>
-              <td className={`py-3 px-6 ${calcularSaldoFinal(asignacion) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(calcularSaldoFinal(asignacion))}
-              </td>
-              <td className="py-3 px-6">
+              <td className="py-3 px-6">{asignacion?.medio_pago || 'No especificado'}</td>
+              <td className="py-3 px-6 text-center">
                 {asignacion?.fecha_actualizacion ? 
                   new Date(asignacion.fecha_actualizacion).toLocaleString() : 
                   'Fecha no disponible'

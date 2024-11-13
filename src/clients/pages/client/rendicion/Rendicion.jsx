@@ -239,22 +239,24 @@ const Rendicion = () => {
   
 </div>
         </div>
-        <div className="w-1/2 p-4">
-          <Asignacion
-            job={job}
-            updateAsignacion={setAsignacion}
-            asignaciones={asignacionesData}
-            setAsignaciones={setAsignacionesData}
-          />
-        </div>
-        
-        <div className="w-1/2 p-4">
-          <ManoObra 
-            manoObra={0} 
-            setManoObra={() => {}} 
-            subtotal={0} 
-          />
-        </div>
+        <div className="flex gap-4 mt-4">
+  <div className="w-1/2 bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <Asignacion
+      job={job}
+      updateAsignacion={setAsignacion}
+      asignaciones={asignacionesData}
+      setAsignaciones={setAsignacionesData}
+    />
+  </div>
+  
+  <div className="w-1/2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <ManoObra 
+      manoObra={0} 
+      setManoObra={() => {}} 
+      subtotal={0} 
+    />
+  </div>
+</div>
 
       </div>
     </div>

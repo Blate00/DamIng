@@ -4,6 +4,7 @@ const getAsignaciones = async (quoteNumber) => {
   const query = `
     SELECT 
       a.*,
+      tp.nombre_pago as medio_pago,
       COALESCE((
         SELECT SUM(total) 
         FROM rendiciones 
@@ -16,11 +17,18 @@ const getAsignaciones = async (quoteNumber) => {
         WHERE quote_number = a.quote_number
       ) as total_asignaciones
     FROM asignacion a
+    LEFT JOIN tipo_pago tp ON a.tipo_pago_id = tp.tipo_pago_id
     WHERE a.quote_number = \$1 
     ORDER BY a.fecha_actualizacion DESC
   `;
   const { rows } = await pool.query(query, [quoteNumber]);
   return rows || [];
+};
+
+const getTiposPago = async () => {
+  const query = 'SELECT * FROM tipo_pago ORDER BY nombre_pago';
+  const { rows } = await pool.query(query);
+  return rows;
 };
 
 const createAsignacion = async (asignacion) => {
@@ -48,18 +56,19 @@ const createAsignacion = async (asignacion) => {
 
     const query = `
       INSERT INTO asignacion (
-        quote_number, saldo_recibido, saldo_actual, fecha_actualizacion
+        quote_number, saldo_recibido, saldo_actual, fecha_actualizacion, tipo_pago_id
       )
-      VALUES (\$1, \$2, \$3, CURRENT_TIMESTAMP)
+      VALUES (\$1, \$2, \$3, CURRENT_TIMESTAMP, \$4)
       RETURNING *, 
-        \$4::numeric as total_asignaciones,
-        \$5::numeric as total_rendiciones
+        \$5::numeric as total_asignaciones,
+        \$6::numeric as total_rendiciones
     `;
     
     const values = [
       asignacion.quote_number,
       saldoRecibido,
       saldoActual,
+      asignacion.tipo_pago_id,
       totalAsignaciones,
       totalRendiciones.total
     ];
@@ -77,5 +86,6 @@ const createAsignacion = async (asignacion) => {
 
 module.exports = {
   getAsignaciones,
-  createAsignacion
+  createAsignacion,
+  getTiposPago
 };
