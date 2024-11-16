@@ -2,7 +2,7 @@ import React from 'react';
 
 const SummaryFlujo = ({ total, formatCLP }) => {
   return (
-    <div className="bg-gray-100 border border-r-l-b rounded-b-lg shadow-xl p-5 space-y-4">
+    <div className="bg-gray-100 border border-r-l-b rounded-b-xl p-5 space-y-4">
       <div className="space-y-3">
        
       

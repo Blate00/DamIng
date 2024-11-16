@@ -14,7 +14,7 @@ const presupuestoRoutes = require('./routes/presupuestoRoutes');
 const rendicionRoutes = require('./routes/rendicionRoutes');
 const asignacionRoutes = require('./routes/asignacionRoutes');
 const manoObraRoutes = require('./routes/mObraRoutes');
-
+const flujoRoutes = require('./routes/flujoRoutes');
 app.use(cors());
 app.use(express.json());
 
@@ -30,7 +30,7 @@ app.use('/api', presupuestoRoutes);
 app.use('/api', rendicionRoutes);
 app.use('/api', asignacionRoutes);
 app.use('/api', manoObraRoutes);
-
+app.use('/api/flujo', flujoRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -1,72 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import AccesoPago from './components/ListaTrabajador';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import SummaryFlujo from './components/SummaryFlujo';
 
 const FlujoCaja = () => {
-  const { id, projectId } = useParams();
+  const { projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
-  const [trabajadores, setTrabajadores] = useState(JSON.parse(localStorage.getItem('trabajadores')) || []);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
+  const listaTrabajadorRef = useRef();
 
   useEffect(() => {
-    const fetchClientAndJob = () => {
-      // Replace Supabase calls with localStorage or hardcoded data if necessary.
-      const storedClients = JSON.parse(localStorage.getItem('clients')) || [];
-      const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
-      
-      const clientData = storedClients.find(client => client.client_id === id);
-      const jobData = storedProjects.find(project => project.project_id === projectId);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
+        const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
+        if (!projectData) {
+          throw new Error('No se encontró el proyecto');
+        }
+        setJob(projectData);
 
-      setClient(clientData || { name: "Cliente Demo" });
-      setJob(jobData || { project_name: "Proyecto Demo" });
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
+        const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
+        setClient(clientData);
 
-      // Calculate total from trabajadores
-      const calculatedTotal = trabajadores.reduce((acc, trabajador) => acc + (trabajador.total || 0), 0);
-      setTotal(calculatedTotal);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchClientAndJob();
-  }, [id, projectId, trabajadores]);
+    fetchData();
+  }, [projectId]);
 
-  const handleDeleteTrabajador = (index) => {
-    const updatedTrabajadores = trabajadores.filter((_, i) => i !== index);
-    setTrabajadores(updatedTrabajadores);
-    localStorage.setItem('trabajadores', JSON.stringify(updatedTrabajadores));
-
-    // Recalculate total after deletion
-    const newTotal = updatedTrabajadores.reduce((acc, trabajador) => acc + (trabajador.total || 0), 0);
+  const handleUpdateTotal = (newTotal) => {
     setTotal(newTotal);
   };
 
+  const handleAddRow = () => {
+    if (listaTrabajadorRef.current) {
+      listaTrabajadorRef.current.handleAddRow();
+    }
+  };
+
+  const handleSubmitPayments = async () => {
+    if (listaTrabajadorRef.current) {
+      await listaTrabajadorRef.current.handleSubmitPayments();
+    }
+  };
+
   const formatCLP = (value) => {
+    if (value == null || isNaN(value)) return '\$0';
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   };
 
-  return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="flex items-start">
-        <div className="p-5 w-full">
-          <Breadcrumb />
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Flujo de Caja</h2>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-800"></div>
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
+          <p className="text-gray-700">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col p-5 h-full">
+      <div className="h-full rounded-xl">
+        <Breadcrumb />
+        <div className="p-4 bg-white rounded-lg">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Flujo de Caja</h2>
+          
           <div className="mb-4">
-            <p>Cliente: {client?.name}</p>
-            <p>Trabajo: {job?.project_name}</p>
+            <p className="text-gray-700">Cliente: {client?.name}</p>
+            <p className="text-gray-700">Proyecto: {job?.project_name}</p>
           </div>
 
           <AccesoPago
-            trabajadores={trabajadores}
-            onDeleteTrabajador={handleDeleteTrabajador}
+            ref={listaTrabajadorRef}
+            projectId={projectId}
+            quoteNumber={job?.quote_number}
+            onUpdateTotal={handleUpdateTotal}
           />
 
+
           <SummaryFlujo 
-            total={total} 
-            formatCLP={formatCLP} 
-            projectId={projectId} 
+            total={total}
+            formatCLP={formatCLP}
           />
+          <div className="mt-4 space-x-2">
+            <button
+              onClick={handleAddRow}
+              className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
+            >
+              Agregar Fila
+            </button>
+            <button
+              onClick={handleSubmitPayments}
+              className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
+            >
+              Guardar Pagos
+            </button>
+          </div>
         </div>
       </div>
     </div>
