@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../supabase/client';
+import axios from 'axios';
 
 const NewMaterial = ({ onMaterialAdded, isOpen, onClose }) => {
   const [material, setMaterial] = useState({ category: '', description: '', current_value: '' });
@@ -19,19 +19,12 @@ const NewMaterial = ({ onMaterialAdded, isOpen, onClose }) => {
     if (material.category.trim() && material.description.trim() && material.current_value.trim()) {
       try {
         const numericValue = parseInt(material.current_value, 10);
-        const { data, error } = await supabase
-          .from('materiales')
-          .insert({
-            ...material,
-            current_value: numericValue,
-            updated_value: numericValue,
-            entry_date: new Date().toISOString()
-          })
-          .select();
+        const response = await axios.post('http://localhost:5000/api/materials', {
+          ...material,
+          current_value: numericValue,
+        });
 
-        if (error) throw error;
-
-        onMaterialAdded(data[0]);
+        onMaterialAdded(response.data);
         setMaterial({ category: '', description: '', current_value: '' });
         onClose();
       } catch (error) {

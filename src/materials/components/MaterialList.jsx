@@ -1,5 +1,5 @@
 import React from 'react';
-import { supabase } from '../../supabase/client';
+import axios from 'axios';
 
 const MaterialList = ({ materials, onMaterialUpdated }) => {
   const handleUpdateValue = async (materialId, currentValue) => {
@@ -9,13 +9,9 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
       const numericValue = parseInt(newValue.replace(/[^0-9]/g, ''), 10);
       if (!isNaN(numericValue)) {
         try {
-          const { data, error } = await supabase
-            .rpc('update_material_value', { 
-              p_material_id: materialId, 
-              p_new_value: numericValue 
-            });
-
-          if (error) throw error;
+          await axios.put(`http://localhost:5000/api/materials/${materialId}`, {
+            new_value: numericValue
+          });
 
           onMaterialUpdated();
         } catch (error) {
@@ -28,19 +24,14 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
   const handleDeleteMaterial = async (materialId) => {
     if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
       try {
-        const { error } = await supabase
-          .from('materiales')
-          .delete()
-          .eq('material_id', materialId);
-
-        if (error) throw error;
-
+        await axios.delete(`http://localhost:5000/api/materials/${materialId}`);
         onMaterialUpdated();
       } catch (error) {
         console.error('Error deleting material:', error);
       }
     }
   };
+
 
   const isUpdateNeeded = (entryDate, lastUpdateDate) => {
     const threeMonthsAgo = new Date();

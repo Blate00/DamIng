@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabase/client';
+import axios from 'axios';
 import Breadcrumb from '../../general/Breadcrumb';
 import NewMaterial from '../components/NewMaterial';
 import MaterialList from '../components/MaterialList';
@@ -14,13 +14,8 @@ const Pmaterial = () => {
   const fetchMaterials = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('materiales')
-        .select('*')
-        .order('entry_date', { ascending: false });
-
-      if (error) throw error;
-      setMaterials(data);
+      const response = await axios.get('http://localhost:5000/api/materials');
+      setMaterials(response.data);
     } catch (error) {
       console.error('Error fetching materials:', error);
       setError('Error al cargar los materiales: ' + error.message);
