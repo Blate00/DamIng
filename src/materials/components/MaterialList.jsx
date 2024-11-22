@@ -53,51 +53,118 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
   };
 
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-red-800">
-        <tr>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg">Categoría</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Descripción</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Actual</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Valor Anterior</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha de Entrada</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Última Actualización</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg">Acciones</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {sortedMaterials.map((material, index) => (
-          <tr key={material.material_id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${isUpdateNeeded(material.entry_date, material.last_update_date) ? 'bg-red-100' : ''} hover:bg-red-50 transition-colors duration-150`}>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{material.category}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{material.description}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCLP(material.current_value)}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCLP(material.updated_value)}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(material.entry_date).toLocaleDateString('es-CL')}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{material.last_update_date ? new Date(material.last_update_date).toLocaleDateString('es-CL') : 'N/A'}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <button 
-                onClick={() => handleUpdateValue(material.material_id, material.current_value)}
-                className="text-red-600 hover:text-red-900 mr-4"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button 
-                onClick={() => handleDeleteMaterial(material.material_id)}
-                className="text-red-600 hover:text-red-900"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </td>
+    <div className="bg-white rounded-xl shadow-xl">
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="bg-gradient-to-r from-red-800 to-red-700">
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider rounded-tl-lg">
+              <div className="flex items-center space-x-2">
+                <span>Categoría</span>
+              </div>
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider">
+              Descripción
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider">
+              Valor Actual
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider">
+              Fecha Entrada
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider">
+              Última Actualización
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white tracking-wider rounded-tr-lg">
+              Acciones
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {sortedMaterials.map((material, index) => (
+            <tr 
+              key={material.material_id} 
+              className={`
+                ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                ${isUpdateNeeded(material.entry_date, material.last_update_date) ? 'bg-red-50' : ''}
+                hover:bg-red-50 transition-all duration-200
+                cursor-pointer
+              `}
+            >
+              <td className="px-6 py-4">
+                <div className="flex items-center">
+                  <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                    <span className="text-red-800 font-medium">
+                      {material.category.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">{material.category}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="text-sm text-gray-900">{material.description}</div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="text-sm font-semibold text-gray-900">
+                  {formatCLP(material.current_value)}
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="text-sm text-gray-900">
+                  {new Date(material.entry_date).toLocaleDateString('es-CL')}
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <span className={`
+                  px-3 py-1 rounded-full text-xs font-medium
+                  ${material.last_update_date ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}
+                `}>
+                  {material.last_update_date 
+                    ? new Date(material.last_update_date).toLocaleDateString('es-CL')
+                    : 'Pendiente'}
+                </span>
+              </td>
+              <td className="px-6 py-4">
+                <div className="flex space-x-3">
+                  <button 
+                    onClick={() => handleUpdateValue(material.material_id)}
+                    className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteMaterial(material.material_id)}
+                    className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    
+    {/* Paginación simplificada */}
+    <div className="p-5   mt-4 flex items-center justify-between">
+      <p className="text-sm text-gray-700">
+        Total: <span className="font-medium">{sortedMaterials.length}</span> materiales
+      </p>
+      <div className="flex gap-2">
+        <button className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition-colors">
+          Anterior
+        </button>
+        <button className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800 transition-colors">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>  
   );
 };
 
