@@ -1,222 +1,183 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../../../supabase/client';
-import Breadcrumb from '../../../../general/Breadcrumb';
-import SelectedMaterialsTable from './components/SelectedMaterialsTable';
-import MaterialSearch from './components/MaterialSearch';
-import MaterialSummary from './components/MaterialSummary';
+  import React, { useState, useEffect } from 'react';
+  import { useParams } from 'react-router-dom';
+  import axios from 'axios';
+  import Breadcrumb from '../../../../general/Breadcrumb';
+  import BuscadorMateriales from './BuscadorMateriales';
+  import TablaMaterialesSeleccionados from './TablaMaterialesSeleccionados';
 
-const Pmaterial = () => {
-  const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const { id, projectId } = useParams();
-  const [client, setClient] = useState(null);
-  const [job, setJob] = useState(null);
+  const ListaMaterialesPage = () => {
+  const { projectId } = useParams();
+  const [materialesSeleccionados, setMaterialesSeleccionados] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [project, setProject] = useState(null);
+  const [totalLista, setTotalLista] = useState(0);
+
+  // Calcular total
+  const calcularTotal = (materiales) => {
+    return materiales.reduce((total, material) => {
+      return total + (parseFloat(material.cantidad) * parseFloat(material.current_value));
+    }, 0);
+  };
 
   useEffect(() => {
-    fetchClientAndJob();
-  }, [id, projectId]);
+    setTotalLista(calcularTotal(materialesSeleccionados));
+  }, [materialesSeleccionados]);
 
+  // Función para buscar materiales
+  const searchMaterials = async (term) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/lista/search?term=${term}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error buscando materiales:', error);
+      return [];
+    }
+  };
+
+  // Función para obtener lista de materiales del proyecto
+  const getProjectMaterials = async (projectId) => {
+    if (!projectId) return { detalles: [] };
+    try {
+      const response = await axios.get(`http://localhost:5000/api/lista-materiales/project/${projectId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error obteniendo materiales del proyecto:', error);
+      return { detalles: [] };
+    }
+  };
+
+  // Cargar datos del proyecto y sus materiales
   useEffect(() => {
-    if (projectId && job?.quote_number) {
-      fetchExistingMaterials();
-    }
-  }, [projectId, job]);
-
-  const fetchClientAndJob = async () => {
-    try {
+    const loadData = async () => {
       setLoading(true);
-      const clientData = await fetchClient(id);
-      setClient(clientData);
+      try {
+        // Obtener datos del proyecto
+        const projectResponse = await axios.get(`http://localhost:5000/api/projects`);
+        const projectData = projectResponse.data.find(p => p.project_id === parseInt(projectId));
+        if (projectData) {
+          setProject(projectData);
 
-      const jobData = await fetchJob(projectId);
-      setJob(jobData);
-    } catch (error) {
-      console.error('Error fetching data:', error.message);
-      setError(error.message);
-    } finally {
-      setLoading(false);
+          // Cargar materiales del proyecto
+          const materialesData = await getProjectMaterials(projectId);
+          setMaterialesSeleccionados(materialesData.detalles || []);
+        }
+      } catch (error) {
+        console.error('Error cargando datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (projectId) {
+      loadData();
+    }
+  }, [projectId]);
+
+  const handleAddMaterial = (material) => {
+    if (!materialesSeleccionados.some(m => m.material_id === material.material_id)) {
+      const newMaterial = {
+        ...material,
+        cantidad: 1,
+        subtotal: parseFloat(material.current_value)
+      };
+      setMaterialesSeleccionados([...materialesSeleccionados, newMaterial]);
     }
   };
 
-  const fetchClient = async (clientId) => {
-    const { data, error } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('client_id', clientId)
-      .single();
-
-    if (error) throw error;
-    return data;
-  };
-
-  const fetchJob = async (jobId) => {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('project_id', jobId)
-      .single();
-
-    if (error) throw error;
-    return data;
-  };
-
-  const fetchExistingMaterials = async () => {
-    try {
-      setLoading(true);
-      // Verificar si ya existe la lista de materiales
-      const { data: existingList, error: existingListError } = await supabase
-        .from('lista_materiales')
-        .select('*')
-        .eq('project_id', projectId)
-        .eq('quote_number', job.quote_number)
-        .single();
-
-      if (existingListError && existingListError.code !== 'PGRST116') {
-        throw existingListError;
+  const handleUpdateCantidad = (materialId, cantidad) => {
+    const cantidadNum = parseFloat(cantidad);
+    if (isNaN(cantidadNum) || cantidadNum <= 0) return;
+    
+    setMaterialesSeleccionados(materialesSeleccionados.map(material => {
+      if (material.material_id === materialId) {
+        return {
+          ...material,
+          cantidad: cantidadNum,
+          subtotal: cantidadNum * parseFloat(material.current_value)
+        };
       }
-
-      if (existingList) {
-        // Obtener los detalles de los materiales junto con la categoría y la descripción
-        const { data: detalles, error: detallesError } = await supabase
-          .from('detalle_lista_materiales')
-          .select(`
-            *,
-            materiales (
-              description,
-              category
-            )
-          `)
-          .eq('lista_id', existingList.lista_id);
-
-        if (detallesError) throw detallesError;
-
-        setSelectedMaterials(
-          detalles.map((detalle) => ({
-            material_id: detalle.material_id,
-            quantity: detalle.cantidad,
-            current_value: detalle.precio_unitario,
-            description: detalle.materiales.description,
-            category: detalle.materiales.category,
-          }))
-        );
-      }
-    } catch (error) {
-      console.error('Error fetching existing materials:', error.message);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddMaterialWithQuantity = (material, quantity) => {
-    setSelectedMaterials((prevMaterials) => [...prevMaterials, { ...material, quantity }]);
-  };
-
-  const handleRemoveMaterial = (index) => {
-    setSelectedMaterials((prevMaterials) => prevMaterials.filter((_, i) => i !== index));
-  };
-
-  const handleUpdateQuantity = (index, delta) => {
-    setSelectedMaterials((prevMaterials) =>
-      prevMaterials.map((material, i) =>
-        i === index ? { ...material, quantity: Math.max(1, material.quantity + delta) } : material
-      )
+      return material;
+    }));
+    };
+  // Agregar la función handleRemoveMaterial
+  const handleRemoveMaterial = (materialId) => {
+    setMaterialesSeleccionados(
+      materialesSeleccionados.filter(material => material.material_id !== materialId)
     );
-  };
+  };// ListaMaterialesPage.jsx
 
-  const saveMaterialList = async () => {
-    if (!projectId || !job?.quote_number) {
-      alert('Información del proyecto incompleta. No se puede guardar la lista de materiales.');
+  const handleSaveList = async () => {
+  try {
+    // Validaciones previas
+    if (!projectId) {
+      alert('No se ha especificado un proyecto');
       return;
     }
 
-    // Calcular total de materiales y total de dinero
-    const totalMateriales = selectedMaterials.reduce((acc, material) => acc + material.quantity, 0);
-    const totalDinero = selectedMaterials.reduce(
-      (acc, material) => acc + material.quantity * material.current_value,
-      0
+    if (materialesSeleccionados.length === 0) {
+      alert('Debe seleccionar al menos un material');
+      return;
+    }
+
+    // Preparar los datos
+    const items = materialesSeleccionados.map(material => {
+      const cantidad = parseFloat(material.cantidad);
+      const precio_unitario = parseFloat(material.current_value);
+
+      if (isNaN(cantidad) || cantidad <= 0) {
+        throw new Error(`Cantidad inválida para ${material.description}`);
+      }
+
+      if (isNaN(precio_unitario) || precio_unitario <= 0) {
+        throw new Error(`Precio inválido para ${material.description}`);
+      }
+
+      return {
+        material_id: material.material_id,
+        cantidad: cantidad,
+        precio_unitario: precio_unitario
+      };
+    });
+
+    const requestData = {
+      project_id: parseInt(projectId),
+      items: items
+    };
+
+    // Log de datos a enviar
+    console.log('Datos a enviar:', JSON.stringify(requestData, null, 2));
+
+    // Realizar la petición
+    const response = await axios.post(
+      'http://localhost:5000/api/lista-materiales',
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
 
-    try {
-      setLoading(true);
+    console.log('Respuesta exitosa:', response.data);
+    alert('Lista guardada exitosamente');
 
-      // Verificar si ya existe la lista de materiales
-      const { data: existingList, error: existingListError } = await supabase
-        .from('lista_materiales')
-        .select('*')
-        .eq('project_id', projectId)
-        .eq('quote_number', job.quote_number)
-        .single();
+    // Recargar la lista
+    const materialesData = await getProjectMaterials(projectId);
+    setMaterialesSeleccionados(materialesData.detalles || []);
 
-      if (existingListError && existingListError.code !== 'PGRST116') {
-        throw existingListError;
-      }
+  } catch (error) {
+    console.error('Error completo:', error);
 
-      let listaId;
-
-      if (existingList) {
-        // Actualizar lista de materiales existente
-        listaId = existingList.lista_id;
-        const { error: updateError } = await supabase
-          .from('lista_materiales')
-          .update({
-            total_materiales: totalMateriales,
-            total_dinero: totalDinero,
-          })
-          .eq('lista_id', listaId);
-
-        if (updateError) throw updateError;
-
-        // Eliminar los detalles antiguos
-        await supabase
-          .from('detalle_lista_materiales')
-          .delete()
-          .eq('lista_id', listaId);
-      } else {
-        // Insertar una nueva lista de materiales
-        const { data: listData, error: listError } = await supabase
-          .from('lista_materiales')
-          .insert({
-            project_id: projectId,
-            quote_number: job.quote_number,
-            total_materiales: totalMateriales,
-            total_dinero: totalDinero,
-          })
-          .select()
-          .single();
-
-        if (listError) throw listError;
-        listaId = listData.lista_id;
-      }
-
-      // Insertar en detalle_lista_materiales
-      const detallesInsert = selectedMaterials.map((material) => ({
-        lista_id: listaId,
-        material_id: material.material_id,
-        cantidad: material.quantity,
-        precio_unitario: material.current_value,
-        subtotal: material.current_value * material.quantity,
-      }));
-
-      const { error: detallesError } = await supabase
-        .from('detalle_lista_materiales')
-        .insert(detallesInsert);
-
-      if (detallesError) throw detallesError;
-
-      alert('Lista de materiales guardada con éxito');
-    } catch (error) {
-      console.error('Error al guardar la lista de materiales:', error.message);
-      setError(error.message);
-      alert('Error al guardar la lista de materiales: ' + error.message);
-    } finally {
-      setLoading(false);
+    if (error.response) {
+      console.error('Respuesta del servidor:', error.response.data);
+      alert(error.response.data.detail || error.response.data.error || 'Error al guardar la lista');
+    } else if (error.message) {
+      alert(error.message);
+    } else {
+      alert('Error desconocido al guardar la lista');
     }
+  }
   };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -225,61 +186,53 @@ const Pmaterial = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
-          <p className="text-gray-700">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!client || !job) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-red-800 mb-4">Datos no encontrados</h2>
-          <p className="text-gray-700">No se pudo cargar la información del cliente o del trabajo.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col p-3 bg-white h-full">
-      <div className="bg-white rounded-lg p-100">
-        <div className="p-5">
-          <Breadcrumb />
-          <h1 className="text-2xl font-semibold mb-4 text-center md:text-left">Lista de Materiales</h1>
+    <div className="flex flex-col min-h-full">
+      <div className="rounded-lg p-5">
+        <Breadcrumb />
 
-          <MaterialSearch handleAddMaterialWithQuantity={handleAddMaterialWithQuantity} />
-
-
-          {selectedMaterials.length > 0 && (
-            <>
-              <SelectedMaterialsTable
-                selectedMaterials={selectedMaterials}
-                handleRemoveMaterial={handleRemoveMaterial}
-                handleUpdateQuantity={handleUpdateQuantity}
-              />
-              <MaterialSummary selectedMaterials={selectedMaterials} />
-            </>
-          )}
-          <div className="flex justify-center md:justify-end mt-5">
-            <button
-              className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-opacity-50"
-              onClick={saveMaterialList}
-              disabled={selectedMaterials.length === 0}
-            >
-              Guardar
-            </button>
+        <div className="bg-white p-5 rounded-lg shadow-lg">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Lista de Materiales - {project?.project_name}
+            </h2>
+            <BuscadorMateriales 
+              onMaterialSelect={handleAddMaterial} 
+              searchMaterials={searchMaterials}
+            />
           </div>
+
+          <TablaMaterialesSeleccionados 
+            materiales={materialesSeleccionados}
+            onUpdateCantidad={handleUpdateCantidad}
+            onRemoveMaterial={handleRemoveMaterial}
+          />
+
+          {materialesSeleccionados.length > 0 && (
+            <div className="mt-4">
+              <div className="text-right mb-4">
+                <span className="font-bold">Total: </span>
+                <span className="text-red-600">
+                  {new Intl.NumberFormat('es-CL', { 
+                    style: 'currency', 
+                    currency: 'CLP' 
+                  }).format(totalLista)}
+                </span>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSaveList}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                >
+                  Guardar Lista
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-};
+  };
 
-export default Pmaterial;
+  export default ListaMaterialesPage;
