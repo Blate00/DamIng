@@ -31,31 +31,95 @@ const addClientWithProject = async (clientData) => {
   }
 };
 
-const getClients = async () => {
-  const { rows } = await pool.query('SELECT * FROM clients');
-  return rows;
-};
-
-const deleteClient = async (clientId) => {
-  await pool.query('DELETE FROM clients WHERE client_id = \$1', [clientId]);
-};
+  
 const getClientById = async (clientId) => {
   try {
-    console.log('Ejecutando consulta para cliente ID:', clientId);
     const { rows } = await pool.query(
       'SELECT * FROM clients WHERE client_id = \$1',
       [clientId]
     );
-    console.log('Resultado de la consulta:', rows);
     return rows[0];
   } catch (error) {
-    console.error('Error en getClientById:', error);
-    throw error;
+    throw new Error(`Error al obtener cliente: ${error.message}`);
   }
-};
+  };
+  
+  const deleteClientAndProjects = async (clientId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+  
+    // Eliminar registros relacionados en documents
+    await client.query(`
+      DELETE FROM documents 
+      WHERE project_id IN (
+        SELECT project_id FROM projects WHERE client_id = \$1
+      )`, [clientId]);
+  
+    // Eliminar registros relacionados en description_budgets
+    await client.query(`
+      DELETE FROM description_budgets 
+      WHERE project_id IN (
+        SELECT project_id FROM projects WHERE client_id = \$1
+      )`, [clientId]);
+  
+    // Eliminar registros relacionados en rendiciones
+    await client.query(`
+      DELETE FROM rendiciones 
+      WHERE project_id IN (
+        SELECT project_id FROM projects WHERE client_id = \$1
+      )`, [clientId]);
+  
+    // Eliminar registros relacionados en lista_materiales
+    await client.query(`
+      DELETE FROM lista_materiales 
+      WHERE project_id IN (
+        SELECT project_id FROM projects WHERE client_id = \$1
+      )`, [clientId]);
+  
+    // Eliminar registros relacionados en tasks
+    await client.query(`
+      DELETE FROM tasks 
+      WHERE project_id IN (
+        SELECT project_id FROM projects WHERE client_id = \$1
+      )`, [clientId]);
+  
+    // Eliminar proyectos del cliente
+    await client.query(
+      'DELETE FROM projects WHERE client_id = \$1',
+      [clientId]
+    );
+  
+    // Finalmente eliminar el cliente
+    await client.query(
+      'DELETE FROM clients WHERE client_id = \$1',
+      [clientId]
+    );
+  
+    await client.query('COMMIT');
+    return true;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+  };
+  
+  const getClients = async () => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM clients');
+    return rows;
+  } catch (error) {
+    throw new Error(`Error al obtener clientes: ${error.message}`);
+  }
+  };
+  
 
 module.exports = {
   getClients,
   addClientWithProject,
-  deleteClient,
+  getClientById,
+  deleteClientAndProjects,
+  getClients
 };

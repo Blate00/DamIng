@@ -3,7 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { FolderIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import axios from 'axios';
-
+import ProjectForm from './components/ProjectForm';
+import { PlusIcon } from '@heroicons/react/outline';
 const ListadoTrabajos = () => {
   const { client_id } = useParams(); // Obtener client_id de la URL
   const [projects, setProjects] = useState([]);
@@ -13,7 +14,15 @@ const ListadoTrabajos = () => {
   const [selectedFilter, setSelectedFilter] = useState('Estado');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
+  const [clientName, setClientName] = useState('');
 
+
+const [client, setClient] = useState(null);
+
+  const handleProjectAdded = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -33,7 +42,31 @@ const ListadoTrabajos = () => {
 
     fetchProjects();
   }, [client_id]); // Dependencia de client_id para volver a ejecutar el efecto si cambia
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+  
+        // Obtener datos del cliente
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
+        const clientData = clientResponse.data.find(c => c.client_id === parseInt(client_id));
+        setClient(clientData);
+  
+        // Obtener proyectos del cliente
+        const projectsResponse = await axios.get(`http://localhost:5000/api/projects`, {
+          params: { client_id }
+        });
+        setProjects(projectsResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [client_id]);
+  
   const filteredProjects = projects
     .filter(project => project.project_name.toLowerCase().includes(searchQuery.toLowerCase()))
     .filter(project => selectedFilter === 'Estado' || project.status === selectedFilter);
@@ -43,7 +76,7 @@ const ListadoTrabajos = () => {
       <div className="h-full rounded-lg">
         <Breadcrumb />
 
-        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-4">
           <div className="relative flex-grow mb-4 md:mb-0">
             <input
               type="text"
@@ -83,7 +116,15 @@ const ListadoTrabajos = () => {
         </div>
 
         <div className='rounded-lg bg-white p-6 shadow-md'>
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Proyectos</h1>
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-semibold text-gray-800">Proyectos</h1>
+    <button 
+      onClick={() => setIsProjectFormOpen(true)}
+      className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-colors duration-200 flex items-center"
+    >
+      <PlusIcon className="h-5 w-5" />
+    </button>
+  </div>
 
           {loading ? (
             <div className="flex items-center justify-center h-64">
@@ -107,7 +148,16 @@ const ListadoTrabajos = () => {
             </ul>
           )}
         </div>
-      </div>
+      </div>  <ProjectForm 
+      clientId={client_id}
+      client={client} // Pasar el objeto cliente completo
+      isOpen={isProjectFormOpen}
+      onClose={() => setIsProjectFormOpen(false)}
+      onProjectAdded={(newProject) => {
+        setProjects([...projects, newProject]);
+        setIsProjectFormOpen(false);
+      }}
+    />
     </div>
   );
 };

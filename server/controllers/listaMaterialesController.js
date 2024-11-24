@@ -80,8 +80,7 @@ const createLista = async (req, res) => {
       console.error('Error en createLista:', error);
       res.status(500).json({
         error: 'Error al crear la lista',
-        detail: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        detail: error.message
       });
     }
     };
@@ -103,20 +102,23 @@ try {
 };
 
 const getListaByProject = async (req, res) => {
-try {
-  const { projectId } = req.params;
-  const lista = await listaMaterialesModel.getListaByProject(projectId);
-
-  if (!lista) {
-    return res.json({ detalles: [] });
+  try {
+    const { projectId } = req.params; // Asegúrate de que esto esté correcto
+    const lista = await listaMaterialesModel.getListaByProject(projectId);
+  
+    if (!lista) {
+      return res.status(404).json({ 
+        message: 'No se encontró lista para este proyecto',
+        projectId 
+      });
+    }
+  
+    res.json(lista);
+  } catch (error) {
+    console.error('Error al obtener lista por proyecto:', error);
+    res.status(500).json({ error: error.message });
   }
-
-  res.json(lista);
-} catch (error) {
-  console.error('Error al obtener lista por proyecto:', error);
-  res.status(500).json({ error: error.message });
-}
-};
+  };
 
 const getAllListas = async (req, res) => {
 try {

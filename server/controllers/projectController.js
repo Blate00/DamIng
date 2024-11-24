@@ -20,7 +20,29 @@ const getProjectsByClientId = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const createProject = async (req, res) => {
+  try {
+    const { clientId, projectName, startDate, endDate, status } = req.body;
+  
+    // Generar un número de cotización único
+    const quoteNumber = `QN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  
+    const newProject = await projectModel.createProject({
+      clientId,
+      projectName,
+      quoteNumber,
+      status,
+      startDate,
+      endDate
+    });
+  
+    res.status(201).json(newProject);
+  } catch (error) {
+    console.error('Error creating project:', error);
+    res.status(500).json({ error: error.message });
+  }
+  };
 module.exports = {
   getProjectsByClientId, // Exportar la nueva función
+  createProject
 };

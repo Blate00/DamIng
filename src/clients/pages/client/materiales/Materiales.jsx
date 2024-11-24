@@ -37,6 +37,7 @@
   // Función para obtener lista de materiales del proyecto
   const getProjectMaterials = async (projectId) => {
     if (!projectId) return { detalles: [] };
+    console.log(`Llamando a la API con projectId: ${projectId}`); // Agregar log
     try {
       const response = await axios.get(`http://localhost:5000/api/lista-materiales/project/${projectId}`);
       return response.data;
@@ -44,21 +45,21 @@
       console.error('Error obteniendo materiales del proyecto:', error);
       return { detalles: [] };
     }
-  };
+    };
 
   // Cargar datos del proyecto y sus materiales
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Obtener datos del proyecto
         const projectResponse = await axios.get(`http://localhost:5000/api/projects`);
         const projectData = projectResponse.data.find(p => p.project_id === parseInt(projectId));
         if (projectData) {
           setProject(projectData);
-
+      
           // Cargar materiales del proyecto
           const materialesData = await getProjectMaterials(projectId);
+          console.log('Datos de materiales recibidos:', materialesData); // Verificar datos
           setMaterialesSeleccionados(materialesData.detalles || []);
         }
       } catch (error) {
@@ -66,8 +67,7 @@
       } finally {
         setLoading(false);
       }
-    };
-
+      };
     if (projectId) {
       loadData();
     }
@@ -203,10 +203,10 @@
           </div>
 
           <TablaMaterialesSeleccionados 
-            materiales={materialesSeleccionados}
-            onUpdateCantidad={handleUpdateCantidad}
-            onRemoveMaterial={handleRemoveMaterial}
-          />
+materiales={materialesSeleccionados}
+onUpdateCantidad={handleUpdateCantidad}
+onRemoveMaterial={handleRemoveMaterial}
+/>
 
           {materialesSeleccionados.length > 0 && (
             <div className="mt-4">

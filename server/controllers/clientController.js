@@ -44,12 +44,30 @@ const fetchClients = async (req, res) => {
 const removeClientAndProjects = async (req, res) => {
   try {
     const clientId = req.params.id;
-    await clientModel.deleteClient(clientId);
-    res.status(204).end();
+  
+    // Verificar si el cliente existe
+    const client = await clientModel.getClientById(clientId);
+    if (!client) {
+      return res.status(404).json({
+        error: 'Cliente no encontrado'
+      });
+    }
+  
+    // Eliminar cliente y sus proyectos relacionados
+    await clientModel.deleteClientAndProjects(clientId);
+  
+    res.status(200).json({
+      message: 'Cliente y proyectos relacionados eliminados exitosamente'
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error removing client and projects:', error);
+    res.status(500).json({ 
+      error: 'Error al eliminar cliente y proyectos',
+      details: error.message 
+    });
   }
-};
+  };
+  
 const getClientById = async (clientId) => {
   const { rows } = await pool.query(
     'SELECT * FROM clients WHERE client_id = \$1',
