@@ -2,8 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Agregar esto en tu archivo CSS (por ejemplo: styles.css) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-
+/* Establecer Inter como fuente por defecto en toda la página */
+body {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  /* Aplicar la fuente a los elementos del componente */
+  table {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  th, td {
+    font-family: 'Inter', sans-serif;
+  }
+  
 
 
 

@@ -4,7 +4,6 @@ const listaMaterialesController = require('../controllers/listaMaterialesControl
 
 // Rutas existentes
 router.get('/lista-materiales', listaMaterialesController.getAllListas);
-router.get('/lista-materiales/:id', listaMaterialesController.getListaById);
 router.post('/lista-materiales', listaMaterialesController.createLista);
 router.put('/lista-materiales/:id', listaMaterialesController.updateLista);
 router.delete('/lista-materiales/:id', listaMaterialesController.deleteLista);

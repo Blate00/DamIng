@@ -5,9 +5,12 @@ import axios from 'axios';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
+import damLogo from '../../../../assets/damLogo.png'; // Asegúrate de que la extensión sea correcta (.png, .jpg, etc.)
+import Dpdf from './components/Dpdf'; 
+import { FaSave, FaPlus } from 'react-icons/fa';
 const Presupuesto = () => {
+    const { client_id } = useParams(); // Obtener client_id de la URL
   const { projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
@@ -16,6 +19,8 @@ const Presupuesto = () => {
   const [gestionPercentage, setGestionPercentage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +34,12 @@ const Presupuesto = () => {
           throw new Error('No se encontró el proyecto');
         }
         setJob(projectData);
-
+  
+        // Obtener datos del cliente
+        const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
+        const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
+        setClient(clientData);
+  
         // Obtener presupuestos
         const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
         setItems(budgetResponse.data);
@@ -38,11 +48,7 @@ const Presupuesto = () => {
           setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
           setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
         }
-
-        // Obtener datos del cliente si es necesario
-        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
-        setClient(clientResponse.data);
-
+  
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err.message);
@@ -50,7 +56,7 @@ const Presupuesto = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [projectId]);
 
@@ -157,167 +163,194 @@ const Presupuesto = () => {
       console.error('Error updating budget:', err.message);
       alert('Error al actualizar el presupuesto.');
     }
-  };const generatePDF = async () => {
+  };
+  const generatePDF = async () => {
     try {
+      // Crear el PDF
       const pdf = new jsPDF('p', 'mm', 'a4');
     
-      // Configuración de fuentes y colores
-      pdf.addFont('helvetica', 'normal');
-      pdf.setFont('helvetica');
+      // Configuración de estilos y colores
+      const styles = {
+        colors: {
+          primary: [139, 0, 0],    // Rojo DAM
+          white: [255, 255, 255],
+          gray: [245, 245, 245],
+          text: [51, 51, 51]
+        },
+        margins: {
+          left: 10,
+          top: 10
+        }
+      };
     
-      // Agregar un fondo suave al encabezado
-      pdf.setFillColor(245, 245, 245);
-      pdf.rect(0, 0, 210, 40, 'F');
+      // Cargar logo
+      const loadImage = () => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          img.onerror = reject;
+          img.src = damLogo;
+        });
+      };
     
-      // Logo o título principal
-      pdf.setFontSize(24);
-      pdf.setTextColor(139, 0, 0); // Color rojo oscuro
-      pdf.text('PRESUPUESTO', 105, 20, { align: 'center' });
+      const logoDataUrl = await loadImage();
     
-      // Línea decorativa
-      pdf.setDrawColor(139, 0, 0);
+      // Header con logo
+      pdf.addImage(logoDataUrl, 'PNG', styles.margins.left, styles.margins.top, 40, 30);
+    
+      // Información del proyecto
+      pdf.setFontSize(16);
+      pdf.setTextColor(...styles.colors.text);
+      const projectTitle = job?.project_name || 'Proyecto sin nombre';
+      pdf.text(projectTitle, 55, 25);
+    
+      // Información adicional
+      pdf.setFontSize(11);
+      const quoteNumber = `Nº CTZ: ${job?.quote_number || 'Sin número'}`;
+      const currentDate = new Date().toLocaleDateString('es-CL');
+      const clientName = client?.name || 'Cliente sin nombre';
+    
+      pdf.text(quoteNumber, 160, 20);
+      pdf.text(currentDate, 160, 25);
+      pdf.text(clientName, 55, 35);
+    
+      // Línea separadora
+      pdf.setDrawColor(...styles.colors.primary);
       pdf.setLineWidth(0.5);
-      pdf.line(20, 25, 190, 25);
+      pdf.line(10, 40, 200, 40);
     
-      // Información del cliente y proyecto
-      pdf.setFontSize(12);
-      pdf.setTextColor(60, 60, 60);
-      pdf.setFont('helvetica', 'bold');
+      // Título "Servicios Eléctricos"
+      pdf.setFontSize(20  );
+      pdf.setTextColor(...styles.colors.text);
+      pdf.text('Presupuesto', 10, 45);
     
-      const infoY = 45;
-      pdf.text('CLIENTE:', 20, infoY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(client?.name || '', 60, infoY);
-    
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('PROYECTO:', 20, infoY + 10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(job?.project_name || '', 60, infoY + 10);
-    
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('FECHA:', 20, infoY + 20);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(new Date().toLocaleDateString('es-CL'), 60, infoY + 20);
-    
-      // Tabla con diseño mejorado
-      const startY = 80;
-      const columns = [
-        { header: 'DESCRIPCIÓN', width: 80, align: 'left' },
-        { header: 'CANTIDAD', width: 30, align: 'center' },
-        { header: 'VALOR UNITARIO', width: 35, align: 'right' },
-        { header: 'TOTAL', width: 35, align: 'right' }
+      // Configuración de la tabla
+      const startY = 50;
+      const tableHeaders = [
+        { text: 'ITEM', width: 15 },
+        { text: 'DESCRIPCIÓN', width: 80 },
+        { text: 'UND', width: 20 },
+        { text: 'CANTIDAD', width: 25 },
+        { text: 'VALOR UNIT', width: 25 },
+        { text: 'TOTAL', width: 25 }
       ];
     
-      // Encabezado de tabla con degradado
-      pdf.setFillColor(139, 0, 0);
-      let currentX = 20;
-      columns.forEach(column => {
-        // Fondo del encabezado
-        pdf.rect(currentX, startY, column.width, 10, 'F');
+      // Encabezado de la tabla
+      pdf.setFillColor(...styles.colors.primary);
+      pdf.rect(10, startY, 190, 10, 'F');
+      pdf.setTextColor(...styles.colors.white);
+      pdf.setFontSize(10);
     
-        // Texto del encabezado
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(column.header, 
-          column.align === 'center' ? currentX + (column.width/2) : 
-          column.align === 'right' ? currentX + column.width - 2 : 
-          currentX + 2, 
-          startY + 7, 
-          { align: column.align });
-    
-        currentX += column.width;
+      let currentX = 10;
+      tableHeaders.forEach(header => {
+        pdf.text(header.text, currentX + 2, startY + 7);
+        currentX += header.width;
       });
     
-      // Filas de datos con alternancia de colores
-      pdf.setTextColor(60, 60, 60);
+      // Contenido de la tabla
       let currentY = startY + 10;
-    
       items.forEach((item, index) => {
-        // Fondo alternado para las filas
+        pdf.setTextColor(...styles.colors.text);
+    
+        // Fondo alternado
         if (index % 2 === 0) {
-          pdf.setFillColor(250, 250, 250);
-          pdf.rect(20, currentY, 180, 10, 'F');
+          pdf.setFillColor(...styles.colors.gray);
+          pdf.rect(10, currentY, 190, 8, 'F');
         }
     
-        currentX = 20;
-        pdf.setFont('helvetica', 'normal');
+        currentX = 10;
+        // Item número
+        pdf.text(String(index + 1), currentX + 2, currentY + 6);
+        currentX += tableHeaders[0].width;
     
         // Descripción
-        pdf.text(item.description || '', currentX + 2, currentY + 7);
-        currentX += columns[0].width;
+        const description = item.description || '';
+        if (description.length > 40) {
+          pdf.setFontSize(8);
+        }
+        pdf.text(description, currentX + 2, currentY + 6);
+        pdf.setFontSize(10);
+        currentX += tableHeaders[1].width;
+    
+        // Unidad
+        pdf.text(item.und || '', currentX + 2, currentY + 6);
+        currentX += tableHeaders[2].width;
     
         // Cantidad
-        pdf.text(item.quantity?.toString() || '', currentX + (columns[1].width/2), currentY + 7, { align: 'center' });
-        currentX += columns[1].width;
+        pdf.text(String(item.quantity || ''), currentX + 2, currentY + 6);
+        currentX += tableHeaders[3].width;
     
         // Valor unitario
-        pdf.text(formatCLP(item.unit_price) || '', currentX + columns[2].width - 2, currentY + 7, { align: 'right' });
-        currentX += columns[2].width;
+        pdf.text(formatCLP(item.unit_price), currentX + 2, currentY + 6);
+        currentX += tableHeaders[4].width;
     
         // Total
-        pdf.text(formatCLP(item.total) || '', currentX + columns[3].width - 2, currentY + 7, { align: 'right' });
+        pdf.text(formatCLP(item.total), currentX + 2, currentY + 6);
     
-        currentY += 10;
+        currentY += 8;
       });
     
-      // Resumen con diseño mejorado
+      // Resumen y totales
       currentY += 10;
-      const summaryX = 120;
+      const summaryX = 130;
       const summaryWidth = 70;
     
-      // Fondo para el resumen
-      pdf.setFillColor(245, 245, 245);
-      pdf.rect(summaryX - 5, currentY - 5, summaryWidth + 10, 50, 'F');
+      const renderSummaryRow = (label, value, isHighlighted = false) => {
+        if (isHighlighted) {
+          pdf.setFillColor(...styles.colors.primary);
+          pdf.rect(summaryX - 5, currentY - 5, summaryWidth + 5, 10, 'F');
+          pdf.setTextColor(...styles.colors.white);
+        } else {
+          pdf.setTextColor(...styles.colors.text);
+        }
     
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Total:', summaryX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(formatCLP(total), summaryX + summaryWidth, currentY, { align: 'right' });
+        pdf.text(label, summaryX, currentY + 2);
+        pdf.text(value, summaryX + summaryWidth - 2, currentY + 2, { align: 'right' });
+        currentY += 12;
+      };
     
-      currentY += 10;
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('GG (%):', summaryX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`${ggPercentage}%`, summaryX + 30, currentY);
-      pdf.text(formatCLP((total * ggPercentage) / 100), summaryX + summaryWidth, currentY, { align: 'right' });
+      // Calcular totales
+      const totalNeto = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+      const ggAmount = (totalNeto * ggPercentage) / 100;
+      const gestionAmount = (totalNeto * gestionPercentage) / 100;
+      const subtotal = totalNeto + ggAmount + gestionAmount;
     
-      currentY += 10;
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Gestión (%):', summaryX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`${gestionPercentage}%`, summaryX + 30, currentY);
-      pdf.text(formatCLP((total * gestionPercentage) / 100), summaryX + summaryWidth, currentY, { align: 'right' });
-    
-      // Subtotal con fondo destacado
-      currentY += 15;
-      pdf.setFillColor(139, 0, 0);
-      pdf.rect(summaryX - 5, currentY - 5, summaryWidth + 10, 12, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('SUBTOTAL:', summaryX, currentY);
-      pdf.text(formatCLP(total + (total * ggPercentage) / 100 + (total * gestionPercentage) / 100), 
-        summaryX + summaryWidth, currentY, { align: 'right' });
+      // Renderizar resumen
+      renderSummaryRow('Total Neto:', formatCLP(totalNeto));
+      renderSummaryRow('GG (%):', `${ggPercentage}% ${formatCLP(ggAmount)}`);
+      renderSummaryRow('Gestión (%):', `${gestionPercentage}% ${formatCLP(gestionAmount)}`);
+      renderSummaryRow('Subtotal:', formatCLP(subtotal), true);
     
       // Pie de página
       pdf.setTextColor(128, 128, 128);
       pdf.setFontSize(8);
+      const footerText = `Documento generado el ${currentDate} | Proyecto: ${projectTitle} | Cliente: ${clientName} | CTZ: ${job?.quote_number}`;
       pdf.text(
-        `Generado el ${new Date().toLocaleDateString('es-CL')} - Página 1 de 1`,
+        footerText,
         pdf.internal.pageSize.width / 2,
         pdf.internal.pageSize.height - 10,
         { align: 'center' }
       );
     
       // Guardar PDF
-      pdf.save(`presupuesto_${job?.quote_number || 'sin_numero'}.pdf`);
+      const fileName = `presupuesto_${job?.quote_number || 'sin_numero'}_${currentDate.replace(/\//g, '-')}.pdf`;
+      pdf.save(fileName);
     
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error al generar el PDF');
+      console.error('Error al generar PDF:', error);
+      alert('Error al generar el PDF. Por favor, intente nuevamente.');
     }
     };
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -358,56 +391,70 @@ const Presupuesto = () => {
   }
 
   return (
-    <div className="flex flex-col p-5 h-full">
-    <div className="h-full rounded-xl">
-      <Breadcrumb />
-      <div className="p-4 bg-white rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Presupuesto</h2>
-          <button
-            onClick={generatePDF}
-            className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-          >
-            Descargar PDF
-          </button>
-        </div>
 
-        <div id="pdf-content">
-          <ItemsTable
-            items={items}
-            handleChange={handleChange}
-            formatCLP={formatCLP}
-            deleteItem={deleteItem}
-          />
+      <div className="flex flex-col p-5 h-full">
+        <div className="h-full rounded-xl">
+          <Breadcrumb />
+          <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
+  <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
+  <p className="text-gray-800 text-base">{client?.name}</p>
+  
+  <div className="mt-4">
+    <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
+    <p className="text-gray-800 text-base">{job?.project_name}</p>
+  </div>
+</div>
 
-          <Summary 
-            total={total} 
-            formatCLP={formatCLP} 
-            budgetId={items.length > 0 ? items[0].budget_id : null} 
-            ggPercentage={ggPercentage} 
-            setGgPercentage={setGgPercentage} 
-            gestionPercentage={gestionPercentage} 
-            setGestionPercentage={setGestionPercentage} 
-          />
-        </div>
+          <div className="p-4 bg-white rounded-b-lg border-l-4 border-red-800">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Servicios Eléctricos</h2>
+              <div className="mt- text-end flex space-x-4">
+  <button
+    className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+    onClick={updateDatabase}
+  >
+    <FaSave className="text-lg" />
+  </button>
 
-        <div className="mt-4 space-x-2">
-          <button
-            className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
-            onClick={updateDatabase}
-          >
-            Guardar
-          </button>
-          <button
-            className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
-            onClick={addNewItem}
-          >
-            Añadir Nueva Fila
-          </button>
+  <button
+    className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+    onClick={addNewItem}
+  >
+    <FaPlus className="text-lg" />
+  </button>
+
+  {/* Dpdf como botón */}
+<Dpdf job={job} client={client} items={items} formatCLP={formatCLP} ggPercentage={ggPercentage} gestionPercentage={gestionPercentage} />
+</div>
+
+
+
+            </div>
+      
+            <div id="pdf-content">
+              <ItemsTable
+                items={items}
+                handleChange={handleChange}
+                formatCLP={formatCLP}
+                deleteItem={deleteItem}
+              />
+      
+              <Summary 
+                total={total} 
+                formatCLP={formatCLP} 
+                budgetId={items.length > 0 ? items[0].budget_id : null} 
+                ggPercentage={ggPercentage} 
+                setGgPercentage={setGgPercentage} 
+                gestionPercentage={gestionPercentage} 
+                setGestionPercentage={setGestionPercentage} 
+              />
+            </div>
+      
+           
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+      
   );
 };
 

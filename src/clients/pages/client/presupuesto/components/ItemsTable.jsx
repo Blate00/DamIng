@@ -1,23 +1,30 @@
-// ItemsTable.js
-import React from 'react';
+import { useEffect } from 'react';
 
 const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap';
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);  // Limpiar el link cuando el componente se desmonte
+    };
+  }, []);
+
   const handleUpdateQuantity = (index, delta) => {
     const newQuantity = Math.max(0, (items[index].quantity || 0) + delta);
     handleChange(index, 'quantity', newQuantity);
   };
 
   const handleUnitValueChange = (index, value) => {
-    // Remover cualquier carácter que no sea número
     const numericValue = value.replace(/[^0-9]/g, '');
-    // Convertir a número
     const newUnitValue = parseFloat(numericValue) || 0;
-    // Actualizar el valor unitario
     handleChange(index, 'unit_price', newUnitValue);
   };
 
   return (
-    <div className="overflow-x-auto rounded-t-lg border border-r-l bg-white ">
+    <div className="overflow-x-auto rounded-t-lg border border-r-l bg-white">
       <table className="min-w-full">
         <thead className="bg-red-800">
           <tr>
@@ -36,7 +43,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
                   type="text"
                   value={item.description}
                   onChange={(e) => handleChange(index, 'description', e.target.value)}
-                  className="w-full bg-transparent text-gray-700 focus:outline-none"
+                  className="w-full bg-transparent text-gray-700 focus:outline-none font-roboto"
                   placeholder="Descripción del ítem"
                 />
               </td>
@@ -66,7 +73,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
                   type="text"
                   value={formatCLP(item.unit_price)}
                   onChange={(e) => handleUnitValueChange(index, e.target.value)}
-                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
+                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none font-roboto"
                   placeholder="\\\$0"
                 />
               </td>

@@ -5,7 +5,11 @@ import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import TablaRendicion from './components/TablaRendicion';
-
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import PDFDownloadButton from './PDFDownloadButton';
+import html2canvas from 'html2canvas';
+import damLogo from '../../../../assets/damLogo.png';
 const Rendicion = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
@@ -20,7 +24,16 @@ const Rendicion = () => {
     total_mano_obra: 0,
     total_recibido: 0
   });
-
+  const generarPDFConHtml2Canvas = async () => {
+    const input = document.getElementById('pdf-content'); // El ID del div que quieres capturar
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    
+    // Agregar la imagen al PDF
+    pdf.addImage(imgData, 'PNG', 0, 0);
+    pdf.save('rendicion.pdf');
+    };
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -189,7 +202,46 @@ const Rendicion = () => {
       </div>
     );
   }
-
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    
+    // Agregar logo
+    doc.addImage(damLogo, 'PNG', 10, 10, 50, 20); // Ajusta la posición y tamaño según sea necesario
+    
+    // Título
+    doc.setFontSize(20);
+    doc.text('Rendición de Cuentas', 14, 30);
+    
+    // Tabla de Items
+    doc.setFontSize(12);
+    doc.text('Items:', 14, 40);
+    doc.autoTable({
+      head: [['Fecha', 'Detalle', 'Folio', 'Proveedor', 'Total']],
+      body: items.map(item => [
+        item.fecha,
+        item.detalle,
+        item.folio,
+        proveedores.find(p => p.id === item.proveedor_id)?.nombre || 'N/A',
+        formatCLP(item.total)
+      ]),
+      startY: 45,
+    });
+    
+    // Asignación
+    doc.addPage();
+    doc.text('Asignación:', 14, 10);
+    doc.text(`Saldo Recibido: ${formatCLP(asignacion.saldo_recibido)}`, 14, 20);
+    doc.text(`Saldo Actual: ${formatCLP(asignacion.saldo_actual)}`, 14, 30);
+    
+    // Mano de Obra
+    doc.addPage();
+    doc.text('Mano de Obra:', 14, 10);
+    doc.text(`Total Mano de Obra: ${formatCLP(manoObraData.total_mano_obra)}`, 14, 20);
+    doc.text(`Total Recibido: ${formatCLP(manoObraData.total_recibido)}`, 14, 30);
+    
+    // Guardar el PDF
+    doc.save('rendicion.pdf');
+    };
   if (error || !client || !job) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -255,28 +307,43 @@ const Rendicion = () => {
               className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
             >
               Guardar
-            </button>
+            </button>    <button 
+      onClick={generarPDF} 
+      className="bg-green-600 text-white p-2 rounded hover:bg-green-500"
+    >
+      Descargar PDF
+    </button>
           </div>
         </div>
 
-        <div className="flex gap-4 mt-4">
-          <div className="w-1/2 bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <Asignacion
-              job={job}
-              updateAsignacion={setAsignacion}
-              asignaciones={asignacionesData}
-              setAsignaciones={setAsignacionesData}
-            />
-          </div>
-          
-          <div className="w-1/2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <ManoObra 
-              job={job}
-              setManoObra={setManoObraData}
-              subtotal={job?.subtotal || 0}
-            />
-          </div>
-        </div>
+        <div className="flex flex-col lg:flex-row gap-4 mt-4">
+<div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-5 shadow-sm border border-gray-100">
+  <Asignacion
+    job={job}
+    updateAsignacion={setAsignacion}
+    asignaciones={asignacionesData}
+    setAsignaciones={setAsignacionesData}
+  />
+</div>
+
+<div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
+  <ManoObra 
+    job={job}
+    setManoObra={setManoObraData}
+    subtotal={job?.subtotal || 0}
+  />
+</div>
+</div>
+<PDFDownloadButton
+  job={job}
+  items={items}
+  proveedores={proveedores}
+  asignacionesData={asignacionesData}
+  manoObraData={manoObraData} // Aquí debe estar bien estructurado
+  formatCLP={formatCLP}
+  logo={damLogo}
+/>
+
       </div>
     </div>
   );

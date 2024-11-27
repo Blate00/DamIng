@@ -208,59 +208,107 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
 
       {/* Resumen de totales */}
       {Array.isArray(asignaciones) && asignaciones.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-4 mt-2">
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-600">Total Asignaciones</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {formatCurrency(asignaciones[0]?.total_asignaciones)}
-            </p>
-          </div>
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-600">Total Rendiciones</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {formatCurrency(asignaciones[0]?.total_rendiciones)}
-            </p>
-          </div>
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-600">Saldo Final</p>
-            <p className={`text-lg font-semibold ${calcularSaldoFinal(asignaciones[0]) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatCurrency(calcularSaldoFinal(asignaciones[0]))}
-            </p>
-          </div>
-        </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-4 mt-2">
+       {/* Total Asignaciones */}
+       <div className="bg-gray-50 p-3 md:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+         <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-start">
+           <p className="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2">
+             Total Asignaciones
+           </p>
+           <p className="text-base sm:text-lg font-semibold text-gray-800">
+             {formatCurrency(asignaciones[0]?.total_asignaciones)}
+           </p>
+         </div>
+       </div>
+       
+       {/* Total Rendiciones */}
+       <div className="bg-gray-50 p-3 md:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+         <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-start">
+           <p className="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2">
+             Total Rendiciones
+           </p>
+           <p className="text-base sm:text-lg font-semibold text-gray-800">
+             {formatCurrency(asignaciones[0]?.total_rendiciones)}
+           </p>
+         </div>
+       </div>
+       
+       {/* Saldo Final */}
+       <div className="bg-gray-50 p-3 md:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+         <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-start">
+           <p className="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2">
+             Saldo Final
+           </p>
+           <p className={`text-base sm:text-lg font-semibold ${
+             calcularSaldoFinal(asignaciones[0]) >= 0 ? 'text-green-600' : 'text-red-600'
+           }`}>
+             {formatCurrency(calcularSaldoFinal(asignaciones[0]))}
+           </p>
+         </div>
+       </div>
+       </div>
       )}
 
       {/* Tabla de asignaciones */}
-      <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden mb-4">
-        <thead className="bg-red-800 border-b border-gray-300">
-          <tr>
-            <th className="py-3 px-6 text-left text-gray-100">Monto Recibido</th>
-            <th className="py-3 px-6 text-left text-gray-100">Medio</th>
-            <th className="py-3 px-6 text-left text-gray-100 text-center">Fecha</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-700">
-          {Array.isArray(asignaciones) && asignaciones.map((asignacion, index) => (
-            <tr key={index} className="border-b bg-white hover:bg-gray-100">
-              <td className="py-3 px-6">{formatCurrency(asignacion?.saldo_recibido)}</td>
-              <td className="py-3 px-6">{asignacion?.medio_pago || 'No especificado'}</td>
-              <td className="py-3 px-6 text-center">
-                {asignacion?.fecha_actualizacion ? 
-                  new Date(asignacion.fecha_actualizacion).toLocaleString() : 
-                  'Fecha no disponible'
-                }
-              </td>
-            </tr>
-          ))}
-          {(!Array.isArray(asignaciones) || asignaciones.length === 0) && (
-            <tr>
-              <td colSpan="6" className="py-3 px-6 text-center text-gray-500">
-                No hay asignaciones disponibles
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto w-full">
+<table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden mb-4">
+  <thead className="bg-red-800 border-b border-gray-300">
+    <tr>
+      <th className="py-2 md:py-3 px-3 md:px-6 text-left text-xs md:text-sm text-gray-100 font-medium">
+        Monto Recibido
+      </th>
+      <th className="py-2 md:py-3 px-3 md:px-6 text-left text-xs md:text-sm text-gray-100 font-medium hidden sm:table-cell">
+        Medio
+      </th>
+      <th className="py-2 md:py-3 px-3 md:px-6 text-left text-xs md:text-sm text-gray-100 font-medium">
+        Fecha
+      </th>
+    </tr>
+  </thead>
+  <tbody className="text-gray-700 text-sm md:text-base">
+    {Array.isArray(asignaciones) && asignaciones.map((asignacion, index) => (
+      <tr key={index} className="border-b bg-white hover:bg-gray-100 transition-colors duration-200">
+        <td className="py-2 md:py-3 px-3 md:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center">
+            <span className="font-medium">
+              {formatCurrency(asignacion?.saldo_recibido)}
+            </span>
+            {/* Mostrar medio de pago en móviles */}
+            <span className="text-xs text-gray-500 mt-1 sm:hidden">
+              {asignacion?.medio_pago || 'No especificado'}
+            </span>
+          </div>
+        </td>
+
+        {/* Celda de Medio oculta en móviles */}
+        <td className="py-2 md:py-3 px-3 md:px-6 hidden sm:table-cell">
+          {asignacion?.medio_pago || 'No especificado'}
+        </td>
+
+        <td className="py-2 md:py-3 px-3 md:px-6 text-center">
+          <span className="whitespace-nowrap text-sm">
+            {asignacion?.fecha_actualizacion ? 
+              new Date(asignacion.fecha_actualizacion).toLocaleString() : 
+              'Fecha no disponible'
+            }
+          </span>
+        </td>
+      </tr>
+    ))}
+
+    {(!Array.isArray(asignaciones) || asignaciones.length === 0) && (
+      <tr>
+        <td 
+          colSpan="3" 
+          className="py-4 px-3 md:px-6 text-center text-gray-500 text-sm"
+        >
+          No hay asignaciones disponibles
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+</div>
     </div>
   );
 };
