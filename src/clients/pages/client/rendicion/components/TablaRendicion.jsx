@@ -72,7 +72,7 @@ const TablaRendicion = ({
     );
   };
   return (
-    <div className="overflow-x-auto rounded-t-xl border border-r-l bg-white">
+    <div className="overflow-x-auto rounded-t-xl border border-r-l bg-white ">
       <table className="min-w-full">
         <thead className="bg-red-800">
           <tr>

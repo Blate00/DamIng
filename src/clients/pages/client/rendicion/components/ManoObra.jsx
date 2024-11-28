@@ -15,24 +15,30 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
 
   const fetchManoObraData = useCallback(async () => {
     if (!job?.quote_number) return;
-
+  
     try {
       const response = await axios.get(`http://localhost:5000/api/mano-obra/${job.quote_number}`);
       const data = response.data;
-      
+  
       if (data.length > 0) {
         const totalManoObra = data[0].total_mano_obra || 0;
         const totalRecibido = data[0].total_recibido || 0;
         const saldoActual = data[0].saldo_actual || 0;
-
+  
         setAbonosManoObra(data);
         setValorManoObraModificado(totalManoObra);
-        
+  
+        // Modificar la estructura de datos que se pasa al componente PDF
         if (setManoObra) {
           setManoObra({
             total_mano_obra: totalManoObra,
             total_recibido: totalRecibido,
-            saldo_actual: saldoActual
+            saldo_actual: saldoActual,
+            abonos: data.map(abono => ({
+              saldo_recibido: abono.saldo_recibido,
+              medio_pago: abono.medio_pago,
+              fecha_actualizacion: abono.fecha_actualizacion
+            }))
           });
         }
       }
@@ -41,7 +47,6 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
       setError('Error al cargar los datos de mano de obra');
     }
   }, [job?.quote_number, setManoObra]);
-
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -83,37 +88,43 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
     }
     return errors;
   };
-
   const handleGuardarAbono = async (e) => {
     e.preventDefault();
     if (!job?.quote_number) {
       alert('No hay un proyecto seleccionado');
       return;
     }
-
+  
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       alert(Object.values(errors).join('\n'));
       return;
     }
-
+  
     try {
       setLoading(true);
       setError(null);
-      
-      await axios.post('http://localhost:5000/api/mano-obra', {
+  
+      // Obtener el tipo de pago seleccionado
+      const tipoPago = tiposPago.find(t => t.tipo_pago_id === formData.tipo_pago_id);
+  
+      const nuevoAbono = {
         quote_number: job.quote_number,
         saldo_recibido: parseFloat(formData.monto),
-        tipo_pago_id: formData.tipo_pago_id
-      });
-
-      await fetchManoObraData();
-      
+        tipo_pago_id: formData.tipo_pago_id,
+        medio_pago: tipoPago?.nombre_pago || 'No especificado'
+      };
+  
+      await axios.post('http://localhost:5000/api/mano-obra', nuevoAbono);
+  
+      // Actualizar los datos localmente
+      const updatedData = await fetchManoObraData();
+  
       setFormData({
         monto: '',
         tipo_pago_id: tiposPago[0]?.tipo_pago_id || ''
       });
-      
+  
       setIsModalOpen(false);
       alert('Abono guardado con éxito');
     } catch (error) {

@@ -7,10 +7,10 @@ import Summary from './components/Summary';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import { Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
 import damLogo from '../../../../assets/damLogo.png'; // Asegúrate de que la extensión sea correcta (.png, .jpg, etc.)
-import Dpdf from './components/Dpdf'; 
+import Dpdf from './components/Dpdf';
 import { FaSave, FaPlus } from 'react-icons/fa';
 const Presupuesto = () => {
-    const { client_id } = useParams(); // Obtener client_id de la URL
+  const { client_id } = useParams(); // Obtener client_id de la URL
   const { projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
@@ -26,7 +26,7 @@ const Presupuesto = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Obtener datos del proyecto
         const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
         const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
@@ -34,21 +34,21 @@ const Presupuesto = () => {
           throw new Error('No se encontró el proyecto');
         }
         setJob(projectData);
-  
+
         // Obtener datos del cliente
         const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
         const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
         setClient(clientData);
-  
+
         // Obtener presupuestos
         const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
         setItems(budgetResponse.data);
-        
+
         if (budgetResponse.data.length > 0) {
           setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
           setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
         }
-  
+
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err.message);
@@ -56,7 +56,7 @@ const Presupuesto = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [projectId]);
 
@@ -122,11 +122,11 @@ const Presupuesto = () => {
   };
 
   // Modificar también el useEffect para asegurar que obtenemos el quote_number
-  
+
   const formatCLP = (value) => {
     if (value == null || isNaN(value)) return '$0';
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-  };  
+  };
 
   const total = items.reduce((total, item) => total + parseFloat(item.total || 0), 0);
   const ggValue = (total * ggPercentage) / 100;
@@ -168,7 +168,7 @@ const Presupuesto = () => {
     try {
       // Crear el PDF
       const pdf = new jsPDF('p', 'mm', 'a4');
-    
+
       // Configuración de estilos y colores
       const styles = {
         colors: {
@@ -182,7 +182,7 @@ const Presupuesto = () => {
           top: 10
         }
       };
-    
+
       // Cargar logo
       const loadImage = () => {
         return new Promise((resolve, reject) => {
@@ -200,38 +200,38 @@ const Presupuesto = () => {
           img.src = damLogo;
         });
       };
-    
+
       const logoDataUrl = await loadImage();
-    
+
       // Header con logo
       pdf.addImage(logoDataUrl, 'PNG', styles.margins.left, styles.margins.top, 40, 30);
-    
+
       // Información del proyecto
       pdf.setFontSize(16);
       pdf.setTextColor(...styles.colors.text);
       const projectTitle = job?.project_name || 'Proyecto sin nombre';
       pdf.text(projectTitle, 55, 25);
-    
+
       // Información adicional
       pdf.setFontSize(11);
       const quoteNumber = `Nº CTZ: ${job?.quote_number || 'Sin número'}`;
       const currentDate = new Date().toLocaleDateString('es-CL');
       const clientName = client?.name || 'Cliente sin nombre';
-    
+
       pdf.text(quoteNumber, 160, 20);
       pdf.text(currentDate, 160, 25);
       pdf.text(clientName, 55, 35);
-    
+
       // Línea separadora
       pdf.setDrawColor(...styles.colors.primary);
       pdf.setLineWidth(0.5);
       pdf.line(10, 40, 200, 40);
-    
+
       // Título "Servicios Eléctricos"
-      pdf.setFontSize(20  );
+      pdf.setFontSize(20);
       pdf.setTextColor(...styles.colors.text);
       pdf.text('Presupuesto', 10, 45);
-    
+
       // Configuración de la tabla
       const startY = 50;
       const tableHeaders = [
@@ -242,35 +242,35 @@ const Presupuesto = () => {
         { text: 'VALOR UNIT', width: 25 },
         { text: 'TOTAL', width: 25 }
       ];
-    
+
       // Encabezado de la tabla
       pdf.setFillColor(...styles.colors.primary);
       pdf.rect(10, startY, 190, 10, 'F');
       pdf.setTextColor(...styles.colors.white);
       pdf.setFontSize(10);
-    
+
       let currentX = 10;
       tableHeaders.forEach(header => {
         pdf.text(header.text, currentX + 2, startY + 7);
         currentX += header.width;
       });
-    
+
       // Contenido de la tabla
       let currentY = startY + 10;
       items.forEach((item, index) => {
         pdf.setTextColor(...styles.colors.text);
-    
+
         // Fondo alternado
         if (index % 2 === 0) {
           pdf.setFillColor(...styles.colors.gray);
           pdf.rect(10, currentY, 190, 8, 'F');
         }
-    
+
         currentX = 10;
         // Item número
         pdf.text(String(index + 1), currentX + 2, currentY + 6);
         currentX += tableHeaders[0].width;
-    
+
         // Descripción
         const description = item.description || '';
         if (description.length > 40) {
@@ -279,30 +279,30 @@ const Presupuesto = () => {
         pdf.text(description, currentX + 2, currentY + 6);
         pdf.setFontSize(10);
         currentX += tableHeaders[1].width;
-    
+
         // Unidad
         pdf.text(item.und || '', currentX + 2, currentY + 6);
         currentX += tableHeaders[2].width;
-    
+
         // Cantidad
         pdf.text(String(item.quantity || ''), currentX + 2, currentY + 6);
         currentX += tableHeaders[3].width;
-    
+
         // Valor unitario
         pdf.text(formatCLP(item.unit_price), currentX + 2, currentY + 6);
         currentX += tableHeaders[4].width;
-    
+
         // Total
         pdf.text(formatCLP(item.total), currentX + 2, currentY + 6);
-    
+
         currentY += 8;
       });
-    
+
       // Resumen y totales
       currentY += 10;
       const summaryX = 130;
       const summaryWidth = 70;
-    
+
       const renderSummaryRow = (label, value, isHighlighted = false) => {
         if (isHighlighted) {
           pdf.setFillColor(...styles.colors.primary);
@@ -311,24 +311,24 @@ const Presupuesto = () => {
         } else {
           pdf.setTextColor(...styles.colors.text);
         }
-    
+
         pdf.text(label, summaryX, currentY + 2);
         pdf.text(value, summaryX + summaryWidth - 2, currentY + 2, { align: 'right' });
         currentY += 12;
       };
-    
+
       // Calcular totales
       const totalNeto = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
       const ggAmount = (totalNeto * ggPercentage) / 100;
       const gestionAmount = (totalNeto * gestionPercentage) / 100;
       const subtotal = totalNeto + ggAmount + gestionAmount;
-    
+
       // Renderizar resumen
       renderSummaryRow('Total Neto:', formatCLP(totalNeto));
       renderSummaryRow('GG (%):', `${ggPercentage}% ${formatCLP(ggAmount)}`);
       renderSummaryRow('Gestión (%):', `${gestionPercentage}% ${formatCLP(gestionAmount)}`);
       renderSummaryRow('Subtotal:', formatCLP(subtotal), true);
-    
+
       // Pie de página
       pdf.setTextColor(128, 128, 128);
       pdf.setFontSize(8);
@@ -339,16 +339,16 @@ const Presupuesto = () => {
         pdf.internal.pageSize.height - 10,
         { align: 'center' }
       );
-    
+
       // Guardar PDF
       const fileName = `presupuesto_${job?.quote_number || 'sin_numero'}_${currentDate.replace(/\//g, '-')}.pdf`;
       pdf.save(fileName);
-    
+
     } catch (error) {
       console.error('Error al generar PDF:', error);
       alert('Error al generar el PDF. Por favor, intente nuevamente.');
     }
-    };
+  };
 
 
   if (loading) {
@@ -392,69 +392,69 @@ const Presupuesto = () => {
 
   return (
 
-      <div className="flex flex-col p-5 h-full">
-        <div className="h-full rounded-xl">
-          <Breadcrumb />
-          <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
-  <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
-  <p className="text-gray-800 text-base">{client?.name}</p>
-  
-  <div className="mt-4">
-    <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
-    <p className="text-gray-800 text-base">{job?.project_name}</p>
-  </div>
-</div>
+    <div className="flex flex-col p-5 h-full">
+      <div className="h-full rounded-xl">
+        <Breadcrumb />
+        <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
+          <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
+          <p className="text-gray-800 text-base">{client?.name}</p>
 
-          <div className="p-4 bg-white rounded-b-lg border-l-4 border-red-800">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Servicios Eléctricos</h2>
-              <div className="mt- text-end flex space-x-4">
-  <button
-    className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
-    onClick={updateDatabase}
-  >
-    <FaSave className="text-lg" />
-  </button>
-
-  <button
-    className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
-    onClick={addNewItem}
-  >
-    <FaPlus className="text-lg" />
-  </button>
-
-  {/* Dpdf como botón */}
-<Dpdf job={job} client={client} items={items} formatCLP={formatCLP} ggPercentage={ggPercentage} gestionPercentage={gestionPercentage} />
-</div>
-
-
-
-            </div>
-      
-            <div id="pdf-content">
-              <ItemsTable
-                items={items}
-                handleChange={handleChange}
-                formatCLP={formatCLP}
-                deleteItem={deleteItem}
-              />
-      
-              <Summary 
-                total={total} 
-                formatCLP={formatCLP} 
-                budgetId={items.length > 0 ? items[0].budget_id : null} 
-                ggPercentage={ggPercentage} 
-                setGgPercentage={setGgPercentage} 
-                gestionPercentage={gestionPercentage} 
-                setGestionPercentage={setGestionPercentage} 
-              />
-            </div>
-      
-           
+          <div className="mt-4">
+            <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
+            <p className="text-gray-800 text-base">{job?.project_name}</p>
           </div>
         </div>
+
+        <div className="p-4 bg-white rounded-b-lg border-l-4 border-red-800">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Servicios Eléctricos</h2>
+            <div className="mt- text-end flex space-x-4">
+              <button
+                className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+                onClick={updateDatabase}
+              >
+                <FaSave className="text-lg" />
+              </button>
+
+              <button
+                className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+                onClick={addNewItem}
+              >
+                <FaPlus className="text-lg" />
+              </button>
+
+              {/* Dpdf como botón */}
+              <Dpdf job={job} client={client} items={items} formatCLP={formatCLP} ggPercentage={ggPercentage} gestionPercentage={gestionPercentage} />
+            </div>
+
+
+
+          </div>
+
+          <div id="pdf-content">
+            <ItemsTable
+              items={items}
+              handleChange={handleChange}
+              formatCLP={formatCLP}
+              deleteItem={deleteItem}
+            />
+
+            <Summary
+              total={total}
+              formatCLP={formatCLP}
+              budgetId={items.length > 0 ? items[0].budget_id : null}
+              ggPercentage={ggPercentage}
+              setGgPercentage={setGgPercentage}
+              gestionPercentage={gestionPercentage}
+              setGestionPercentage={setGestionPercentage}
+            />
+          </div>
+
+
+        </div>
       </div>
-      
+    </div>
+
   );
 };
 

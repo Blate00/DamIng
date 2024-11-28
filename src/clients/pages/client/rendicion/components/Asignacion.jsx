@@ -124,7 +124,7 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 ">
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-xl font-bold text-gray-800">Asignación</h4>
         <button 

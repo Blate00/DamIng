@@ -7,9 +7,11 @@ import Breadcrumb from '../../../../general/Breadcrumb';
 import TablaRendicion from './components/TablaRendicion';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import PDFDownloadButton from './PDFDownloadButton';
 import html2canvas from 'html2canvas';
 import damLogo from '../../../../assets/damLogo.png';
+import { FaSave, FaPlus } from 'react-icons/fa';
+import Dpdf from './Dpdf';
+
 const Rendicion = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
@@ -24,20 +26,11 @@ const Rendicion = () => {
     total_mano_obra: 0,
     total_recibido: 0
   });
-  const generarPDFConHtml2Canvas = async () => {
-    const input = document.getElementById('pdf-content'); // El ID del div que quieres capturar
-    const canvas = await html2canvas(input);
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF();
-    
-    // Agregar la imagen al PDF
-    pdf.addImage(imgData, 'PNG', 0, 0);
-    pdf.save('rendicion.pdf');
-    };
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       const [jobResponse, rendicionesResponse, proveedoresResponse, clientResponse] = await Promise.all([
         axios.get(`http://localhost:5000/api/projects`),
         axios.get(`http://localhost:5000/api/rendiciones/project/${projectId}`),
@@ -47,7 +40,7 @@ const Rendicion = () => {
 
       const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
       if (!projectData) throw new Error('No se encontró el proyecto');
-      
+
       const clientData = clientResponse.data.find(client => client.client_id === parseInt(id));
       if (!clientData) throw new Error('No se encontró el cliente');
 
@@ -63,11 +56,19 @@ const Rendicion = () => {
         ]);
 
         setAsignacionesData(asignacionesResponse.data || []);
-        
+
+        // En el fetchData del componente Rendicion
         if (manoObraResponse.data.length > 0) {
+          const manoObraInfo = manoObraResponse.data[0];
           setManoObraData({
-            total_mano_obra: manoObraResponse.data[0].total_mano_obra || 0,
-            total_recibido: manoObraResponse.data[0].total_recibido || 0
+            total_mano_obra: manoObraInfo.total_mano_obra || 0,
+            total_recibido: manoObraInfo.total_recibido || 0,
+            saldo_actual: manoObraInfo.saldo_actual || 0,
+            abonos: manoObraResponse.data.map(item => ({
+              saldo_recibido: item.saldo_recibido,
+              medio_pago: item.medio_pago,
+              fecha_actualizacion: item.fecha_actualizacion
+            }))
           });
         }
       }
@@ -98,7 +99,7 @@ const Rendicion = () => {
 
   const agregarFila = useCallback(() => {
     if (!job) return;
-  
+
     const newItem = {
       project_id: projectId,
       quote_number: job.quote_number || '',
@@ -109,10 +110,10 @@ const Rendicion = () => {
       documento: '',
       total: 0
     };
-  
+
     setItems(prevItems => [...prevItems, newItem]);
   }, [projectId, job]);
-  
+
   const handleChange = async (index, field, value) => {
     try {
       const updatedItems = [...items];
@@ -125,9 +126,9 @@ const Rendicion = () => {
       } else {
         item[field] = value;
       }
-  
+
       setItems(updatedItems);
-  
+
       if (item.rendicion_id) {
         await axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
       }
@@ -142,7 +143,7 @@ const Rendicion = () => {
       const updatedItems = [...items];
       updatedItems[index].proveedor_id = proveedorId;
       setItems(updatedItems);
-  
+
       if (updatedItems[index].rendicion_id) {
         await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
           ...updatedItems[index],
@@ -167,10 +168,10 @@ const Rendicion = () => {
 
   const guardarRendiciones = async () => {
     try {
-      const itemsToSave = items.filter(item => 
-        item.project_id && 
-        item.quote_number && 
-        item.total && 
+      const itemsToSave = items.filter(item =>
+        item.project_id &&
+        item.quote_number &&
+        item.total &&
         item.proveedor_id
       );
 
@@ -179,13 +180,14 @@ const Rendicion = () => {
         return;
       }
 
-      await Promise.all(items.map(item => {
+      // Procesar secuencialmente en lugar de usar Promise.all
+      for (const item of items) {
         if (item.rendicion_id) {
-          return axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
+          await axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
         } else {
-          return axios.post(`http://localhost:5000/api/rendiciones`, item);
+          await axios.post(`http://localhost:5000/api/rendiciones`, item);
         }
-      }));
+      }
 
       alert('Rendiciones guardadas exitosamente');
       await fetchData();
@@ -202,46 +204,7 @@ const Rendicion = () => {
       </div>
     );
   }
-  const generarPDF = () => {
-    const doc = new jsPDF();
-    
-    // Agregar logo
-    doc.addImage(damLogo, 'PNG', 10, 10, 50, 20); // Ajusta la posición y tamaño según sea necesario
-    
-    // Título
-    doc.setFontSize(20);
-    doc.text('Rendición de Cuentas', 14, 30);
-    
-    // Tabla de Items
-    doc.setFontSize(12);
-    doc.text('Items:', 14, 40);
-    doc.autoTable({
-      head: [['Fecha', 'Detalle', 'Folio', 'Proveedor', 'Total']],
-      body: items.map(item => [
-        item.fecha,
-        item.detalle,
-        item.folio,
-        proveedores.find(p => p.id === item.proveedor_id)?.nombre || 'N/A',
-        formatCLP(item.total)
-      ]),
-      startY: 45,
-    });
-    
-    // Asignación
-    doc.addPage();
-    doc.text('Asignación:', 14, 10);
-    doc.text(`Saldo Recibido: ${formatCLP(asignacion.saldo_recibido)}`, 14, 20);
-    doc.text(`Saldo Actual: ${formatCLP(asignacion.saldo_actual)}`, 14, 30);
-    
-    // Mano de Obra
-    doc.addPage();
-    doc.text('Mano de Obra:', 14, 10);
-    doc.text(`Total Mano de Obra: ${formatCLP(manoObraData.total_mano_obra)}`, 14, 20);
-    doc.text(`Total Recibido: ${formatCLP(manoObraData.total_recibido)}`, 14, 30);
-    
-    // Guardar el PDF
-    doc.save('rendicion.pdf');
-    };
+
   if (error || !client || !job) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -252,14 +215,65 @@ const Rendicion = () => {
         </div>
       </div>
     );
-  }
+  } const getProveedoresUsados = () => {
+    // Obtener los IDs únicos de proveedores usados en los items
+    const proveedoresIds = [...new Set(items.map(item => item.proveedor_id).filter(Boolean))];
+
+    // Filtrar la lista de proveedores para obtener solo los usados
+    return proveedores.filter(proveedor =>
+      proveedoresIds.includes(proveedor.proveedor_id)
+    );
+  };
 
   return (
     <div className="flex flex-col p-5 h-full">
-      <div className="h-full rounded-lg">
-        <Breadcrumb />   
-        <div className="p-3 bg-white rounded-xl">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Rendición</h2>
+      <div className="h-full rounded-lg ">
+        <Breadcrumb />
+        <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
+          <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
+          <p className="text-gray-800 text-base">{client?.name}</p>
+
+          <div className="mt-4">
+            <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
+            <p className="text-gray-800 text-base">{job?.project_name}</p>
+          </div>
+        </div>
+        <div className="p-5  bg-white rounded-b-xl border-l-4  border-red-800  ">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+
+              <h2 className="text-xl font-semibold text-gray-800">Rendición</h2>
+              <div className="text-end flex space-x-4">
+                <button
+                  onClick={agregarFila}
+                  className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+                >
+                  <FaPlus className="text-lg" />
+                                 </button>
+
+                <button
+                  onClick={guardarRendiciones}
+                  className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-7 00 transition duration-300"
+                >
+                  <FaSave className="text-lg" />
+             
+                </button>
+
+                <Dpdf
+                  job={job}
+                  client={client}
+                  items={items.map(item => ({
+                    ...item,
+                    proveedor_nombre: proveedores.find(p => p.proveedor_id === item.proveedor_id)?.nombre || 'N/A'
+                  }))}
+                  asignacionesData={asignacionesData}
+                  manoObraData={manoObraData}
+                  proveedores={getProveedoresUsados()}
+                  formatCLP={formatCLP}
+                />
+              </div>
+            </div>
+          </div>
 
           <TablaRendicion
             items={items}
@@ -270,8 +284,8 @@ const Rendicion = () => {
             formatCLP={formatCLP}
             agregarFila={agregarFila}
           />
-       
-          <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300 rounded-b-xl space-y-4">
+
+          <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300 rounded-b-xl space-y-4 ">
             <div className="flex flex-col space-y-3">
               <div className="flex justify-between items-center border-gray-200">
                 <span className="text-md font-medium text-black">Total:</span>
@@ -294,57 +308,30 @@ const Rendicion = () => {
             </div>
           </div>
 
-          <div className="mt-4 space-x-2">
-            <button 
-              onClick={agregarFila} 
-              className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
-            >
-              Añadir Fila
-            </button>
 
-            <button 
-              onClick={guardarRendiciones} 
-              className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
-            >
-              Guardar
-            </button>    <button 
-      onClick={generarPDF} 
-      className="bg-green-600 text-white p-2 rounded hover:bg-green-500"
-    >
-      Descargar PDF
-    </button>
-          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4 mt-4">
-<div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-5 shadow-sm border border-gray-100">
-  <Asignacion
-    job={job}
-    updateAsignacion={setAsignacion}
-    asignaciones={asignacionesData}
-    setAsignaciones={setAsignacionesData}
-  />
-</div>
+          <div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-5 shadow-sm  border-l-4  border-red-800 ">
+            <Asignacion
+              job={job}
+              updateAsignacion={setAsignacion}
+              asignaciones={asignacionesData}
+              setAsignaciones={setAsignacionesData}
+            />
+          </div>
 
-<div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
-  <ManoObra 
-    job={job}
-    setManoObra={setManoObraData}
-    subtotal={job?.subtotal || 0}
-  />
-</div>
-</div>
-<PDFDownloadButton
-  job={job}
-  items={items}
-  proveedores={proveedores}
-  asignacionesData={asignacionesData}
-  manoObraData={manoObraData} // Aquí debe estar bien estructurado
-  formatCLP={formatCLP}
-  logo={damLogo}
-/>
+          <div className="w-full lg:w-1/2 bg-white rounded-xl p-4 md:p-6 shadow-sm border-l-4  border-red-800 ">
+            <ManoObra
+              job={job}
+              setManoObra={setManoObraData}
+              subtotal={job?.subtotal || 0}
+            />
+          </div>
+        </div>
 
       </div>
+
     </div>
   );
 };
