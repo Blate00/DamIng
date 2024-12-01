@@ -43,7 +43,7 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
           <p className="text-base text-red-700 font-semibold">{formatCLP(total)}</p>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600">GG (%):</span>
+          <span className="text-sm font-medium text-gray-600">Gastos Generales:</span>
           <div className="flex items-center space-x-3">
             <div className="relative">
               <input
@@ -63,7 +63,7 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-600">Gestión (%):</span>
+          <span className="text-sm font-medium text-gray-600">Gestión:</span>
           <div className="flex items-center space-x-3">
             <div className="relative">
               <input

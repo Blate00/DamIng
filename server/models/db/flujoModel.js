@@ -119,7 +119,28 @@ const flujoModel = {
       console.error('Error en getPaymentsByProject:', error);
       throw error;
     }
+  },
+  // En flujoModel.js
+getPaymentsByQuoteNumber: async (quoteNumber) => {
+  const query = `
+    SELECT 
+      ep.*,
+      e.name as employee_name,
+      p.project_name
+    FROM employee_payments ep
+    JOIN employees e ON e.employee_id = ep.employee_id
+    JOIN projects p ON p.project_id = ep.project_id
+    WHERE ep.quote_number = \$1
+    ORDER BY ep.trabajo_fecha DESC
+  `;
+  try {
+    const result = await pool.query(query, [quoteNumber]);
+    return result.rows;
+  } catch (error) {
+    console.error('Error en getPaymentsByQuoteNumber:', error);
+    throw error;
   }
+}
 };
 
 

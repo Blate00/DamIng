@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 50,
-        height: 40,
+        height: 50,
     },
     headerInfo: {
         marginLeft: 15,
@@ -123,7 +123,7 @@ const MyDocument = ({ job, client, items, formatCLP, ggPercentage, gestionPercen
                             {job?.project_name || 'Sin proyecto'} - {client?.name || 'Sin cliente'}
                         </Text>
                         <Text style={styles.subtitle}>
-                            CTZ: {job?.quote_number || 'Sin número'} | Fecha: {currentDate}
+                            {job?.quote_number || 'Sin número'} | Fecha: {currentDate}
                         </Text>
                     </View>
                 </View>
@@ -157,13 +157,13 @@ const MyDocument = ({ job, client, items, formatCLP, ggPercentage, gestionPercen
                             </Text>
                         </View>
                         <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>GG ({ggPercentage}%):</Text>
+                            <Text style={styles.summaryLabel}>GG:</Text>
                             <Text style={[styles.summaryValue, { color: '#B91C1C' }]}>
                                 {formatCLP(ggAmount)}
                             </Text>
                         </View>
                         <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Gestión ({gestionPercentage}%):</Text>
+                            <Text style={styles.summaryLabel}>Gestión:</Text>
                             <Text style={[styles.summaryValue, { color: '#B91C1C' }]}>
                                 {formatCLP(gestionAmount)}
                             </Text>

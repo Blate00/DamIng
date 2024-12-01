@@ -58,6 +58,24 @@ const flujoController = {
       });
     }
   },
+  // En flujoController.js
+getQuotePayments: async (req, res) => {
+  try {
+    const { quoteNumber } = req.params;
+    const payments = await flujoModel.getPaymentsByQuoteNumber(quoteNumber);
+
+    res.json({
+      success: true,
+      data: payments
+    });
+  } catch (error) {
+    console.error('Error al obtener pagos:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener los pagos de la cotización'
+    });
+  }
+},
 getEmployeePayments: async (req, res) => {
     try {
       const { employeeId } = req.params;

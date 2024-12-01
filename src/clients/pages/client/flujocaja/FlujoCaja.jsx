@@ -11,9 +11,12 @@ const FlujoCaja = () => {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [total, setTotal] = useState(0);
   const listaTrabajadorRef = useRef();
+  const [total, setTotal] = useState(0);
+  const [totalRegistered, setTotalRegistered] = useState(0);
 
+ const [newTotal, setNewTotal] = useState(0);
+  const [registeredTotal, setRegisteredTotal] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,11 +43,12 @@ const FlujoCaja = () => {
 
     fetchData();
   }, [projectId]);
-
-  const handleUpdateTotal = (newTotal) => {
-    setTotal(newTotal);
-  };
-
+   const handleUpdateTotal = (newPaymentsTotal, registeredPaymentsTotal) => {
+        console.log('Nuevos pagos:', newPaymentsTotal);
+        console.log('Pagos registrados:', registeredPaymentsTotal);
+        setNewTotal(newPaymentsTotal);
+        setRegisteredTotal(registeredPaymentsTotal);
+      };
   const handleAddRow = () => {
     if (listaTrabajadorRef.current) {
       listaTrabajadorRef.current.handleAddRow();
@@ -85,26 +89,31 @@ const FlujoCaja = () => {
     <div className="flex flex-col p-5 h-full">
       <div className="h-full rounded-xl">
         <Breadcrumb />
-        <div className="p-4 bg-white rounded-lg">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Flujo de Caja</h2>
-          
-          <div className="mb-4">
-            <p className="text-gray-700">Cliente: {client?.name}</p>
-            <p className="text-gray-700">Proyecto: {job?.project_name}</p>
+         <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
+          <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
+          <p className="text-gray-800 text-base">{client?.name}</p>
+
+          <div className="mt-4">
+            <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
+            <p className="text-gray-800 text-base">{job?.project_name}</p>
           </div>
+        </div>
+        <div className="p-4 bg-white rounded-b-lg border-l-4 border-red-800">
+          <h2 className="text-xl font-semibold text-gray-800">Flujo de Caja</h2>
+       
 
-          <AccesoPago
-            ref={listaTrabajadorRef}
-            projectId={projectId}
-            quoteNumber={job?.quote_number}
-            onUpdateTotal={handleUpdateTotal}
-          />
+           <AccesoPago
+        ref={listaTrabajadorRef}
+        projectId={projectId}
+        quoteNumber={job?.quote_number}
+        onUpdateTotal={handleUpdateTotal}
+      />
 
-
-          <SummaryFlujo 
-            total={total}
-            formatCLP={formatCLP}
-          />
+      <SummaryFlujo 
+        newTotal={newTotal}
+        registeredTotal={registeredTotal}
+        formatCLP={formatCLP}
+      />
           <div className="mt-4 space-x-2">
             <button
               onClick={handleAddRow}
