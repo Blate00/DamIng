@@ -184,7 +184,7 @@ const StandaloneMaterialList = () => {
   return (
     <div className="flex flex-col p-5 h-full">
       <div className="h-full rounded-lg">
-        <Breadcrumb /> {/* Breadcrumb agregado */}
+        <Breadcrumb />
 
         <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
           <p className="text-gray-900 font-semibold text-lg">Cliente:</p>

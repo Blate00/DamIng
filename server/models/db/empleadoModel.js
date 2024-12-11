@@ -24,8 +24,47 @@ const deleteEmpleado = async (empleadoId) => {
   await pool.query('DELETE FROM employees WHERE employee_id = \$1', [empleadoId]);
 };
 
+
+// models/db/empleadoModel.js  
+
+const getEmpleadoPayments = async (employeeId) => {  
+  const query = `  
+    SELECT   
+      ep.*,  
+      p.project_name,  
+      TO_CHAR(ep.created_at::date, 'DD-MM-YYYY') as fecha_pago,  
+      TO_CHAR(ep.trabajo_fecha, 'DD-MM-YYYY') as fecha_trabajo  
+    FROM employee_payments ep  
+    JOIN projects p ON ep.project_id = p.project_id  
+    WHERE ep.employee_id = \$1  
+    ORDER BY ep.created_at DESC  
+  `;  
+
+  const { rows } = await pool.query(query, [employeeId]);  
+  return rows;  
+};  
+
+const getEmpleadoPaymentsByPaymentDate = async (employeeId, fechaPago) => {  
+  const query = `  
+    SELECT   
+      ep.*,  
+      p.project_name,  
+      TO_CHAR(ep.created_at::date, 'DD-MM-YYYY') as fecha_pago,  
+      TO_CHAR(ep.trabajo_fecha, 'DD-MM-YYYY') as fecha_trabajo  
+    FROM employee_payments ep  
+    JOIN projects p ON ep.project_id = p.project_id  
+    WHERE ep.employee_id = \$1   
+    AND ep.created_at::date = \$2::date  
+  `;  
+
+  const { rows } = await pool.query(query, [employeeId, fechaPago]);  
+  return rows;  
+};  
+
+
 module.exports = {
   getEmpleados,
   addEmpleado,
-  deleteEmpleado,
+  deleteEmpleado,  getEmpleadoPayments,  
+  getEmpleadoPaymentsByPaymentDate  
 };

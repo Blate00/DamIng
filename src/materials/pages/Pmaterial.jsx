@@ -63,19 +63,6 @@
         <div className="rounded-lg p-5">
           <Breadcrumb />
 
-          <div className="mb-4 flex justify-between items-center">
-            <h2 className="text-lg font-semibold mb-2"></h2>
-            <select
-              value={filterGroup}
-              onChange={(e) => setFilterGroup(e.target.value)}
-              className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Mostrar Todos</option>
-              {groups.map((group, index) => (
-                <option key={index} value={group}>{group}</option>
-              ))}
-            </select>
-          </div>
   <div className='bg-white p-5 rounded-lg' >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Lista de Materiales</h2>

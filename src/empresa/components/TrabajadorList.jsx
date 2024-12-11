@@ -28,9 +28,20 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading, onOpenMod
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleTrabajadorClick = (trabajador) => {
-    navigate('/empresa/liquidaciones', { state: { nombre: trabajador.name, correo: trabajador.email, telefono: trabajador.phone_number } });
-  };
+ // TrabajadoresList.jsx  
+const handleTrabajadorClick = (trabajador) => {  
+  navigate('/empresa/liquidaciones', {   
+    state: {   
+      nombre: trabajador.name,   
+      correo: trabajador.email,   
+      telefono: trabajador.phone_number,  
+      employee_id: trabajador.employee_id,
+      banco : trabajador.banco_id,
+      account: trabajador.account_number
+        // Añadimos el employee_id  
+    }  
+  });  
+};  
 
   const getInitial = (name) => {
     return name && typeof name === 'string' ? name.charAt(0).toUpperCase() : '?';
@@ -65,7 +76,6 @@ const TrabajadoresList = ({ trabajadores, onDeleteTrabajador, loading, onOpenMod
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">{trabajador.name || 'Sin nombre'}</h3>
-                  <p className="text-sm text-gray-500">{trabajador.phone_number || 'Sin teléfono'}</p>
                 </div>
               </div>
               <button

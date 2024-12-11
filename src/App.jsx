@@ -15,7 +15,7 @@ import Ptasks from './tasks/Ptasks';
 import Phome from './home/Phome';
 import Pagos from './clients/pages/client/components/PagoTrabajador';
 import ListaPagos from './empresa/components/Liquidaciones';
-import RegistroPagos from './clients/pages/client/components/RegistroPagos';
+import RegistroPagos from './empresa/components/DetallePago';
 import { DarkModeProvider } from './general/DarkModeContext';
 import { Toaster } from 'react-hot-toast';
 import './index.css';
@@ -45,7 +45,7 @@ function App() {
            
               <Route path="/pago" element={<Pagos />} />
               <Route path="/empresa/liquidaciones" element={<ListaPagos />} />
-              <Route path="/pagos" element={<RegistroPagos />} />
+              <Route path="/empresa/liquidaciones/detalle" element={<RegistroPagos />} />
               <Route path="*" element={<div>Página no encontrada (404)</div>} />
             </Routes>
           </Layout>
