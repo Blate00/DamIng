@@ -162,7 +162,7 @@ return (
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-black mb-1">{project.project_name}</h3>
-                    <p className="text-sm text-gray-600">CTZ: {project.quote_number}</p>
+                    <p className="text-sm text-gray-600">{project.quote_number}</p>
                     {project.start_date && (
                       <p className="text-sm text-gray-600">Inicio: {new Date(project.start_date).toLocaleDateString()}</p>
                     )}

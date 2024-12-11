@@ -34,7 +34,7 @@ app.use('/api', asignacionRoutes);
 app.use('/api', manoObraRoutes);
 app.use('/api/flujo', flujoRoutes);
 app.use('/api', materialRoutes); // Nueva ruta montada
-app.use('/api/lista-materiales', listaMaterialesRoutes);
+app.use('/api', listaMaterialesRoutes);  
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

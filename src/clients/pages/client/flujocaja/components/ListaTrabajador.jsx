@@ -257,7 +257,7 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
                         value={formatCLP(row[field])}
                         onChange={(e) => handleInputChange(index, e)}
                         className="w-full bg-transparent text-gray-700 focus:outline-none border-gray-300 rounded-md"
-                        placeholder="\$0"
+                        placeholder="$0"
                         readOnly={field === 'total'}
                       />
                     )}

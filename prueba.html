@@ -1,61 +1,148 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rendición de Gastos</title>
-</head>
-<body class="bg-gray-100 p-8">
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Predicción de Transacciones Mensuales</title>  
+    <style>  
+        body {  
+            font-family: Arial, sans-serif;  
+            line-height: 1.6;  
+            margin: 0;  
+            padding: 0;  
+            background-color: #f4f4f9;  
+            color: #333;  
+        }  
+        header {  
+            background-color: #4CAF50;  
+            color: white;  
+            padding: 10px 20px;  
+            text-align: center;  
+        }  
+        .container {  
+            max-width: 800px;  
+            margin: 20px auto;  
+            padding: 20px;  
+            background: white;  
+            border-radius: 8px;  
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+        }  
+        h1, h2 {  
+            color: #4CAF50;  
+        }  
+        form {  
+            display: flex;  
+            flex-direction: column;  
+        }  
+        label {  
+            margin-top: 10px;  
+            font-weight: bold;  
+        }  
+        input, select, button {  
+            margin-top: 5px;  
+            padding: 10px;  
+            font-size: 16px;  
+            border: 1px solid #ccc;  
+            border-radius: 4px;  
+        }  
+        button {  
+            background-color: #4CAF50;  
+            color: white;  
+            border: none;  
+            cursor: pointer;  
+            margin-top: 20px;  
+        }  
+        button:hover {  
+            background-color: #45a049;  
+        }  
+        .result {  
+            margin-top: 20px;  
+            padding: 10px;  
+            background-color: #e8f5e9;  
+            border: 1px solid #4CAF50;  
+            border-radius: 4px;  
+            font-weight: bold;  
+            color: #2e7d32;  
+        }  
+    </style>  
+</head>  
+<body>  
+    <header>  
+        <h1>Predicción de Transacciones Mensuales</h1>  
+        <p>Ingrese los datos del cliente para calcular el número de transacciones mensuales (Txs_T12).</p>  
+    </header>  
+    <div class="container">  
+        <form id="predictionForm">  
+            <!-- Datos demográficos -->  
+            <h2>Datos Demográficos</h2>  
+            <label for="edad">Edad:</label>  
+            <input type="number" id="edad" name="edad" placeholder="Ingrese la edad del cliente" required>  
 
-    <h2 class="text-2xl font-bold mb-6">Tabla de Rendición de Gastos del Proyecto</h2>
+            <label for="sexo">Sexo:</label>  
+            <select id="sexo" name="sexo" required>  
+                <option value="">Seleccione</option>  
+                <option value="M">Masculino</option>  
+                <option value="F">Femenino</option>  
+                <option value="O">Otro</option>  
+            </select>  
 
-    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead>
-            <tr class="bg-gray-200 text-gray-700">
-                <th class="py-3 px-4 text-left">Fecha</th>
-                <th class="py-3 px-4 text-left">Descripción</th>
-                <th class="py-3 px-4 text-left">Monto Rendición</th>
-                <th class="py-3 px-4 text-left">Total Rendición</th>
-                <th class="py-3 px-4 text-left">Total Asignación (Abonado)</th>
-                <th class="py-3 px-4 text-left">Saldo Actual</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Fila de ejemplo para cada gasto -->
-            <tr class="border-b">
-                <td class="py-3 px-4">2024-11-07</td>
-                <td class="py-3 px-4">Compra de Materiales</td>
-                <td class="py-3 px-4">$500</td>
-                <td class="py-3 px-4">$500</td>
-                <td class="py-3 px-4">$1000</td>
-                <td class="py-3 px-4 text-green-600 font-semibold">$500</td>
-            </tr>
-            <tr class="bg-gray-50 border-b">
-                <td class="py-3 px-4">2024-11-08</td>
-                <td class="py-3 px-4">Herramientas</td>
-                <td class="py-3 px-4">$300</td>
-                <td class="py-3 px-4">$800</td>
-                <td class="py-3 px-4">$1000</td>
-                <td class="py-3 px-4 text-green-600 font-semibold">$200</td>
-            </tr>
-            <tr class="border-b">
-                <td class="py-3 px-4">2024-11-09</td>
-                <td class="py-3 px-4">Transporte</td>
-                <td class="py-3 px-4">$250</td>
-                <td class="py-3 px-4">$1050</td>
-                <td class="py-3 px-4">$1000</td>
-                <td class="py-3 px-4 text-red-600 font-semibold">-$50</td> <!-- Saldo en negativo -->
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr class="bg-gray-200 text-gray-700 font-semibold">
-                <td colspan="3" class="py-3 px-4 text-right">Totales</td>
-                <td class="py-3 px-4">$1050</td> <!-- Total de rendición acumulado -->
-                <td class="py-3 px-4">$1000</td> <!-- Total asignado -->
-                <td class="py-3 px-4 text-red-600">-$50</td> <!-- Saldo actual -->
-            </tr>
-        </tfoot>
-    </table>
+            <label for="region">Región:</label>  
+            <select id="region" name="region" required>  
+                <option value="">Seleccione la región</option>  
+                <option value="norte">Norte</option>  
+                <option value="centro">Centro</option>  
+                <option value="sur">Sur</option>  
+            </select>  
 
-</body>
-</html>
+            <label for="subsegmento">Subsegmento:</label>  
+            <input type="text" id="subsegmento" name="subsegmento" placeholder="Ingrese el subsegmento del cliente" required>  
+
+            <!-- Datos financieros -->  
+            <h2>Datos Financieros</h2>  
+            <label for="cupo_linea">Cupo de Línea Principal:</label>  
+            <input type="number" id="cupo_linea" name="cupo_linea" placeholder="Ingrese el cupo de línea principal" required>  
+
+            <label for="num_tarjetas">Número de Tarjetas:</label>  
+            <input type="number" id="num_tarjetas" name="num_tarjetas" placeholder="Ingrese el número de tarjetas" required>  
+
+            <!-- Comportamiento histórico -->  
+            <h2>Comportamiento Histórico</h2>  
+            <label for="facturacion">Facturación Mensual Promedio:</label>  
+            <input type="number" id="facturacion" name="facturacion" placeholder="Ingrese la facturación mensual promedio" required>  
+
+            <label for="uso_tarjeta">Uso de Tarjeta Últimos 12 Meses:</label>  
+            <input type="number" id="uso_tarjeta" name="uso_tarjeta" placeholder="Ingrese el uso de tarjeta en los últimos 12 meses" required>  
+
+            <!-- Botón de cálculo -->  
+            <button type="button" onclick="calcularPrediccion()">Calcular Predicción</button>  
+        </form>  
+
+        <!-- Resultado -->  
+        <div id="resultado" class="result" style="display: none;">  
+            <p>El número estimado de transacciones mensuales (Txs_T12) es: <span id="prediccion"></span></p>  
+        </div>  
+    </div>  
+
+    <script>  
+        // Función para calcular la predicción (simulación)  
+        function calcularPrediccion() {  
+            // Obtener los valores de los inputs  
+            const edad = parseInt(document.getElementById('edad').value);  
+            const sexo = document.getElementById('sexo').value;  
+            const region = document.getElementById('region').value;  
+            const subsegmento = document.getElementById('subsegmento').value;  
+            const cupoLinea = parseFloat(document.getElementById('cupo_linea').value);  
+            const numTarjetas = parseInt(document.getElementById('num_tarjetas').value);  
+            const facturacion = parseFloat(document.getElementById('facturacion').value);  
+            const usoTarjeta = parseFloat(document.getElementById('uso_tarjeta').value);  
+
+            // Simulación de un cálculo de predicción (puedes reemplazarlo con un modelo real)  
+            const prediccion = (edad * 0.1) + (cupoLinea * 0.05) + (numTarjetas * 2) + (facturacion * 0.03) + (usoTarjeta * 0.07);  
+
+            // Mostrar el resultado  
+            document.getElementById('prediccion').textContent = prediccion.toFixed(2);  
+            document.getElementById('resultado').style.display = 'block';  
+        }  
+    </script>  
+</body>  
+</html>  
