@@ -11,4 +11,6 @@ router.get('/payments/project/:projectId', flujoController.getProjectPayments);
 // Nueva ruta para obtener pagos por empleado
 router.get('/payments/employee/:employeeId', flujoController.getEmployeePayments);
 router.get('/payments/quote/:quoteNumber', flujoController.getQuotePayments);
+
+
 module.exports = router;

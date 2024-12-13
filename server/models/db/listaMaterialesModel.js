@@ -67,11 +67,47 @@ const removeMaterialFromList = async (list_id) => {
   );  
   return result.rows[0];  
 };  
+
+// Obtener lista de materiales por proyecto, incluyendo materiales no añadidos
+const getMaterialListWithAvailables = async (project_id) => {
+  // Primero, obtener los materiales ya guardados en la lista
+  const savedMaterials = await pool.query(
+    `SELECT 
+      ml.*,
+      m.category,
+      m.description,
+      m.current_value,
+      true as is_selected
+    FROM material_lists ml
+    JOIN materiales m ON ml.material_id = m.material_id
+    WHERE ml.project_id = $1
+    ORDER BY ml.list_id DESC`,
+    [project_id]
+  );
+
+  // Luego, obtener todos los materiales que NO están en la lista
+  const availableMaterials = await pool.query(
+    `SELECT 
+      m.*,
+      false as is_selected
+    FROM materiales m
+    WHERE m.material_id NOT IN (
+      SELECT material_id 
+      FROM material_lists 
+      WHERE project_id = $1
+    )`,
+    [project_id]
+  );
+
+  // Combinar ambos conjuntos de materiales
+  return [...savedMaterials.rows, ...availableMaterials.rows];
+};
   
 module.exports = {  
   addMaterialToList,  
   getMaterialListByProject,  
   getMaterialListByQuote,  
   updateMaterialQuantity,  
-  removeMaterialFromList  
+  removeMaterialFromList ,
+  getMaterialListWithAvailables 
 };  

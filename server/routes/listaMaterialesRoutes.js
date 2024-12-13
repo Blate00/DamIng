@@ -16,5 +16,5 @@ router.put('/material-lists/:list_id', listaMaterialesController.updateMaterialQ
 
 // Eliminar material de la lista  
 router.delete('/material-lists/:list_id', listaMaterialesController.removeMaterialFromList);  
-
+router.get('/material-lists/project-with-availables/:project_id', listaMaterialesController.getMaterialListWithAvailables);
 module.exports = router;  

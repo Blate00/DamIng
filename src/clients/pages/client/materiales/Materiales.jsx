@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Breadcrumb from '../../../../general/Breadcrumb'; // Importar el componente Breadcrumb  
 import TablaMaterialesSeleccionados from './TablaMaterialesSeleccionados'; 
+import DescargarPDF from './Dpdf'; // Añade esta línea
+import { FaSave, FaPlus } from 'react-icons/fa';
 
 const StandaloneMaterialList = () => {
   const [materials, setMaterials] = useState([]);
@@ -14,24 +16,26 @@ const StandaloneMaterialList = () => {
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
   const [saving, setSaving] = useState(false);
+  const selectedQuantities = materials.reduce((acc, material) => ({
+    ...acc,
+    [material.material_id]: material.quantity || 1
+}), {});
   // Fetch materials from the API    
   const fetchMaterials = async () => {
     try {
       setLoading(true);
-      // Primero intentamos obtener la lista específica del proyecto  
-      const materialListResponse = await axios.get(`http://localhost:5000/api/material-lists/project/${projectId}`);
-
-      if (materialListResponse.data.length > 0) {
-        setMaterials(materialListResponse.data);
-      } else {
-        // Si no hay lista específica, obtener todos los materiales  
-        const response = await axios.get('http://localhost:5000/api/materials');
-        setMaterials(response.data.map(material => ({
-          ...material,
-          quantity: 1,
-          unit_value: material.current_value
-        })));
-      }
+      const materialListResponse = await axios.get(
+        `http://localhost:5000/api/material-lists/project-with-availables/${projectId}`
+      );
+  
+      // Mapear los materiales, añadiendo información de guardado
+      const mappedMaterials = materialListResponse.data.map(material => ({
+        ...material,
+        quantity: material.list_id ? material.quantity : 1,
+        unit_value: material.current_value
+      }));
+  
+      setMaterials(mappedMaterials);
     } catch (error) {
       console.error('Error fetching materials:', error);
       setError('Error al cargar los materiales: ' + error.message);
@@ -83,15 +87,23 @@ const StandaloneMaterialList = () => {
   // Handle deleting a material    
   const handleDeleteMaterial = async (materialId) => {
     if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/materials/${materialId}`);
-        fetchMaterials(); // Refresh the list after deleting    
-      } catch (error) {
-        console.error('Error deleting material:', error);
-      }
-    }
-  };
+        try {
+            // Primero actualizar el estado local
+            setMaterials(prevMaterials => 
+                prevMaterials.filter(material => material.material_id !== materialId)
+            );
 
+            // Luego hacer la llamada a la API
+            await axios.delete(`http://localhost:5000/api/materials/${materialId}`);
+            
+        } catch (error) {
+            console.error('Error deleting material:', error);
+            // Si hay error, recargar los materiales
+            await fetchMaterials();
+            alert('Error al eliminar el material');
+        }
+    }
+};
   // Get unique categories for filtering    
   const uniqueCategories = [...new Set(materials.map((material) => material.category))];
 
@@ -187,39 +199,70 @@ const StandaloneMaterialList = () => {
         <Breadcrumb />
 
         <div className="p-4 bg-white shadow-md rounded-tl-lg rounded-tr-lg border-l-4 border-red-800">
-          <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
-          <p className="text-gray-800 text-base">{client?.name}</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-900 font-semibold text-lg">Cliente:</p>
+              <p className="text-gray-800 text-base">{client?.name}</p>
 
-          <div className="mt-4">
-            <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
-            <p className="text-gray-800 text-base">{job?.project_name}</p>
+              <div className="mt-4">
+                <p className="text-gray-900 font-semibold text-lg">Proyecto:</p>
+                <p className="text-gray-800 text-base">{job?.project_name}</p>
+              </div>
+            </div>
+          
           </div>
         </div>
 
         <div className="p-5 bg-white rounded-b-xl border-l-4 border-red-800">
          
+            <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-800">Lista de Materiales</h2>
-            <button
-              onClick={handleSaveMaterialList}
-              disabled={saving}
-              className={`px-4 py-2 rounded-md text-white ${saving ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
-                } transition-colors`}
-            >
-              {saving ? 'Guardando...' : 'Guardar Lista'}
-            </button>
+            <div className="mt- text-end flex space-x-4">
+              <button
+                className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+            onClick={handleSaveMaterialList}
+                    disabled={saving}
+              >
+                <FaSave className="text-lg" />
+              </button>
 
-          <TablaMaterialesSeleccionados
-            materiales={filteredMaterials}
-            onMaterialsChange={(updatedMaterials) => {
-              setMaterials(updatedMaterials);
-            }}
-          />
+              <button
+                className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+              
+              >
+                <FaPlus className="text-lg" />
+              </button>
 
-         
+              <DescargarPDF
+    materiales={materials.filter(m => m && m.material_id)}
+    selectedQuantities={materials.reduce((acc, material) => ({
+        ...acc,
+        [material.material_id]: material.quantity || 1
+    }), {})}
+    totals={{
+        totalQuantity: totalMaterials,
+        totalAmount: totalMoney
+    }}
+    formatCLP={formatCLP}
+    client={client}
+    job={job}
+/>
+            </div>
+
+
+
+          </div>
+
+            <TablaMaterialesSeleccionados
+                materiales={filteredMaterials}
+                onMaterialsChange={(updatedMaterials) => {
+                    setMaterials(updatedMaterials);
+                }}
+            />
         </div>
       </div>
     </div>
-  );
+);
 };
 
 export default StandaloneMaterialList;    

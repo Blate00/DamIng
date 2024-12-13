@@ -113,11 +113,21 @@ const removeMaterialFromList = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar material de la lista', details: error.message });
   }
 };
-
+const getMaterialListWithAvailables = async (req, res) => {
+  try {
+    const { project_id } = req.params;
+    const materialList = await listaMaterialesModel.getMaterialListWithAvailables(project_id);
+    res.json(materialList);
+  } catch (error) {
+    console.error('Error fetching material list:', error);
+    res.status(500).json({ error: 'Error al obtener lista de materiales', details: error.message });
+  }
+};
 module.exports = {
   addMaterialsToList,
   getMaterialListByProject,
   getMaterialListByQuote,
   updateMaterialQuantity,
-  removeMaterialFromList
+  removeMaterialFromList,
+  getMaterialListWithAvailables
 };  
