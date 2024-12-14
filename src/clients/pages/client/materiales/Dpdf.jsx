@@ -211,6 +211,20 @@ const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, clie
 };
 
 const DescargarPDF = ({ materiales, selectedQuantities, totals, formatCLP, client, job }) => {
+    // Validación de props
+    if (!materiales || !selectedQuantities || !formatCLP) {
+        return (
+            <button 
+                className="flex items-center space-x-1 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" 
+                disabled
+                title="Faltan datos requeridos"
+            >
+                <FiDownload className="text-lg" />
+                <span>No disponible</span>
+            </button>
+        );
+    }
+
     const haySeleccionados = materiales.some(material => material.is_selected);
 
     if (!haySeleccionados) {
@@ -234,24 +248,33 @@ const DescargarPDF = ({ materiales, selectedQuantities, totals, formatCLP, clien
                     selectedQuantities={selectedQuantities}
                     totals={totals}
                     formatCLP={formatCLP}
-                    client={client}
-                    job={job}
+                    client={client || {}}
+                    job={job || {}}
                 />
             }
             fileName={`materiales_${client?.name || 'sin_cliente'}_${job?.quote_number || 'sin_numero'}_${new Date().toISOString().split('T')[0]}.pdf`}
         >
-            {({ loading }) => (
-                loading ? (
+            {({ loading, error }) => {
+                if (error) {
+                    console.error('Error generando PDF:', error);
+                    return (
+                        <button className="flex items-center space-x-1 bg-red-500 text-white px-4 py-2 rounded" disabled>
+                            <FiDownload className="text-lg" />
+                            <span>Error al generar PDF</span>
+                        </button>
+                    );
+                }
+                
+                return loading ? (
                     <button className="flex items-center space-x-1 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
                         <FiDownload className="text-lg animate-spin" />
-                        <span>Generando PDF...</span>
                     </button>
                 ) : (
                     <button className="flex items-center space-x-1 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300">
                         <FiDownload className="text-lg" />
                     </button>
-                )
-            )}
+                );
+            }}
         </PDFDownloadLink>
     );
 };
