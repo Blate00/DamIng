@@ -106,7 +106,6 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
   };
 
   const calculateTotal = (currentRows) => {
-    // Total de nuevos pagos (filas sin isRegistered)
     const newPaymentsTotal = currentRows
       .filter(row => !row.isRegistered)
       .reduce((sum, row) => {

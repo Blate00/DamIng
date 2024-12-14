@@ -21,7 +21,6 @@ const createRendicion = async (req, res) => {
   try {
     const { project_id, quote_number, total, proveedor_id } = req.body;
     
-    // Validaciones mejoradas
     if (!project_id || !quote_number || !total || !proveedor_id) {
       return res.status(400).json({ 
         error: 'Faltan datos requeridos (project_id, quote_number, total, proveedor_id)' 

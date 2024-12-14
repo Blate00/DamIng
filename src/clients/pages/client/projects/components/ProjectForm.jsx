@@ -23,7 +23,7 @@ const ProjectForm = ({ clientId, client, isOpen, onClose, onProjectAdded }) => {
         status: 'No Iniciado'
       };
 
-      console.log('Enviando datos:', projectData); // Para debugging
+      console.log('Enviando datos:', projectData); 
 
       const response = await axios.post('http://localhost:5000/api/projects', projectData);
 
@@ -52,7 +52,6 @@ const ProjectForm = ({ clientId, client, isOpen, onClose, onProjectAdded }) => {
 
         <form onSubmit={handleSubmit} className="flex-grow p-6">
           <div className="space-y-6">
-            {/* Campo del cliente (deshabilitado) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cliente
@@ -65,7 +64,6 @@ const ProjectForm = ({ clientId, client, isOpen, onClose, onProjectAdded }) => {
               />
             </div>
 
-            {/* Campo del nombre del proyecto */}
             <div>
               <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
                 Nombre del Proyecto *

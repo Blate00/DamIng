@@ -1,16 +1,13 @@
 const projectModel = require('../models/db/projectModel');
 
-//función para obtener proyectos por client_id
 const getProjectsByClientId = async (req, res) => {
   const { client_id } = req.query; // Obtener client_id de los parámetros de la consulta
   try {
     let projects;
 
     if (client_id) {
-      // Filtrar proyectos por client_id si se proporciona
       projects = await projectModel.getProjectsByClientId(client_id);
     } else {
-      // Obtener todos los proyectos si no se proporciona client_id
       projects = await projectModel.getAllProjects();
     }
 
@@ -42,7 +39,6 @@ const createProject = async (req, res) => {
       });
     }
   
-    // Generar quote_number
     const quote_number = `QN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   
     const newProject = await projectModel.createProject({
@@ -87,7 +83,7 @@ const createProject = async (req, res) => {
     }
     };
 module.exports = {
-  getProjectsByClientId, // Exportar la nueva función
+  getProjectsByClientId, 
   createProject,
   updateProjectStatus
 };

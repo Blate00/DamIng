@@ -5,7 +5,6 @@ const addClientWithProject = async (clientData) => {
   try {
     await dbClient.query('BEGIN');
 
-    // Insertar el cliente
     const clientResult = await dbClient.query(
       'INSERT INTO clients (name, email, phone_number) VALUES (\$1, \$2, \$3) RETURNING *',
       [clientData.name, clientData.email, clientData.phone_number]

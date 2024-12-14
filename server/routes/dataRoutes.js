@@ -2,7 +2,6 @@
    const router = express.Router();
    const pool = require('../models/config');
 
-   // Obtener clientes
    router.get('/clients', async (req, res) => {
      try {
        const result = await pool.query('SELECT * FROM clients');
@@ -13,7 +12,6 @@
      }
    });
 
-   // Agregar cliente
    router.post('/clients', async (req, res) => {
      const { name, email, phone_number } = req.body;
      try {

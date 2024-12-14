@@ -13,7 +13,7 @@ const Ptasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks'); // Usa Axios para obtener tareas
+      const response = await axios.get('http://localhost:5000/api/tasks'); 
       setTasks(response.data);
     } catch (error) {
       console.error('Error al obtener las tareas:', error);
@@ -23,7 +23,7 @@ const Ptasks = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/empleados'); // Usa Axios para obtener empleados
+      const response = await axios.get('http://localhost:5000/api/empleados'); 
       setEmployees(response.data);
     } catch (error) {
       console.error('Error al obtener los empleados:', error);
@@ -43,9 +43,9 @@ const Ptasks = () => {
 
   const addTask = async (taskData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/tasks', taskData); // Usa Axios para agregar tarea
-      setTasks((prevTasks) => [...prevTasks, response.data]); // Agrega la nueva tarea a la lista
-      setIsModalOpen(false); // Cierra el modal después de agregar la tarea
+      const response = await axios.post('http://localhost:5000/api/tasks', taskData); 
+      setTasks((prevTasks) => [...prevTasks, response.data]); 
+      setIsModalOpen(false); 
     } catch (error) {
       console.error('Error al agregar la tarea:', error);
       setError('Error al agregar la tarea: ' + error.message);
@@ -54,8 +54,8 @@ const Ptasks = () => {
 
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${taskId}/status`, { status: newStatus }); // Usa Axios para actualizar el estado
-      await fetchTasks(); // Refetch tasks after updating
+      await axios.put(`http://localhost:5000/api/tasks/${taskId}/status`, { status: newStatus });
+      await fetchTasks(); 
     } catch (error) {
       console.error('Error al actualizar el estado de la tarea:', error);
       setError('Error al actualizar el estado de la tarea: ' + error.message);
@@ -64,8 +64,8 @@ const Ptasks = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`); // Usa Axios para eliminar la tarea
-      await fetchTasks(); // Refetch tasks after deleting
+      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`); 
+      await fetchTasks(); 
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
       setError('Error al eliminar la tarea: ' + error.message);

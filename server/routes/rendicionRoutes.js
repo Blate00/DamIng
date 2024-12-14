@@ -9,7 +9,6 @@ const {
   getProveedores
 } = require('../controllers/rendicionController');
 
-// Middleware para validar IDs numéricos
 const validateNumericId = (req, res, next) => {
   const id = req.params.projectId || req.params.rendicionId;
   if (!id || isNaN(parseInt(id))) {
@@ -18,12 +17,10 @@ const validateNumericId = (req, res, next) => {
   next();
 };
 
-// Ruta de prueba
 router.get('/test', (req, res) => {
   res.json({ message: 'API de rendiciones funcionando correctamente' });
 });
 
-// Rutas para proveedores
 router.get('/proveedores', getProveedores);
 
 // Rutas para rendiciones

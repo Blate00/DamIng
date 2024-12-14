@@ -28,7 +28,6 @@ const Pclient = () => {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      // Asegúrate de que esta URL sea correcta
       const response = await axios.get('http://localhost:5000/api/clients'); 
       console.log(response.data); // Verifica que sea un array
       setClients(Array.isArray(response.data) ? response.data : []);

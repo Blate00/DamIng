@@ -36,14 +36,12 @@ const createAsignacion = async (asignacion) => {
   try {
     await client.query('BEGIN');
 
-    // Obtener el total de rendiciones
     const { rows: [totalRendiciones] } = await client.query(`
       SELECT COALESCE(SUM(total), 0) as total 
       FROM rendiciones 
       WHERE quote_number = \$1
     `, [asignacion.quote_number]);
 
-    // Obtener el total de asignaciones previas
     const { rows: [totalAsignacionesPrevias] } = await client.query(`
       SELECT COALESCE(SUM(saldo_recibido), 0) as total 
       FROM asignacion 

@@ -1,26 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import Summary from './Summary'; // Importar el componente Summary  
+import Summary from './Summary'; 
 
 const TablaMaterialesSeleccionados = ({ materiales,
   onMaterialsChange }) => {
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // Estado para manejar las cantidades seleccionadas  
+
   const [selectedQuantities, setSelectedQuantities] = useState(
     materiales.reduce((acc, material) => ({
       ...acc,
       [material.material_id]: material.quantity || 1
     }), {})
   );
-  // Estado para manejar la lista local de materiales  
+
   const [localMaterials, setLocalMaterials] = useState(materiales);
   const formatCLP = (value) => {
     return new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
     }).format(value);
-  };
-  // Obtener categorías únicas    
+  }
+  
   const uniqueCategories = [...new Set(localMaterials.map((material) => material.category))];
 
   // Manejar selección de categorías    
@@ -32,7 +32,7 @@ const TablaMaterialesSeleccionados = ({ materiales,
     );
   };
 
-  // Manejar cambio de cantidad  
+  
   const handleQuantityChange = (materialId, value) => {
     const quantity = Math.max(0, parseInt(value) || 0);
     setSelectedQuantities(prev => {
@@ -41,7 +41,7 @@ const TablaMaterialesSeleccionados = ({ materiales,
         [materialId]: quantity
       };
 
-      // Actualizar materiales con nuevas cantidades y notificar al padre  
+      
       const updatedMaterials = localMaterials.map(material => ({
         ...material,
         quantity: material.material_id === materialId ? quantity : (newQuantities[material.material_id] || 0)
@@ -54,23 +54,23 @@ const TablaMaterialesSeleccionados = ({ materiales,
   // Manejar eliminación de material  
   const handleDeleteMaterial = (materialId) => {
     if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
-        // Actualizar cantidades seleccionadas
-        setSelectedQuantities(prev => {
-            const newQuantities = { ...prev };
-            delete newQuantities[materialId];
-            return newQuantities;
-        });
+      // Actualizar cantidades seleccionadas
+      setSelectedQuantities(prev => {
+        const newQuantities = { ...prev };
+        delete newQuantities[materialId];
+        return newQuantities;
+      });
 
-        // Actualizar materiales locales
-        const updatedMaterials = localMaterials.filter(
-            material => material.material_id !== materialId
-        );
-        setLocalMaterials(updatedMaterials);
+      // Actualizar materiales locales
+      const updatedMaterials = localMaterials.filter(
+        material => material.material_id !== materialId
+      );
+      setLocalMaterials(updatedMaterials);
 
-        // Notificar al componente padre
-        onMaterialsChange?.(updatedMaterials);
+      // Notificar al componente padre
+      onMaterialsChange?.(updatedMaterials);
     }
-};
+  };
 
   // Filtrar materiales por categorías seleccionadas    
   const filteredMaterials = localMaterials.filter((material) => {
@@ -79,7 +79,7 @@ const TablaMaterialesSeleccionados = ({ materiales,
     );
   });
 
-  // Calcular totales usando useMemo  
+ 
   const totals = useMemo(() => {
     return filteredMaterials.reduce((acc, material) => {
       const quantity = selectedQuantities[material.material_id] || 0;
@@ -177,16 +177,15 @@ const TablaMaterialesSeleccionados = ({ materiales,
         </thead>
         <tbody className="divide-y bg-white">
           {filteredMaterials.map((material, index) => (
-        <tr
-        key={`${material.material_id}-${index}`}
-        className={`hover:bg-gray-50 transition-colors duration-200 ${
-          material.is_selected 
-            ? 'bg-green-50 border-l-4 border-green-600' // Elementos seleccionados
-            : material.in_database 
-              ? 'bg-blue-50 border-l-4 border-blue-500' // Elementos en BD
-              : 'bg-white' // Elementos normales
-        }`}
-      >
+            <tr
+              key={`${material.material_id}-${index}`}
+              className={`hover:bg-gray-50 transition-colors duration-200 ${material.is_selected
+                  ? 'bg-green-50 border-l-4 border-green-600'
+                  : material.in_database
+                    ? 'bg-blue-50 border-l-4 border-blue-500' 
+                    : 'bg-white' 
+                }`}
+            >
               <td className="py-4 px-6">
                 <input
                   type="text"
@@ -196,45 +195,43 @@ const TablaMaterialesSeleccionados = ({ materiales,
                 />
               </td>
               <td className="py-4 px-6">
-  <div className="flex items-center space-x-2">
-    <input
-      type="text"
-      className={`w-full bg-transparent focus:outline-none ${
-        material.is_selected 
-          ? 'text-green-700 font-medium' 
-          : material.in_database
-            ? 'text-blue-700'
-            : 'text-gray-700'
-      }`}
-      value={material.description}
-      readOnly
-    />
-    {material.in_database && (
-      <div className="relative group">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-5 w-5 ${
-            material.is_selected ? 'text-green-500' : 'text-blue-500'
-          }`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <div className="absolute invisible group-hover:visible bg-gray-800 text-white text-xs rounded py-1 px-2 -mt-1 ml-6 whitespace-nowrap">
-          {material.is_selected 
-            ? 'Material seleccionado en BD'
-            : 'Material disponible en BD'
-          }
-        </div>
-      </div>
-    )}
-  </div>
-</td>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    className={`w-full bg-transparent focus:outline-none ${material.is_selected
+                        ? 'text-green-700 font-medium'
+                        : material.in_database
+                          ? 'text-blue-700'
+                          : 'text-gray-700'
+                      }`}
+                    value={material.description}
+                    readOnly
+                  />
+                  {material.in_database && (
+                    <div className="relative group">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`h-5 w-5 ${material.is_selected ? 'text-green-500' : 'text-blue-500'
+                          }`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div className="absolute invisible group-hover:visible bg-gray-800 text-white text-xs rounded py-1 px-2 -mt-1 ml-6 whitespace-nowrap">
+                        {material.is_selected
+                          ? 'Material seleccionado en BD'
+                          : 'Material disponible en BD'
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </td>
               <td className="py-4 px-6 text-center">
                 <div className="flex items-center justify-center space-x-2">
                   <button

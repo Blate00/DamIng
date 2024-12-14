@@ -24,9 +24,6 @@ const deleteEmpleado = async (empleadoId) => {
   await pool.query('DELETE FROM employees WHERE employee_id = \$1', [empleadoId]);
 };
 
-
-// models/db/empleadoModel.js  
-
 const getEmpleadoPayments = async (employeeId) => {  
   const query = `  
     SELECT   

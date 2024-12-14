@@ -1,7 +1,6 @@
 const listaMaterialesModel = require('../models/db/listaMaterialesModel');
 const pool = require('../models/config');  
-// Agregar material a la lista  
-// En listaMaterialesController.js  
+
 const addMaterialsToList = async (req, res) => {  
   const { project_id, quote_number, materials } = req.body;  
   const client = await pool.connect();  
@@ -9,7 +8,6 @@ const addMaterialsToList = async (req, res) => {
   try {  
     await client.query('BEGIN');  
   
-    // Eliminar materiales existentes  
     await client.query(  
       'DELETE FROM material_lists WHERE project_id = \$1',  
       [project_id]  

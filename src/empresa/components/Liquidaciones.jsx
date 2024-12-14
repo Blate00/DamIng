@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Breadcrumb from '../../general/Breadcrumb';
-import { DocumentTextIcon, DownloadIcon, UserIcon, MailIcon, PhoneIcon, ArrowLeftIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, UserIcon, MailIcon, PhoneIcon } from '@heroicons/react/outline';
 
 const Liquidaciones = () => {
   const location = useLocation();
@@ -12,14 +12,13 @@ const Liquidaciones = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Extraer datos del estado  
-  const { nombre, correo, telefono, employee_id,banco,account } = location.state || {};
-  const formatCLP = (value) => {  
-    return new Intl.NumberFormat('es-CL', {  
-      style: 'currency',  
-      currency: 'CLP',  
-    }).format(value);  
-  }; 
+  const { nombre, correo, telefono, employee_id, banco, account } = location.state || {};
+  const formatCLP = (value) => {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+    }).format(value);
+  };
   useEffect(() => {
     const fetchPayments = async () => {
       if (!employee_id) {
@@ -44,7 +43,6 @@ const Liquidaciones = () => {
     fetchPayments();
   }, [employee_id]);
 
-  // Si no hay datos del empleado, redirigir  
   if (!location.state) {
     return (
       <div className="p-4 text-center">
@@ -160,7 +158,7 @@ const Liquidaciones = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-gray-900">
-                        {formatCLP(pagos.reduce((sum, pago) => sum + Number(pago.total_payment), 0))}  
+                        {formatCLP(pagos.reduce((sum, pago) => sum + Number(pago.total_payment), 0))}
                       </p>
                       <p className="text-sm text-gray-500">
                         {pagos.length} {pagos.length === 1 ? 'pago' : 'pagos'}
@@ -183,7 +181,7 @@ const Liquidaciones = () => {
                         </div>
                         <div className="text-right">
                           <p className="font-medium">
-                           {formatCLP(Number(pago.total_payment || 0))}                            </p>
+                            {formatCLP(Number(pago.total_payment || 0))}                            </p>
 
                         </div>
                       </div>

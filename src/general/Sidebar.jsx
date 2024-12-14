@@ -2,14 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HomeIcon, UsersIcon, ClipboardListIcon, OfficeBuildingIcon,LogoutIcon, UserCircleIcon, MenuIcon, XIcon, ArrowLeftIcon } from '@heroicons/react/outline';
 import ClientForm from '../clients/components/ClientForm';
-import { useMaterials } from './MaterialsContext';
 import { supabase } from '../supabase/client';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const modalRef = useRef();
-  const [materials] = useMaterials();
   const [clients, setClients] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,32 +82,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
   };
 
-  const handleDeleteClient = async (clientId) => {
-    try {
-      const { error: clientError } = await supabase
-        .from('clients')
-        .delete()
-        .eq('client_id', clientId);
-
-      if (clientError) {
-        throw clientError;
-      }
-
-      const { error: projectsError } = await supabase
-        .from('projects')
-        .delete()
-        .eq('client_id', clientId);
-
-      if (projectsError) {
-        throw projectsError;
-      }
-
-      setClients(prevClients => prevClients.filter(client => client.client_id !== clientId));
-      setFilteredClients(prevClients => prevClients.filter(client => client.client_id !== clientId));
-    } catch (error) {
-      console.error('Error deleting client:', error.message);
-    }
-  };
 
   const isActive = (path) => {
     if (path === '/clients') {
@@ -133,10 +105,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
 
 <>
-  {/* Sidebar */}
   <div className={`fixed inset-y-0 left-0 w-64 bg-[#700F23] text-white transition-all duration-300 ease-in-out transform lg:translate-x-0 ${isOpen ? 'translate-x-0 z-50' : '-translate-x-full'} overflow-y-auto`}>
     <div className="flex flex-col h-full">
-      {/* Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-red-900">
         <div className="flex items-center space-x-3">
           <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#ffffff" className="transform hover:rotate-180 transition-transform duration-500 cursor-pointer">
@@ -146,7 +116,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-grow mt-6 px-4">
         <ul className="space-y-1">
           {navItems.map((item) => {
@@ -185,7 +154,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     </div>
   </div>
   
-  {/* Overlay para cerrar el sidebar en modo responsive */}
   {isOpen && (
     <div 
       className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" 
@@ -203,7 +171,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <ArrowLeftIcon className="h-6 w-6" />
     </button>
 
-    {/* Botón para abrir el sidebar */}
     <button
       onClick={toggleSidebar}
       className="bg-red-800 text-white p-3 rounded-full shadow-lg hover:bg-red-900 transition-colors duration-200"
@@ -212,7 +179,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     </button>
   </div>
 
-  {/* Modal */}
   {isModalOpen && (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div ref={modalRef} className="bg-white rounded-lg shadow-xl w-96 max-w-md p-6">

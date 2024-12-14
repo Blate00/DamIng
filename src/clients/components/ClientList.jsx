@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { DotsVerticalIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
 
 const ClientList = ({ clients = [], onDeleteClient, loading }) => {

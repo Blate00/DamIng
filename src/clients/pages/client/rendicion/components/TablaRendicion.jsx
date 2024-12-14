@@ -26,17 +26,14 @@ const TablaRendicion = ({
     if (proveedor) {
       handleProveedorChange(index, proveedor.proveedor_id);
     }
-    // Si no hay coincidencia exacta, solo actualizamos el texto de búsqueda
-    // sin modificar el ID del proveedor
+
   };
 
   const getProveedorDisplayText = (index, item) => {
-    // Si hay texto de búsqueda, muestra ese texto
     if (proveedorSearchText.hasOwnProperty(index)) {
       return proveedorSearchText[index];
     }
     
-    // Si no hay texto de búsqueda pero hay un ID, muestra el nombre del proveedor
     if (item.proveedor_id) {
       const proveedor = proveedores.find(p => p.proveedor_id === item.proveedor_id);
       return proveedor ? proveedor.nombre : '';
@@ -46,14 +43,12 @@ const TablaRendicion = ({
   };
 
   const handleProveedorBlur = (index) => {
-    // Cuando el input pierde el foco, verificamos si el texto coincide con algún proveedor
     const currentText = proveedorSearchText[index] || '';
     const proveedor = proveedores.find(p => 
       p.nombre.toLowerCase() === currentText.toLowerCase()
     );
 
     if (!proveedor) {
-      // Si no hay coincidencia, restauramos el nombre del proveedor original
       const originalProveedor = items[index].proveedor_id ? 
         proveedores.find(p => p.proveedor_id === items[index].proveedor_id) : null;
       

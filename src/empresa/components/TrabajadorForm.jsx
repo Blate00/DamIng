@@ -22,7 +22,7 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
 
   const fetchBancos = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/banco'); // Asegúrate de que esta ruta exista
+      const response = await axios.get('http://localhost:5000/api/banco'); 
       setBancos(response.data);
     } catch (error) {
       console.error('Error fetching bancos:', error);
@@ -31,7 +31,7 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
 
   const fetchTiposCuenta = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tipocuenta'); // Asegúrate de que esta ruta exista
+      const response = await axios.get('http://localhost:5000/api/tipocuenta');
       setTiposCuenta(response.data);
     } catch (error) {
       console.error('Error fetching tipos de cuenta:', error);

@@ -28,7 +28,6 @@ const getManoObra = async (quoteNumber) => {
     `;
     const { rows } = await pool.query(query, [quoteNumber]);
     
-    // Si no hay registros pero existe un presupuesto, devolver los valores iniciales
     if (rows.length === 0) {
       const initialQuery = `
         SELECT 
@@ -50,7 +49,6 @@ const getManoObra = async (quoteNumber) => {
     try {
       await client.query('BEGIN');
   
-      // Obtener el total del presupuesto (subtotal)
       const { rows: [presupuesto] } = await client.query(`
         SELECT 
           subtotal as total_mano_obra
@@ -60,7 +58,6 @@ const getManoObra = async (quoteNumber) => {
         LIMIT 1
       `, [manoObra.quote_number]);
   
-      // Obtener el total de pagos previos
       const { rows: [totalPagosPrevios] } = await client.query(`
         SELECT COALESCE(SUM(saldo_recibido), 0) as total 
         FROM mano_obra 

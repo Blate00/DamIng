@@ -1,6 +1,5 @@
 // Summary.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, gestionPercentage, setGestionPercentage }) => {
   const [ggValue, setGgValue] = useState(0);

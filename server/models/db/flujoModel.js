@@ -120,8 +120,8 @@ const flujoModel = {
       throw error;
     }
   },
-  // En flujoModel.js
-getPaymentsByQuoteNumber: async (quoteNumber) => {
+
+  getPaymentsByQuoteNumber: async (quoteNumber) => {
   const query = `
     SELECT 
       ep.*,

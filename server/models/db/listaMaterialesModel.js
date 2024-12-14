@@ -1,7 +1,5 @@
 const pool = require('../config');  
   
-// Agregar materiales a la lista  
-// listaMaterialesModel.js  
 const addMaterialToList = async (listData) => {  
   const { project_id, quote_number, material_id, quantity, unit_value } = listData;  
   const result = await pool.query(  
@@ -68,9 +66,7 @@ const removeMaterialFromList = async (list_id) => {
   return result.rows[0];  
 };  
 
-// Obtener lista de materiales por proyecto, incluyendo materiales no añadidos
 const getMaterialListWithAvailables = async (project_id) => {
-  // Primero, obtener los materiales ya guardados en la lista
   const savedMaterials = await pool.query(
     `SELECT 
       ml.*,
@@ -85,7 +81,6 @@ const getMaterialListWithAvailables = async (project_id) => {
     [project_id]
   );
 
-  // Luego, obtener todos los materiales que NO están en la lista
   const availableMaterials = await pool.query(
     `SELECT 
       m.*,
@@ -99,7 +94,6 @@ const getMaterialListWithAvailables = async (project_id) => {
     [project_id]
   );
 
-  // Combinar ambos conjuntos de materiales
   return [...savedMaterials.rows, ...availableMaterials.rows];
 };
   

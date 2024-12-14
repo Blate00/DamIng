@@ -5,12 +5,10 @@ import axios from 'axios';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import { Document, Page, Text, View, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
-import damLogo from '../../../../assets/damLogo.png'; // Asegúrate de que la extensión sea correcta (.png, .jpg, etc.)
 import Dpdf from './components/Dpdf';
 import { FaSave, FaPlus } from 'react-icons/fa';
 const Presupuesto = () => {
-  const { client_id } = useParams(); // Obtener client_id de la URL
+  const { client_id } = useParams();
   const { projectId } = useParams();
   const [client, setClient] = useState(null);
   const [job, setJob] = useState(null);
@@ -27,7 +25,6 @@ const Presupuesto = () => {
       try {
         setLoading(true);
 
-        // Obtener datos del proyecto
         const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
         const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
         if (!projectData) {
@@ -35,12 +32,10 @@ const Presupuesto = () => {
         }
         setJob(projectData);
 
-        // Obtener datos del cliente
         const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
         const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
         setClient(clientData);
 
-        // Obtener presupuestos
         const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
         setItems(budgetResponse.data);
 
@@ -121,8 +116,6 @@ const Presupuesto = () => {
     }
   };
 
-  // Modificar también el useEffect para asegurar que obtenemos el quote_number
-
   const formatCLP = (value) => {
     if (value == null || isNaN(value)) return '$0';
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
@@ -164,192 +157,6 @@ const Presupuesto = () => {
       alert('Error al actualizar el presupuesto.');
     }
   };
-  const generatePDF = async () => {
-    try {
-      // Crear el PDF
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      // Configuración de estilos y colores
-      const styles = {
-        colors: {
-          primary: [139, 0, 0],    // Rojo DAM
-          white: [255, 255, 255],
-          gray: [245, 245, 245],
-          text: [51, 51, 51]
-        },
-        margins: {
-          left: 10,
-          top: 10
-        }
-      };
-
-      // Cargar logo
-      const loadImage = () => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            resolve(canvas.toDataURL('image/png'));
-          };
-          img.onerror = reject;
-          img.src = damLogo;
-        });
-      };
-
-      const logoDataUrl = await loadImage();
-
-      // Header con logo
-      pdf.addImage(logoDataUrl, 'PNG', styles.margins.left, styles.margins.top, 40, 30);
-
-      // Información del proyecto
-      pdf.setFontSize(16);
-      pdf.setTextColor(...styles.colors.text);
-      const projectTitle = job?.project_name || 'Proyecto sin nombre';
-      pdf.text(projectTitle, 55, 25);
-
-      // Información adicional
-      pdf.setFontSize(11);
-      const quoteNumber = `Nº CTZ: ${job?.quote_number || 'Sin número'}`;
-      const currentDate = new Date().toLocaleDateString('es-CL');
-      const clientName = client?.name || 'Cliente sin nombre';
-
-      pdf.text(quoteNumber, 160, 20);
-      pdf.text(currentDate, 160, 25);
-      pdf.text(clientName, 55, 35);
-
-      // Línea separadora
-      pdf.setDrawColor(...styles.colors.primary);
-      pdf.setLineWidth(0.5);
-      pdf.line(10, 40, 200, 40);
-
-      // Título "Servicios Eléctricos"
-      pdf.setFontSize(20);
-      pdf.setTextColor(...styles.colors.text);
-      pdf.text('Presupuesto', 10, 45);
-
-      // Configuración de la tabla
-      const startY = 50;
-      const tableHeaders = [
-        { text: 'ITEM', width: 15 },
-        { text: 'DESCRIPCIÓN', width: 80 },
-        { text: 'UND', width: 20 },
-        { text: 'CANTIDAD', width: 25 },
-        { text: 'VALOR UNIT', width: 25 },
-        { text: 'TOTAL', width: 25 }
-      ];
-
-      // Encabezado de la tabla
-      pdf.setFillColor(...styles.colors.primary);
-      pdf.rect(10, startY, 190, 10, 'F');
-      pdf.setTextColor(...styles.colors.white);
-      pdf.setFontSize(10);
-
-      let currentX = 10;
-      tableHeaders.forEach(header => {
-        pdf.text(header.text, currentX + 2, startY + 7);
-        currentX += header.width;
-      });
-
-      // Contenido de la tabla
-      let currentY = startY + 10;
-      items.forEach((item, index) => {
-        pdf.setTextColor(...styles.colors.text);
-
-        // Fondo alternado
-        if (index % 2 === 0) {
-          pdf.setFillColor(...styles.colors.gray);
-          pdf.rect(10, currentY, 190, 8, 'F');
-        }
-
-        currentX = 10;
-        // Item número
-        pdf.text(String(index + 1), currentX + 2, currentY + 6);
-        currentX += tableHeaders[0].width;
-
-        // Descripción
-        const description = item.description || '';
-        if (description.length > 40) {
-          pdf.setFontSize(8);
-        }
-        pdf.text(description, currentX + 2, currentY + 6);
-        pdf.setFontSize(10);
-        currentX += tableHeaders[1].width;
-
-        // Unidad
-        pdf.text(item.und || '', currentX + 2, currentY + 6);
-        currentX += tableHeaders[2].width;
-
-        // Cantidad
-        pdf.text(String(item.quantity || ''), currentX + 2, currentY + 6);
-        currentX += tableHeaders[3].width;
-
-        // Valor unitario
-        pdf.text(formatCLP(item.unit_price), currentX + 2, currentY + 6);
-        currentX += tableHeaders[4].width;
-
-        // Total
-        pdf.text(formatCLP(item.total), currentX + 2, currentY + 6);
-
-        currentY += 8;
-      });
-
-      // Resumen y totales
-      currentY += 10;
-      const summaryX = 130;
-      const summaryWidth = 70;
-
-      const renderSummaryRow = (label, value, isHighlighted = false) => {
-        if (isHighlighted) {
-          pdf.setFillColor(...styles.colors.primary);
-          pdf.rect(summaryX - 5, currentY - 5, summaryWidth + 5, 10, 'F');
-          pdf.setTextColor(...styles.colors.white);
-        } else {
-          pdf.setTextColor(...styles.colors.text);
-        }
-
-        pdf.text(label, summaryX, currentY + 2);
-        pdf.text(value, summaryX + summaryWidth - 2, currentY + 2, { align: 'right' });
-        currentY += 12;
-      };
-
-      // Calcular totales
-      const totalNeto = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
-      const ggAmount = (totalNeto * ggPercentage) / 100;
-      const gestionAmount = (totalNeto * gestionPercentage) / 100;
-      const subtotal = totalNeto + ggAmount + gestionAmount;
-
-      // Renderizar resumen
-      renderSummaryRow('Total Neto:', formatCLP(totalNeto));
-      renderSummaryRow('GG (%):', `${ggPercentage}% ${formatCLP(ggAmount)}`);
-      renderSummaryRow('Gestión (%):', `${gestionPercentage}% ${formatCLP(gestionAmount)}`);
-      renderSummaryRow('Subtotal:', formatCLP(subtotal), true);
-
-      // Pie de página
-      pdf.setTextColor(128, 128, 128);
-      pdf.setFontSize(8);
-      const footerText = `Documento generado el ${currentDate} | Proyecto: ${projectTitle} | Cliente: ${clientName} | CTZ: ${job?.quote_number}`;
-      pdf.text(
-        footerText,
-        pdf.internal.pageSize.width / 2,
-        pdf.internal.pageSize.height - 10,
-        { align: 'center' }
-      );
-
-      // Guardar PDF
-      const fileName = `presupuesto_${job?.quote_number || 'sin_numero'}_${currentDate.replace(/\//g, '-')}.pdf`;
-      pdf.save(fileName);
-
-    } catch (error) {
-      console.error('Error al generar PDF:', error);
-      alert('Error al generar el PDF. Por favor, intente nuevamente.');
-    }
-  };
-
 
   if (loading) {
     return (

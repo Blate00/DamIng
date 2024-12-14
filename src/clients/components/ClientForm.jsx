@@ -50,7 +50,7 @@ const ClientForm = ({ clients = [], addClient, isOpen, onClose }) => {
       clientName: client.name || '',
       email: client.email || '',
       phone: client.phone_number || '',
-      projectName: formData.projectName || '' // Mantener el valor actual del proyecto
+      projectName: formData.projectName || ''
     });
     setClientMatches([]);
   };

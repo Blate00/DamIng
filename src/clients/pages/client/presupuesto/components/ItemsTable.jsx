@@ -8,7 +8,7 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
     document.head.appendChild(link);
 
     return () => {
-      document.head.removeChild(link);  // Limpiar el link cuando el componente se desmonte
+      document.head.removeChild(link);
     };
   }, []);
 
@@ -48,34 +48,34 @@ const ItemsTable = ({ items, handleChange, formatCLP, deleteItem }) => {
                 />
               </td>
               <td className="py-4 px-6 text-center">
-              <div className="flex items-center justify-center space-x-2">
-  <button 
-    onClick={() => handleUpdateQuantity(index, -1)} 
-    className="text-red-600 hover:text-red-800 focus:outline-none"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-    </svg>
-  </button>
-  <input
-    type="number"
-    value={item.quantity}
-    onChange={(e) => {
-      const newQuantity = parseInt(e.target.value) || 0;
-      handleUpdateQuantity(index, newQuantity - item.quantity);
-    }}
-    className="w-16 text-center border rounded-md px-2 py-1 font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-    min="0"
-  />
-  <button 
-    onClick={() => handleUpdateQuantity(index, 1)} 
-    className="text-red-600 hover:text-red-800 focus:outline-none"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-    </svg>
-  </button>
-</div>
+                <div className="flex items-center justify-center space-x-2">
+                  <button
+                    onClick={() => handleUpdateQuantity(index, -1)}
+                    className="text-red-600 hover:text-red-800 focus:outline-none"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const newQuantity = parseInt(e.target.value) || 0;
+                      handleUpdateQuantity(index, newQuantity - item.quantity);
+                    }}
+                    className="w-16 text-center border rounded-md px-2 py-1 font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    min="0"
+                  />
+                  <button
+                    onClick={() => handleUpdateQuantity(index, 1)}
+                    className="text-red-600 hover:text-red-800 focus:outline-none"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
               </td>
               <td className="py-4 px-6 text-center">
                 <input

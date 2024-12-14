@@ -206,7 +206,6 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
         </div>
       </div>
 
-      {/* Resumen de totales */}
       {Array.isArray(asignaciones) && asignaciones.length > 0 && (
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-4 mt-2">
        {/* Total Asignaciones */}
@@ -221,7 +220,6 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
          </div>
        </div>
        
-       {/* Total Rendiciones */}
        <div className="bg-gray-50 p-3 md:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
          <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-start">
            <p className="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2">
@@ -233,7 +231,6 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
          </div>
        </div>
        
-       {/* Saldo Final */}
        <div className="bg-gray-50 p-3 md:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
          <div className="flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-start">
            <p className="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2">
@@ -249,7 +246,6 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
        </div>
       )}
 
-      {/* Tabla de asignaciones */}
       <div className="overflow-x-auto w-full">
 <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md overflow-hidden mb-4">
   <thead className="bg-red-800 border-b border-gray-300">
@@ -280,7 +276,6 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
           </div>
         </td>
 
-        {/* Celda de Medio oculta en móviles */}
         <td className="py-2 md:py-3 px-3 md:px-6 hidden sm:table-cell">
           {asignacion?.medio_pago || 'No especificado'}
         </td>

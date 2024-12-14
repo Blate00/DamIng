@@ -3,7 +3,6 @@ const materialModel = require('../models/db/materialModel');
 const createMaterial = async (req, res) => {
   try {
     const materialData = req.body;
-    // Validación de datos
     if (!materialData.category || !materialData.description || !materialData.current_value) {
       return res.status(400).json({ error: 'Todos los campos son requeridos' });
     }

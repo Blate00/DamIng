@@ -123,7 +123,7 @@ const Home = () => {
         .eq('task_id', taskId);
 
       if (error) throw error;
-      loadData(); // Refetch tasks after deleting
+      loadData(); 
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
       setError('Error al eliminar la tarea: ' + error.message);

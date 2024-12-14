@@ -122,14 +122,12 @@ const MyDocument = ({ job, client, items = [], asignacionesData = [], manoObraDa
     };
 
     const getProveedorNombre = (item) => {
-        // Usar directamente el nombre del proveedor que viene en el item
         return item.proveedor_nombre || 'N/A';
     };
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                {/* Header */}
                 <View style={styles.header}>
                     <Image style={styles.logo} src={damLogo} />
                     <View style={styles.headerInfo}>
@@ -140,7 +138,6 @@ const MyDocument = ({ job, client, items = [], asignacionesData = [], manoObraDa
                     </View>
                 </View>
 
-                {/* Tabla de Rendiciones */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Detalle de Rendiciones</Text>
                     <View style={styles.table}>
@@ -169,7 +166,6 @@ const MyDocument = ({ job, client, items = [], asignacionesData = [], manoObraDa
                         </View>
                 </View>
 
-                {/* Sección de Asignaciones */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Asignación</Text>
                     <View style={styles.summaryContainer}>
@@ -218,7 +214,6 @@ const MyDocument = ({ job, client, items = [], asignacionesData = [], manoObraDa
                     </View>
                 </View>
 
-                {/* Sección de Mano de Obra */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Mano de Obra</Text>
                     <View style={styles.summaryContainer}>

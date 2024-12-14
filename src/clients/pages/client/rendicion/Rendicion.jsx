@@ -5,10 +5,7 @@ import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import TablaRendicion from './components/TablaRendicion';
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import html2canvas from 'html2canvas';
-import damLogo from '../../../../assets/damLogo.png';
 import { FaSave, FaPlus } from 'react-icons/fa';
 import Dpdf from './Dpdf';
 
@@ -57,7 +54,6 @@ const Rendicion = () => {
 
         setAsignacionesData(asignacionesResponse.data || []);
 
-        // En el fetchData del componente Rendicion
         if (manoObraResponse.data.length > 0) {
           const manoObraInfo = manoObraResponse.data[0];
           setManoObraData({
@@ -180,7 +176,6 @@ const Rendicion = () => {
         return;
       }
 
-      // Procesar secuencialmente en lugar de usar Promise.all
       for (const item of items) {
         if (item.rendicion_id) {
           await axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
@@ -216,10 +211,9 @@ const Rendicion = () => {
       </div>
     );
   } const getProveedoresUsados = () => {
-    // Obtener los IDs únicos de proveedores usados en los items
     const proveedoresIds = [...new Set(items.map(item => item.proveedor_id).filter(Boolean))];
 
-    // Filtrar la lista de proveedores para obtener solo los usados
+    
     return proveedores.filter(proveedor =>
       proveedoresIds.includes(proveedor.proveedor_id)
     );

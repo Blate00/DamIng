@@ -19,7 +19,6 @@ const getRendiciones = async (projectId) => {
 
 const createRendicion = async (rendicion) => {
   try {
-    // Primero verificamos que el project_id y quote_number existan en la tabla projects
     const checkProjectQuery = `
       SELECT * FROM projects 
       WHERE project_id = \$1 AND quote_number = \$2

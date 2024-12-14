@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FolderIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../../general/Breadcrumb';
@@ -9,8 +9,6 @@ import { PlusIcon } from '@heroicons/react/outline';
 const ListadoTrabajos = () => {
 const { client_id } = useParams();
 const [projects, setProjects] = useState([]);
-const [openIndex, setOpenIndex] = useState(null);
-const dropdownRef = useRef(null);
 const [selectedPeriod, setSelectedPeriod] = useState('2024');
 const [selectedFilter, setSelectedFilter] = useState('Estado');
 const [searchQuery, setSearchQuery] = useState('');

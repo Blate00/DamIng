@@ -19,7 +19,7 @@ const TaskForm = ({ addTask, isOpen, onClose }) => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/projects'); // Cambia la ruta según tu configuración
+      const response = await fetch('http://localhost:5000/api/projects'); 
       const data = await response.json();
       if (response.ok) {
         setProjects(data);
@@ -33,7 +33,7 @@ const TaskForm = ({ addTask, isOpen, onClose }) => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/empleados'); // Cambia la ruta según tu configuración
+      const response = await fetch('http://localhost:5000/api/empleados'); 
       const data = await response.json();
       if (response.ok) {
         setEmployees(data);
