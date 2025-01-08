@@ -75,7 +75,12 @@ const getClientById = async (clientId) => {
       WHERE project_id IN (
         SELECT project_id FROM projects WHERE client_id = \$1
       )`, [clientId]);
-  
+      await client.query(`
+        DELETE FROM material_lists
+        WHERE project_id IN (
+          SELECT project_id FROM projects WHERE client_id = \$1
+        )`, [clientId]);
+    
     // Eliminar registros relacionados en tasks
     await client.query(`
       DELETE FROM tasks 

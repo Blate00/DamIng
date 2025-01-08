@@ -120,15 +120,24 @@ const DetalleLiquidacion = () => {
               </div>
             </div>
           </div>
-          <DescargarLiquidacionPDF
-            fechaPago={fechaPago}
-            pagos={pagos}
-            empleado={empleado}
-            totales={totales}
-            formatCLP={formatCLP}
-          />
+      
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h3 className="text-lg font-semibold mb-4">Resumen de Pagos Semana Pagado el {fechaPago}</h3>
+        
+    <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-gray-800">
+            Resumen de Pagos Semana Pagado el {fechaPago}
+        </h3>    
+        <div className="flex justify-end">
+            <DescargarLiquidacionPDF
+                fechaPago={fechaPago}
+                pagos={pagos}
+                empleado={empleado}
+                totales={totales}
+                formatCLP={formatCLP}
+            />
+        </div>
+    </div>
+
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">Pago Día</p>

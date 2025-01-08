@@ -124,8 +124,14 @@ const styles = StyleSheet.create({
 
 const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, client, job }) => {
     const currentDate = new Date().toLocaleDateString('es-CL');
-    const materialesSeleccionadosBD = materiales.filter(material => material.is_selected);
-    const totalesSeleccionados = materialesSeleccionadosBD.reduce((acc, material) => {
+    
+    // Filtrar materiales guardados o seleccionados
+    const materialesParaPDF = materiales.filter(material => 
+        material.in_database || material.is_selected
+    );
+
+    // Calcular totales para los materiales filtrados
+    const totalesPDF = materialesParaPDF.reduce((acc, material) => {
         const quantity = selectedQuantities[material.material_id] || 0;
         return {
             totalQuantity: acc.totalQuantity + quantity,
@@ -133,9 +139,11 @@ const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, clie
         };
     }, { totalQuantity: 0, totalAmount: 0 });
 
+    // ... resto del código del componente ...
+
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
+          <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <Image style={styles.logo} src={damLogo} />
                     <View style={styles.headerInfo}>
@@ -167,7 +175,7 @@ const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, clie
                             <Text style={styles.tableHeaderCell}>TOTAL</Text>
                         </View>
 
-                        {materialesSeleccionadosBD.map((material, index) => (
+                        {materialesParaPDF.map((material, index) => (
                             <View key={index} style={styles.tableRow}>
                                 <Text style={styles.tableCell}>{material.category}</Text>
                                 <Text style={[styles.tableCell, { flex: 2 }]}>{material.description}</Text>
@@ -187,12 +195,12 @@ const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, clie
                     <View style={styles.summaryContainer}>
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryLabel}>Cantidad Total:</Text>
-                            <Text style={styles.summaryValue}>{totalesSeleccionados.totalQuantity}</Text>
+                            <Text style={styles.summaryValue}>{totalesPDF.totalQuantity}</Text>
                         </View>
                         <View style={[styles.summaryRow, { backgroundColor: '#700F23', padding: 8, borderRadius: 4 }]}>
                             <Text style={[styles.summaryLabel, { color: '#ffffff' }]}>TOTAL NETO:</Text>
                             <Text style={[styles.summaryValue, { color: '#ffffff' }]}>
-                                {formatCLP(totalesSeleccionados.totalAmount)}
+                                {formatCLP(totalesPDF.totalAmount)}
                             </Text>
                         </View>
                     </View>
@@ -203,7 +211,7 @@ const MaterialesPDF = ({ materiales, selectedQuantities, totals, formatCLP, clie
                     Cliente: {client?.name || 'Sin cliente'} | 
                     Proyecto: {job?.project_name || 'Sin proyecto'} | 
                     CTZ: {job?.quote_number || 'Sin número'} |
-                    Total materiales: {materialesSeleccionadosBD.length}
+                    Total materiales: {materialesParaPDF.length}
                 </Text>
             </Page>
         </Document>
@@ -225,17 +233,20 @@ const DescargarPDF = ({ materiales, selectedQuantities, totals, formatCLP, clien
         );
     }
 
-    const haySeleccionados = materiales.some(material => material.is_selected);
+    // Verificar si hay materiales guardados o seleccionados
+    const hayMaterialesParaPDF = materiales.some(material => 
+        material.in_database || material.is_selected
+    );
 
-    if (!haySeleccionados) {
+    if (!hayMaterialesParaPDF) {
         return (
             <button 
                 className="flex items-center space-x-1 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" 
                 disabled
-                title="No hay materiales seleccionados en la BD"
+                title="No hay materiales guardados o seleccionados"
             >
                 <FiDownload className="text-lg" />
-                <span>Sin materiales seleccionados</span>
+                <span>Sin materiales</span>
             </button>
         );
     }
@@ -278,5 +289,4 @@ const DescargarPDF = ({ materiales, selectedQuantities, totals, formatCLP, clien
         </PDFDownloadLink>
     );
 };
-
 export default DescargarPDF;

@@ -22,13 +22,15 @@ const StandaloneMaterialList = () => {
       const materialListResponse = await axios.get(
         `http://localhost:5000/api/material-lists/project-with-availables/${projectId}`
       );
-
+  
       const mappedMaterials = materialListResponse.data.map(material => ({
         ...material,
         quantity: material.list_id ? material.quantity : 1,
-        unit_value: material.current_value
+        unit_value: material.current_value,
+        in_database: !!material.list_id, // Marcar si ya está en la base de datos
+        is_selected: false // Resetear selección para nuevos materiales
       }));
-
+  
       setMaterials(mappedMaterials);
     } catch (error) {
       console.error('Error fetching materials:', error);
@@ -98,28 +100,29 @@ const StandaloneMaterialList = () => {
   const handleSaveMaterialList = async () => {
     try {
       setSaving(true);
-
-      const materialsToSave = filteredMaterials.map(material => ({
-        material_id: material.material_id,
-        quantity: material.quantity || 1, // Usar la cantidad del material directamente  
-        unit_value: material.current_value || 0
-      }));
-
-      console.log('Datos a enviar:', {
-        project_id: parseInt(projectId),
-        quote_number: job?.quote_number,
-        materials: materialsToSave
-      });
-
+      
+      const materialsToSave = filteredMaterials
+        .filter(material => material.in_database || material.is_selected)
+        .map(material => ({
+          material_id: material.material_id,
+          quantity: material.quantity || 1,
+          unit_value: material.current_value || 0
+        }));
+  
+      if (materialsToSave.length === 0) {
+        alert('Por favor, seleccione al menos un material para guardar.');
+        return;
+      }
+  
       const response = await axios.post('http://localhost:5000/api/material-lists', {
         project_id: parseInt(projectId),
         quote_number: job?.quote_number,
         materials: materialsToSave
       });
-
+  
       if (response.data) {
         alert('Lista de materiales guardada exitosamente');
-        await fetchMaterials();
+        await fetchMaterials(); // Recargar los materiales desde el servidor
       }
     } catch (error) {
       console.error('Error saving material list:', error);

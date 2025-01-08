@@ -4,6 +4,7 @@ import axios from 'axios';
 import AccesoPago from './components/ListaTrabajador';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import SummaryFlujo from './components/SummaryFlujo';
+import { FaSave, FaPlus } from 'react-icons/fa';
 
 const FlujoCaja = () => {
   const { projectId } = useParams();
@@ -99,8 +100,21 @@ const FlujoCaja = () => {
           </div>
         </div>
         <div className="p-4 bg-white rounded-b-lg border-l-4 border-red-800">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Flujo de Caja</h2>
-
+          <div className="mt- text-end flex space-x-4">
+            <button
+              onClick={handleAddRow}
+              className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+            >
+  <FaPlus className="text-lg" />            </button>
+            <button
+              onClick={handleSubmitPayments}
+              className="flex items-center space-x-2 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+            >
+  <FaSave className="text-lg" />            </button>
+            </div>
+          </div>
 
           <AccesoPago
             ref={listaTrabajadorRef}
@@ -115,18 +129,7 @@ const FlujoCaja = () => {
             formatCLP={formatCLP}
           />
           <div className="mt-4 space-x-2">
-            <button
-              onClick={handleAddRow}
-              className="bg-red-800 text-white p-2 rounded hover:bg-red-700"
-            >
-              Agregar Fila
-            </button>
-            <button
-              onClick={handleSubmitPayments}
-              className="bg-red-700 text-white p-2 rounded hover:bg-red-600"
-            >
-              Guardar Pagos
-            </button>
+          
           </div>
         </div>
       </div>

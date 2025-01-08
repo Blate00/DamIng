@@ -177,7 +177,6 @@ const DescargarLiquidacionPDF = ({ fechaPago, pagos, empleado, totales, formatCL
                 ) : (  
                     <button className="flex items-center space-x-1 bg-red-800 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300">  
                         <FiDownload className="text-lg" />  
-                        <span>Descargar PDF</span>  
                     </button>  
                 )  
             )}  
