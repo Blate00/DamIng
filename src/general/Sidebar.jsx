@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HomeIcon, UsersIcon, ClipboardListIcon, OfficeBuildingIcon,LogoutIcon, UserCircleIcon, MenuIcon, XIcon, ArrowLeftIcon } from '@heroicons/react/outline';
 import ClientForm from '../clients/components/ClientForm';
-import { supabase } from '../supabase/client';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
@@ -12,75 +11,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('clients')
-          .select('*');
 
-        if (error) {
-          throw error;
-        }
 
-        setClients(data);
-        setFilteredClients(data);
-      } catch (error) {
-        console.error('Error fetching clients:', error.message);
-      }
-    };
-
-    fetchClients();
-  }, []);
-
-  useEffect(() => {
-    setFilteredClients(clients);
-  }, [clients]);
-
-  const handleAddClient = async (clientName, email, phone, projectName, quoteNumber, status, startDate, endDate) => {
-    try {
-      const { data: existingClients, error: fetchError } = await supabase
-        .from('clients')
-        .select('client_id')
-        .eq('name', clientName);
-  
-      if (fetchError) {
-        throw fetchError;
-      }
-  
-      let clientId;
-  
-      if (existingClients && existingClients.length > 0) {
-        clientId = existingClients[0].client_id;
-      } else {
-        const { data: clientData, error: clientError } = await supabase
-          .from('clients')
-          .insert([{ name: clientName, email, phone_number: phone, project_count: 1 }])
-          .select('client_id');
-  
-        if (clientError || !clientData || clientData.length === 0) {
-          throw clientError || new Error('No se pudo insertar el cliente');
-        }
- 
-        clientId = clientData[0].client_id;
-  
-        setClients(prevClients => [...prevClients, clientData[0]]);
-        setFilteredClients(prevClients => [...prevClients, clientData[0]]);
-      }
-  
-      const { error: projectError } = await supabase
-        .from('projects')
-        .insert([{ client_id: clientId, project_name: projectName, quote_number: quoteNumber, status, start_date: startDate, end_date: endDate }]);
-  
-      if (projectError) {
-        throw projectError;
-      }
-  
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Error adding client and project:', error.message);
-    }
-  };
 
 
   const isActive = (path) => {

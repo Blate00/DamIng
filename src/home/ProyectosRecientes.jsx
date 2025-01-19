@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabase/client';
 import { Link } from 'react-router-dom';
 import { FolderIcon, ChevronRightIcon } from '@heroicons/react/solid';
 

@@ -6,12 +6,6 @@ const TablaMaterialesSeleccionados = ({ materiales,
   const [selectedCategories, setSelectedCategories] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [selectedQuantities, setSelectedQuantities] = useState(
-    materiales.reduce((acc, material) => ({
-      ...acc,
-      [material.material_id]: material.quantity || 1
-    }), {})
-  );
   const [selectedMaterials, setSelectedMaterials] = useState(
     materiales.reduce((acc, material) => ({
       ...acc,
@@ -19,6 +13,13 @@ const TablaMaterialesSeleccionados = ({ materiales,
     }), {})
   );
   const [localMaterials, setLocalMaterials] = useState(materiales);
+
+  const [selectedQuantities, setSelectedQuantities] = useState(
+    materiales.reduce((acc, material) => ({
+      ...acc,
+      [material.material_id]: material.quantity || 1
+    }), {})
+  );
   const formatCLP = (value) => {
     return new Intl.NumberFormat('es-CL', {
       style: 'currency',
@@ -28,26 +29,19 @@ const TablaMaterialesSeleccionados = ({ materiales,
   
   const uniqueCategories = [...new Set(localMaterials.map((material) => material.category))];
   const handleMaterialSelection = (materialId) => {
-    setSelectedMaterials(prev => ({
-      ...prev,
-      [materialId]: !prev[materialId]
-    }));
+    // Actualizar el estado de selección
+    const updatedMaterials = localMaterials.map(material => {
+      if (material.material_id === materialId) {
+        return {
+          ...material,
+          is_selected: !material.is_selected // Toggle el estado de selección
+        };
+      }
+      return material;
+    });
   
-    // Si estamos seleccionando el material, establecemos cantidad inicial
-    if (!selectedMaterials[materialId]) {
-      setSelectedQuantities(prev => ({
-        ...prev,
-        [materialId]: 1
-      }));
-    }
-  
-    const updatedMaterials = localMaterials.map(material => ({
-      ...material,
-      is_selected: material.material_id === materialId ? 
-        !selectedMaterials[materialId] : 
-        selectedMaterials[material.material_id]
-    }));
-  
+    // Actualizar el estado local y notificar al componente padre
+    setLocalMaterials(updatedMaterials);
     onMaterialsChange?.(updatedMaterials);
   };
   // Manejar selección de categorías    
@@ -80,47 +74,24 @@ const TablaMaterialesSeleccionados = ({ materiales,
   };
   // Manejar eliminación de material  
   const handleDeleteMaterial = (materialId) => {
-    const material = localMaterials.find(m => m.material_id === materialId);
-    
-    if (material.in_database) {
-      // Si está en la base de datos, actualizamos todos los estados relevantes
-      setSelectedMaterials(prev => ({
-        ...prev,
-        [materialId]: false
-      }));
-      
+    if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
+      // Actualizar cantidades seleccionadas
       setSelectedQuantities(prev => {
         const newQuantities = { ...prev };
         delete newQuantities[materialId];
         return newQuantities;
       });
   
-      const updatedMaterials = localMaterials.map(m => ({
-        ...m,
-        is_selected: m.material_id === materialId ? false : m.is_selected,
-        quantity: m.material_id === materialId ? 1 : m.quantity // Resetear la cantidad
-      }));
-  
+      // Actualizar materiales locales
+      const updatedMaterials = localMaterials.filter(
+        material => material.material_id !== materialId
+      );
       setLocalMaterials(updatedMaterials);
-      onMaterialsChange?.(updatedMaterials);
-    } else {
-      // Si no está en la base de datos
-      if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
-        setSelectedQuantities(prev => {
-          const newQuantities = { ...prev };
-          delete newQuantities[materialId];
-          return newQuantities;
-        });
   
-        const updatedMaterials = localMaterials.filter(
-          m => m.material_id !== materialId
-        );
-        setLocalMaterials(updatedMaterials);
-        onMaterialsChange?.(updatedMaterials);
-      }
+      // Notificar al componente padre
+      onMaterialsChange?.(updatedMaterials);
     }
   };
-
   // Filtrar materiales por categorías seleccionadas    
   const filteredMaterials = localMaterials.filter((material) => {
     return (

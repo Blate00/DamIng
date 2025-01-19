@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from '../tasks/TaskList';
 import Breadcrumb from '../general/Breadcrumb'; 
-import { supabase } from '../supabase/client'
 import ProyectosRecientes from './ProyectosRecientes'
 import DashboardSummary from './DashboardSummary';
 
@@ -15,65 +14,11 @@ const Home = () => {
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [employees, setEmployees] = useState([]);
 
-
-  const fetchActiveProjectsCount = async () => {
-    try {
-      const { count, error } = await supabase
-        .from('projects')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'Iniciado');
-
-      if (error) throw error;
-      return count;
-    } catch (error) {
-      console.error('Error al obtener el conteo de proyectos activos:', error);
-      throw error;
-    }
-  };
-  const fetchTasks = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          projects:project_id (project_id, project_name)
-        `);
-  
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error al obtener las tareas:', error);
-      throw error;
-    }
-  };
-
-  const fetchEmployees = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('employees')
-        .select('employee_id, name');
-  
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error al obtener los empleados:', error);
-      throw error;
-    }
-  };
-
   const loadData = async () => {
     try {
       setLoading(true);
-      const [tasksData, employeesData] = await Promise.all([fetchTasks(), fetchEmployees()]);
-      
-      setEmployees(employeesData);
-
-      const tasksWithEmployeeNames = tasksData.map(task => ({
-        ...task,
-        responsible_employee_name: employeesData.find(emp => emp.employee_id === task.responsible_employee_id)?.name || 'Desconocido'
-      }));
-
-      setTasks(tasksWithEmployeeNames);
+      // Aquí deberías implementar tu nueva lógica para cargar los datos
+      // Por ejemplo, usando una API REST u otro servicio
     } catch (error) {
       setError(error.message);
     } finally {
@@ -87,13 +32,8 @@ const Home = () => {
 
   const addTask = async (taskData) => {
     try {
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert([taskData])
-        .select();
-
-      if (error) throw error;
-      loadData(); // Refetch tasks after adding
+      // Implementar nueva lógica para agregar tareas
+      loadData(); 
     } catch (error) {
       console.error('Error al agregar la tarea:', error);
       setError('Error al agregar la tarea: ' + error.message);
@@ -102,13 +42,8 @@ const Home = () => {
 
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ status: newStatus })
-        .eq('task_id', taskId);
-
-      if (error) throw error;
-      loadData(); // Refetch tasks after updating
+      // Implementar nueva lógica para actualizar el estado de las tareas
+      loadData(); 
     } catch (error) {
       console.error('Error al actualizar el estado de la tarea:', error);
       setError('Error al actualizar el estado de la tarea: ' + error.message);
@@ -117,12 +52,7 @@ const Home = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('task_id', taskId);
-
-      if (error) throw error;
+      // Implementar nueva lógica para eliminar tareas
       loadData(); 
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);
@@ -148,6 +78,7 @@ const Home = () => {
       </div>
     );
   }
+
   return (
     <div className="flex flex-col p-3 h-full">
       <Breadcrumb />
@@ -160,12 +91,10 @@ const Home = () => {
           <TaskList tasks={tasks} updateTaskStatus={updateTaskStatus} deleteTask={deleteTask} />
           <h2 className="text-2xl font-bold mb-5 mt-5 ">Recientes</h2>
           <ProyectosRecientes/>
-             </div>
-
-       
+        </div>
       </div>
     </div>
   );
 };
 
-export default Home;  
+export default Home;

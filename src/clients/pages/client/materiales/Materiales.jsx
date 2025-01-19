@@ -213,11 +213,11 @@ const StandaloneMaterialList = () => {
           </div>
 
           <TablaMaterialesSeleccionados
-            materiales={filteredMaterials}
-            onMaterialsChange={(updatedMaterials) => {
-              setMaterials(updatedMaterials);
-            }}
-          />
+  materiales={materials}
+  onMaterialsChange={(updatedMaterials) => {
+    setMaterials(updatedMaterials);
+  }}
+/>
         </div>
       </div>
     </div>
