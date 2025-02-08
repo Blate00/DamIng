@@ -15,7 +15,7 @@ const rendicionRoutes = require('./routes/rendicionRoutes');
 const asignacionRoutes = require('./routes/asignacionRoutes');
 const manoObraRoutes = require('./routes/mObraRoutes');
 const flujoRoutes = require('./routes/flujoRoutes');
-const materialRoutes = require('./routes/materialRoutes'); // Nueva importación
+const materialRoutes = require('./routes/materialRoutes'); 
 const listaMaterialesRoutes = require('./routes/listaMaterialesRoutes');
 app.use(cors());
 app.use(express.json());
@@ -33,7 +33,7 @@ app.use('/api', rendicionRoutes);
 app.use('/api', asignacionRoutes);
 app.use('/api', manoObraRoutes);
 app.use('/api/flujo', flujoRoutes);
-app.use('/api', materialRoutes); // Nueva ruta montada
+app.use('/api', materialRoutes);
 app.use('/api', listaMaterialesRoutes);  
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

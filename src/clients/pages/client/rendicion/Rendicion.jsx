@@ -8,7 +8,7 @@ import TablaRendicion from './components/TablaRendicion';
 import 'jspdf-autotable';
 import { FaSave, FaPlus } from 'react-icons/fa';
 import Dpdf from './Dpdf';
-
+import SummaryRendicion from './components/SummaryRendicion';
 const Rendicion = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
@@ -279,28 +279,12 @@ const Rendicion = () => {
             agregarFila={agregarFila}
           />
 
-          <div className="flex flex-col bg-gray-100 p-6 border-r border-l border-b border-gray-300 rounded-b-xl space-y-4 ">
-            <div className="flex flex-col space-y-3">
-              <div className="flex justify-between items-center border-gray-200">
-                <span className="text-md font-medium text-black">Total:</span>
-                <p className="text-base text-red-700 font-bold">
-                  {formatCLP(totalRendicion)}
-                </p>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-md font-medium text-black">Saldo Actual:</span>
-                <p className="text-base text-red-700 font-bold">
-                  {formatCLP(asignacion.saldo_recibido)}
-                </p>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-md font-medium text-black">Saldo Final:</span>
-                <p className="text-base text-red-700 font-bold">
-                  {formatCLP(asignacion.saldo_recibido - totalRendicion)}
-                </p>
-              </div>
-            </div>
-          </div>
+<SummaryRendicion
+  totalRendicion={totalRendicion}
+  formatCLP={formatCLP}
+  asignacion={asignacion}
+  items={items} // Necesario para la funcionalidad de ocultamiento
+/>
 
 
         </div>

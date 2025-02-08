@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, gestionPercentage, setGestionPercentage }) => {
+const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, gestionPercentage, setGestionPercentage, items }) => {
   const [ggValue, setGgValue] = useState(0);
   const [gestionValue, setGestionValue] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -31,8 +31,13 @@ const Summary = ({ total, formatCLP, budgetId, ggPercentage, setGgPercentage, ge
     }
   };
 
+  // Si no hay items, no renderizar el componente
+  if (!items || items.length === 0) {
+    return null;
+  }
+
   return (
-    <div className=" mx-auto p-4 sm:p-6">
+    <div className="x-auto p-4 sm:p-6">
       <div className="space-y-4 sm:space-y-6">
         {/* Subtotal */}
         <div className="flex justify-between items-center">

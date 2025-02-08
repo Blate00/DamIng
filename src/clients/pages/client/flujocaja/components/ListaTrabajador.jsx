@@ -1,6 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import axios from 'axios';
-
+import { api, apiConfig } from '../../../../../config/api';
 const formatCLP = (value) => {
   if (!value) return '';
   return new Intl.NumberFormat('es-CL', {
@@ -24,9 +23,9 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   // Función para cargar empleados
-  const fetchEmpleados = async () => {
+const fetchEmpleados = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/flujo/employees');
+      const response = await api.get(apiConfig.endpoints.employees);
       setEmpleados(response.data || []);
     } catch (error) {
       console.error('Error al cargar empleados:', error);
@@ -39,7 +38,7 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
   // Función para cargar pagos del proyecto
   const fetchProjectPayments = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/flujo/payments/project/${projectId}`);
+      const response = await api.get(apiConfig.endpoints.projectPayments(projectId));
       if (response.data.success) {
         const filteredPayments = response.data.data
           .filter(payment => payment.quote_number === quoteNumber)
@@ -161,7 +160,7 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
             extra: row.extra || 0,
             trabajo_fecha: row.fecha
           };
-          return axios.post('http://localhost:5000/api/flujo/payments', paymentData);
+          return api.post(apiConfig.endpoints.payments, paymentData);
         });
 
         await Promise.all(promises);

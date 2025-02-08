@@ -5,7 +5,7 @@ import Breadcrumb from '../../../../general/Breadcrumb';
 import TablaMaterialesSeleccionados from './TablaMaterialesSeleccionados';
 import DescargarPDF from './Dpdf';
 import { FaSave, FaPlus } from 'react-icons/fa';
-
+import { api, apiConfig } from '../../../../config/api';
 const StandaloneMaterialList = () => {
   const [materials, setMaterials] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -19,16 +19,16 @@ const StandaloneMaterialList = () => {
   const fetchMaterials = async () => {
     try {
       setLoading(true);
-      const materialListResponse = await axios.get(
-        `http://localhost:5000/api/material-lists/project-with-availables/${projectId}`
+      const materialListResponse = await api.get(
+        apiConfig.endpoints.materialLists.projectWithAvailables(projectId)
       );
   
       const mappedMaterials = materialListResponse.data.map(material => ({
         ...material,
         quantity: material.list_id ? material.quantity : 1,
         unit_value: material.current_value,
-        in_database: !!material.list_id, // Marcar si ya está en la base de datos
-        is_selected: false // Resetear selección para nuevos materiales
+        in_database: !!material.list_id,
+        is_selected: false
       }));
   
       setMaterials(mappedMaterials);
@@ -45,7 +45,7 @@ const StandaloneMaterialList = () => {
       try {
         setLoading(true);
 
-        const jobResponse = await axios.get('http://localhost:5000/api/projects');
+        const jobResponse = await api.get(apiConfig.endpoints.projects);
         const projectData = jobResponse.data.find(
           (project) => project.project_id === parseInt(projectId)
         );
@@ -54,7 +54,7 @@ const StandaloneMaterialList = () => {
         }
         setJob(projectData);
 
-        const clientResponse = await axios.get('http://localhost:5000/api/clients/');
+        const clientResponse = await api.get(apiConfig.endpoints.clients);
         const clientData = clientResponse.data.find(
           (client) => client.client_id === projectData.client_id
         );
@@ -114,7 +114,7 @@ const StandaloneMaterialList = () => {
         return;
       }
   
-      const response = await axios.post('http://localhost:5000/api/material-lists', {
+      const response = await api.post(apiConfig.endpoints.materialLists.base, {
         project_id: parseInt(projectId),
         quote_number: job?.quote_number,
         materials: materialsToSave
@@ -122,7 +122,7 @@ const StandaloneMaterialList = () => {
   
       if (response.data) {
         alert('Lista de materiales guardada exitosamente');
-        await fetchMaterials(); // Recargar los materiales desde el servidor
+        await fetchMaterials();
       }
     } catch (error) {
       console.error('Error saving material list:', error);

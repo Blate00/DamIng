@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import TablaRendicionMobile from './TablaRendicionMobile';
 const TablaRendicion = ({ 
   items, 
   handleChange, 
@@ -65,103 +65,145 @@ const TablaRendicion = ({
     return proveedores.filter(proveedor => 
       proveedor.nombre.toLowerCase().includes(inputValue)
     );
-  };
-  return (
-    <div className="overflow-x-auto rounded-t-xl border border-r-l bg-white ">
-      <table className="min-w-full">
-        <thead className="bg-red-800">
-          <tr>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Fecha</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Detalle</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Folio</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Proveedor</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Documento</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Total</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {items.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="py-4 px-6">
-                <input
-                  type="date"
-                  className="w-full bg-transparent text-gray-700 focus:outline-none"
-                  value={item.fecha ? item.fecha.split('T')[0] : ''}
-                  onChange={(e) => handleChange(index, 'fecha', e.target.value)}
-                  placeholder="Selecciona una fecha"
-                />
-              </td>
-              <td className="py-4 px-6">
-                <input
-                  type="text"
-                  className="w-full bg-transparent text-gray-700 focus:outline-none"
-                  value={item.detalle || ''}
-                  onChange={(e) => handleChange(index, 'detalle', e.target.value)}
-                  placeholder="Ingresa un detalle"
-                />
-              </td>
-              <td className="py-4 px-6 text-center">
-                <input
-                  type="text"
-                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  value={item.folio || ''}
-                  onChange={(e) => handleChange(index, 'folio', e.target.value)}
-                  placeholder="Ingresa el folio"
-                />
-              </td>
-              <td className="py-4 px-6 text-center relative">
-                <input
-                  type="text"
-                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  value={getProveedorDisplayText(index, item)}
-                  onChange={(e) => handleProveedorInputChange(index, e.target.value)}
-                  onBlur={() => handleProveedorBlur(index)}
-                  placeholder="Buscar proveedor..."
-                  list={`proveedores-${index}`}
-                />
-                <datalist id={`proveedores-${index}`}>
-                  {getSuggestions(proveedorSearchText[index]).map((proveedor) => (
-                    <option 
-                      key={proveedor.proveedor_id} 
-                      value={proveedor.nombre}
-                    />
-                  ))}
-                </datalist>
-              </td>
-              <td className="py-4 px-6 text-center">
-                <input
-                  type="text"
-                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  value={item.documento || ''}
-                  onChange={(e) => handleChange(index, 'documento', e.target.value)}
-                  placeholder="Ingresa el documento"
-                />
-              </td>
-              <td className="py-4 px-6 text-center">
-                <input
-                  type="text"
-                  className="w-full bg-transparent text-center text-gray-700 focus:outline-none"
-                  value={formatCLP(item.total) || ''}
-                  onChange={(e) => handleTotalChange(index, e.target.value)}
-                  placeholder="Ingresa el total"
-                />
-              </td>
-              <td className="py-4 px-6 text-center">
-                <button
-                  onClick={() => deleteItem(index)}
-                  className="text-red-600 hover:text-red-800 transition-colors duration-200 focus:outline-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
-                </button>
-              </td>
+  };if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-xl shadow-sm p-8">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <svg 
+              className="w-20 h-20 mx-auto text-red-600/80" 
+              fill="none" 
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="1.5" 
+                d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+            ¡Comienza tu rendición!
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Agrega tu primer ítem para comenzar a crear tu rendición
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (<>
+    <div className="hidden md:block overflow-x-auto rounded-t-lg border border-r-l bg-white">
+      <div className="overflow-hidden rounded-xl shadow-lg border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr className="bg-gradient-to-r from-red-800 to-red-700">
+              {['Fecha', 'Detalle', 'Folio', 'Proveedor', 'Documento', 'Total', 'Acciones'].map((header, index) => (
+                <th key={header} className={`px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider ${index === 0 ? 'rounded-tl-xl' : ''} ${index === 6 ? 'rounded-tr-xl' : ''}`}>
+                  <span className="flex items-center justify-center space-x-2">
+                    {header}
+                  </span>
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-100">
+            {items.map((item, index) => (
+              <tr key={index} className="hover:bg-gray-50 transition-all duration-200">
+                <td className="px-6 py-4">
+                  <input
+                    type="date"
+                    value={item.fecha ? item.fecha.split('T')[0] : ''}
+                    onChange={(e) => handleChange(index, 'fecha', e.target.value)}
+                    className="w-full bg-transparent text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                  />
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="text"
+                    value={item.detalle || ''}
+                    onChange={(e) => handleChange(index, 'detalle', e.target.value)}
+                    className="w-full bg-transparent text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                    placeholder="Ingresa un detalle"
+                  />
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="text"
+                    value={item.folio || ''}
+                    onChange={(e) => handleChange(index, 'folio', e.target.value)}
+                    className="w-full bg-transparent text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                    placeholder="Ingresa el folio"
+                  />
+                </td>
+                <td className="px-6 py-4 relative">
+                  <input
+                    type="text"
+                    value={getProveedorDisplayText(index, item)}
+                    onChange={(e) => handleProveedorInputChange(index, e.target.value)}
+                    onBlur={() => handleProveedorBlur(index)}
+                    className="w-full bg-transparent text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                    placeholder="Buscar proveedor..."
+                    list={`proveedores-${index}`}
+                  />
+                  <datalist id={`proveedores-${index}`}>
+                    {getSuggestions(proveedorSearchText[index]).map((proveedor) => (
+                      <option key={proveedor.proveedor_id} value={proveedor.nombre} />
+                    ))}
+                  </datalist>
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="text"
+                    value={item.documento || ''}
+                    onChange={(e) => handleChange(index, 'documento', e.target.value)}
+                    className="w-full bg-transparent text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                    placeholder="Ingresa el documento"
+                  />
+                </td>
+                <td className="px-6 py-4">
+                  <input
+                    type="text"
+                    value={formatCLP(item.total) || ''}
+                    onChange={(e) => handleTotalChange(index, e.target.value)}
+                    className="w-full bg-transparent text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg px-3 py-2 transition-all duration-200"
+                    placeholder="Ingresa el total"
+                  />
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => deleteItem(index)}
+                      className="p-2 rounded-full text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                      title="Eliminar ítem"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div><TablaRendicionMobile
+    items={items}
+    handleChange={handleChange}
+    deleteItem={deleteItem}
+    proveedores={proveedores}
+    handleProveedorChange={handleProveedorChange}
+    formatCLP={formatCLP}
+    proveedorSearchText={proveedorSearchText}
+    handleProveedorInputChange={handleProveedorInputChange}
+    handleProveedorBlur={handleProveedorBlur}
+    getSuggestions={getSuggestions}
+    getProveedorDisplayText={getProveedorDisplayText}
+  /></>
   );
 };
 

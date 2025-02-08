@@ -1,12 +1,12 @@
-// Presupuesto.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import ItemsTable from './components/ItemsTable';
 import Summary from './components/Summary';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import Dpdf from './components/Dpdf';
 import { FaSave, FaPlus } from 'react-icons/fa';
+import { api, apiConfig } from '../../../../config/api';
+
 const Presupuesto = () => {
   const { client_id } = useParams();
   const { projectId } = useParams();
@@ -22,38 +22,38 @@ const Presupuesto = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
-        const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
-        if (!projectData) {
-          throw new Error('No se encontró el proyecto');
+            const jobResponse = await api.get(apiConfig.endpoints.projects);
+            const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
+            if (!projectData) {
+                throw new Error('No se encontró el proyecto');
+            }
+            setJob(projectData);
+
+            const clientResponse = await api.get(apiConfig.endpoints.clients);
+            const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
+            setClient(clientData);
+
+            const budgetResponse = await api.get(apiConfig.endpoints.budget.byProject(projectId));
+            setItems(budgetResponse.data);
+
+            if (budgetResponse.data.length > 0) {
+                setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
+                setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
+            }
+
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-        setJob(projectData);
-
-        const clientResponse = await axios.get(`http://localhost:5000/api/clients/`);
-        const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
-        setClient(clientData);
-
-        const budgetResponse = await axios.get(`http://localhost:5000/api/presupuesto/${projectId}`);
-        setItems(budgetResponse.data);
-
-        if (budgetResponse.data.length > 0) {
-          setGgPercentage(budgetResponse.data[0].gg_percentage || 0);
-          setGestionPercentage(budgetResponse.data[0].gestion_percentage || 0);
-        }
-
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
     };
 
     fetchData();
-  }, [projectId]);
+}, [projectId]);
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...items];
@@ -71,13 +71,13 @@ const Presupuesto = () => {
   const deleteItem = async (index) => {
     const itemToDelete = items[index];
     try {
-      await axios.delete(`http://localhost:5000/api/presupuesto/${itemToDelete.budget_id}`);
-      setItems(items.filter((_, i) => i !== index));
+        await api.delete(apiConfig.endpoints.budget.byId(itemToDelete.budget_id));
+        setItems(items.filter((_, i) => i !== index));
     } catch (err) {
-      console.error('Error deleting budget:', err.message);
-      alert('Error al eliminar el presupuesto.');
+        console.error('Error deleting budget:', err.message);
+        alert('Error al eliminar el presupuesto.');
     }
-  };
+};
   const addNewItem = async () => {
     if (!job) {
       alert('Error: Información del trabajo no disponible');
@@ -105,16 +105,16 @@ const Presupuesto = () => {
 
     try {
       console.log('Enviando nuevo item:', newItem);
-      const response = await axios.post('http://localhost:5000/api/presupuesto', newItem);
+      const response = await api.post(apiConfig.endpoints.budget.base, newItem);
       if (response.data) {
-        setItems(prevItems => [...prevItems, response.data]);
-        console.log('Item agregado exitosamente:', response.data);
+          setItems(prevItems => [...prevItems, response.data]);
+          console.log('Item agregado exitosamente:', response.data);
       }
-    } catch (err) {
+  } catch (err) {
       console.error('Error adding new budget item:', err.response?.data?.error || err.message);
       alert(`Error al añadir nueva fila: ${err.response?.data?.error || err.message}`);
-    }
-  };
+  }
+};
 
   const formatCLP = (value) => {
     if (value == null || isNaN(value)) return '$0';
@@ -128,36 +128,35 @@ const Presupuesto = () => {
 
   const updateDatabase = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/presupuesto/${items[0]?.budget_id}`, {
-        gg_percentage: ggPercentage,
-        gestion_percentage: gestionPercentage,
-        gg_amount: ggValue,
-        gestion_amount: gestionValue,
-        subtotal: subtotal,
-      });
-
-      for (const item of items) {
-        if (item.description && item.quantity > 0 && item.unit_price > 0) {
-          await axios.put(`http://localhost:5000/api/presupuesto/${item.budget_id}`, {
-            description: item.description,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            total: item.total,
+        await api.put(apiConfig.endpoints.budget.byId(items[0]?.budget_id), {
             gg_percentage: ggPercentage,
             gestion_percentage: gestionPercentage,
             gg_amount: ggValue,
             gestion_amount: gestionValue,
             subtotal: subtotal,
-          });
-        }
-      }
-      alert('Presupuesto actualizado exitosamente en la base de datos.');
-    } catch (err) {
-      console.error('Error updating budget:', err.message);
-      alert('Error al actualizar el presupuesto.');
-    }
-  };
+        });
 
+        for (const item of items) {
+            if (item.description && item.quantity > 0 && item.unit_price > 0) {
+                await api.put(apiConfig.endpoints.budget.byId(item.budget_id), {
+                    description: item.description,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    total: item.total,
+                    gg_percentage: ggPercentage,
+                    gestion_percentage: gestionPercentage,
+                    gg_amount: ggValue,
+                    gestion_amount: gestionValue,
+                    subtotal: subtotal,
+                });
+            }
+        }
+        alert('Presupuesto actualizado exitosamente en la base de datos.');
+    } catch (err) {
+        console.error('Error updating budget:', err.message);
+        alert('Error al actualizar el presupuesto.');
+    }
+};
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -246,15 +245,16 @@ const Presupuesto = () => {
               deleteItem={deleteItem}
             />
 
-            <Summary
-              total={total}
-              formatCLP={formatCLP}
-              budgetId={items.length > 0 ? items[0].budget_id : null}
-              ggPercentage={ggPercentage}
-              setGgPercentage={setGgPercentage}
-              gestionPercentage={gestionPercentage}
-              setGestionPercentage={setGestionPercentage}
-            />
+<Summary
+    total={total}
+    formatCLP={formatCLP}
+    budgetId={items.length > 0 ? items[0].budget_id : null}
+    ggPercentage={ggPercentage}
+    setGgPercentage={setGgPercentage}
+    gestionPercentage={gestionPercentage}
+    setGestionPercentage={setGestionPercentage}
+    items={items} // Agregar esta línea
+  />
           </div>
 
 

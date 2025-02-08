@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { api, apiConfig } from '../../../../config/api';
 import AccesoPago from './components/ListaTrabajador';
 import Breadcrumb from '../../../../general/Breadcrumb';
 import SummaryFlujo from './components/SummaryFlujo';
@@ -13,24 +13,23 @@ const FlujoCaja = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const listaTrabajadorRef = useRef();
-  const [total, setTotal] = useState(0);
-  const [totalRegistered, setTotalRegistered] = useState(0);
-
   const [newTotal, setNewTotal] = useState(0);
   const [registeredTotal, setRegisteredTotal] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const jobResponse = await axios.get(`http://localhost:5000/api/projects`);
+        // Usando el cliente API configurado
+        const jobResponse = await api.get(apiConfig.endpoints.projects);
         const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
         if (!projectData) {
           throw new Error('No se encontró el proyecto');
         }
         setJob(projectData);
 
-        const clientResponse = await axios.get(`http://localhost:5000/api/clients`);
+        const clientResponse = await api.get(apiConfig.endpoints.clients);
         const clientData = clientResponse.data.find(client => client.client_id === projectData.client_id);
         setClient(clientData);
 
