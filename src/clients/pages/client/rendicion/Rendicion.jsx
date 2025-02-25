@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import Asignacion from './components/Asignacion';
 import ManoObra from './components/ManoObra';
 import Breadcrumb from '../../../../general/Breadcrumb';
@@ -9,6 +8,8 @@ import 'jspdf-autotable';
 import { FaSave, FaPlus } from 'react-icons/fa';
 import Dpdf from './Dpdf';
 import SummaryRendicion from './components/SummaryRendicion';
+import { api, apiConfig } from '../../../../config/api';
+
 const Rendicion = () => {
   const { id, projectId } = useParams();
   const [client, setClient] = useState(null);
@@ -29,10 +30,10 @@ const Rendicion = () => {
       setLoading(true);
 
       const [jobResponse, rendicionesResponse, proveedoresResponse, clientResponse] = await Promise.all([
-        axios.get(`http://localhost:5000/api/projects`),
-        axios.get(`http://localhost:5000/api/rendiciones/project/${projectId}`),
-        axios.get(`http://localhost:5000/api/proveedores`),
-        axios.get(`http://localhost:5000/api/clients`)
+       api.get(apiConfig.endpoints.projects),
+       api.get(apiConfig.endpoints.rendicion.fetch(projectId)),
+       api.get(apiConfig.endpoints.proveedores),
+       api.get(apiConfig.endpoints.clients)
       ]);
 
       const projectData = jobResponse.data.find(project => project.project_id === parseInt(projectId));
@@ -48,8 +49,8 @@ const Rendicion = () => {
 
       if (projectData.quote_number) {
         const [asignacionesResponse, manoObraResponse] = await Promise.all([
-          axios.get(`http://localhost:5000/api/asignacion/${projectData.quote_number}`),
-          axios.get(`http://localhost:5000/api/mano-obra/${projectData.quote_number}`)
+          api.get(apiConfig.endpoints.asignacion.fetch(projectData.quote_number)),
+          api.get(apiConfig.endpoints.manoObra.fetch(projectData.quote_number))
         ]);
 
         setAsignacionesData(asignacionesResponse.data || []);
@@ -84,7 +85,7 @@ const Rendicion = () => {
     try {
       const itemToDelete = items[index];
       if (itemToDelete.rendicion_id) {
-        await axios.delete(`http://localhost:5000/api/rendiciones/${itemToDelete.rendicion_id}`);
+        await api.delete(apiConfig.endpoints.rendicion.fix(itemToDelete.rendicion_id));
         setItems(prevItems => prevItems.filter((_, i) => i !== index));
       }
     } catch (error) {
@@ -126,7 +127,7 @@ const Rendicion = () => {
       setItems(updatedItems);
 
       if (item.rendicion_id) {
-        await axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
+        await api.put(apiConfig.endpoints.rendicion.fix(item.rendicion_id), item);
       }
     } catch (error) {
       console.error('Error updating item:', error);
@@ -141,7 +142,7 @@ const Rendicion = () => {
       setItems(updatedItems);
 
       if (updatedItems[index].rendicion_id) {
-        await axios.put(`http://localhost:5000/api/rendiciones/${updatedItems[index].rendicion_id}`, {
+        await api.put(apiConfig.endpoints.rendicion.fix(updatedItems[index].rendicion_id), {
           ...updatedItems[index],
           proveedor_id: proveedorId
         });
@@ -178,9 +179,9 @@ const Rendicion = () => {
 
       for (const item of items) {
         if (item.rendicion_id) {
-          await axios.put(`http://localhost:5000/api/rendiciones/${item.rendicion_id}`, item);
+          await api.put(apiConfig.endpoints.rendicion.fix(item.rendicion_id), item);
         } else {
-          await axios.post(`http://localhost:5000/api/rendiciones`, item);
+          await api.post(apiConfig.endpoints.rendicion.post, item);
         }
       }
 

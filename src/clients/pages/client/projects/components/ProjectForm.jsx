@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { api, apiConfig } from '../../../../../config/api';
 
 const ProjectForm = ({ clientId, client, isOpen, onClose, onProjectAdded }) => {
   const [formData, setFormData] = useState({
@@ -23,9 +23,10 @@ const ProjectForm = ({ clientId, client, isOpen, onClose, onProjectAdded }) => {
         status: 'No Iniciado'
       };
 
-      console.log('Enviando datos:', projectData); 
+      console.log('Enviando datos:', projectData);
 
-      const response = await axios.post('http://localhost:5000/api/projects', projectData);
+      // Uso del endpoint centralizado desde apiConfig
+      const response = await api.post(apiConfig.endpoints.projects, projectData);
 
       if (response.data) {
         onProjectAdded(response.data);

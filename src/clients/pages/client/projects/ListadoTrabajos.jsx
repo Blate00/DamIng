@@ -2,9 +2,9 @@ import React, { useState, useEffect} from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FolderIcon, SearchIcon, CalendarIcon, FilterIcon } from '@heroicons/react/outline';
 import Breadcrumb from '../../../../general/Breadcrumb';
-import axios from 'axios';
 import ProjectForm from './components/ProjectForm';
 import { PlusIcon } from '@heroicons/react/outline';
+import { api, apiConfig } from '../../../../config/api';
 
 const ListadoTrabajos = () => {
 const { client_id } = useParams();
@@ -33,8 +33,8 @@ const handleStatusChange = async (projectId, newStatus) => {
       updateData.end_date = currentDate;
     }
 
-    const response = await axios.put(
-      `http://localhost:5000/api/projects/${projectId}/status`,
+    const response = await api.put(
+      apiConfig.endpoints.status,
       updateData
     );
 
@@ -68,8 +68,8 @@ useEffect(() => {
     try {
       setLoading(true);
       const [clientResponse, projectsResponse] = await Promise.all([
-        axios.get(`http://localhost:5000/api/clients`),
-        axios.get(`http://localhost:5000/api/projects`, {
+      api.get(apiConfig.endpoints.clients),
+        api.get(apiConfig.endpoints.projects, {
           params: { client_id }
         })
       ]);

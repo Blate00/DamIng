@@ -4,6 +4,7 @@ import ClientList from '../components/ClientList';
 import ClientForm from '../components/ClientForm';
 import Breadcrumb from '../../general/Breadcrumb';
 import { SearchIcon, CalendarIcon, FilterIcon, PlusIcon } from '@heroicons/react/outline';
+import { api, apiConfig } from '../../config/api';
 
 const Pclient = () => {
   const [clients, setClients] = useState([]);
@@ -28,8 +29,8 @@ const Pclient = () => {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/clients'); 
-      console.log(response.data); // Verifica que sea un array
+      const response = await api.get(apiConfig.endpoints.clients); 
+      console.log(response.data); 
       setClients(Array.isArray(response.data) ? response.data : []);
       setFilteredClients(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
@@ -40,7 +41,7 @@ const Pclient = () => {
   };
   const handleAddClient = async (clientName, email, phone, projectName) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/clients', {
+      const response = await api.post(apiConfig.endpoints.clients, {
         clientName,
         email,
         phone,
@@ -62,8 +63,8 @@ const Pclient = () => {
     if (!isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/clients/${clientId}`); // Asegúrate de que esta URL sea correcta
-      fetchClients(); // Refetch clients to update the list
+      await api.delete(apiConfig.endpoints.clientDelete(clientId)); 
+      fetchClients(); 
     } catch (error) {
       console.error('Error eliminando el cliente:', error.message);
     }

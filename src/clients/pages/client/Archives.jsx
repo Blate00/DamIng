@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/react/solid';
 import Breadcrumb from '../../../general/Breadcrumb';
-import axios from 'axios';
+import { api, apiConfig } from '../../../config/api';
 
 const Archives = () => {
   const { projectId, id } = useParams();
@@ -25,7 +25,7 @@ const Archives = () => {
           throw new Error('ID del proyecto o cliente no proporcionado');
         }
 
-        const response = await axios.get(`http://localhost:5000/api/archives/${projectId}`);
+        const response = await api.get(apiConfig.endpoints.archives.get(projectId));
         const { documents, projectName } = response.data;
 
         console.log(documents);

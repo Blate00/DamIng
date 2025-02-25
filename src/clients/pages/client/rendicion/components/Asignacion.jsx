@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api, apiConfig } from '../../../../../config/api';
 
 const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
   useEffect(() => {
     const fetchTiposPago = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/tipo-pago');
+        const response = await api.get(apiConfig.endpoints.tipoPago);
         setTiposPago(response.data);
         if (response.data.length > 0) {
           setFormData(prev => ({
@@ -34,7 +34,7 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
       if (!job?.quote_number) return;
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/asignacion/${job.quote_number}`);
+        const response = await api.get(apiConfig.endpoints.asignacion.fetch(job.quote_number));
         const asignacionesData = response.data || [];
         setAsignaciones(asignacionesData);
         
@@ -76,13 +76,13 @@ const Asignacion = ({ job, updateAsignacion, asignaciones, setAsignaciones }) =>
         return;
       }
 
-      await axios.post(`http://localhost:5000/api/asignacion`, {
+      await api.post(apiConfig.endpoints.asignacion.base, {
         quote_number: job.quote_number,
         saldo_recibido: monto,
         tipo_pago_id: formData.tipo_pago_id
       });
 
-      const updatedResponse = await axios.get(`http://localhost:5000/api/asignacion/${job.quote_number}`);
+      const updatedResponse = await api.get(apiConfig.endpoints.asignacion.fetch(job.quote_number));
       const updatedAsignaciones = updatedResponse.data || [];
       
       setAsignaciones(updatedAsignaciones);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { api, apiConfig } from '../../../../../config/api';
 
 const ManoObra = ({ job, setManoObra, subtotal }) => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
     if (!job?.quote_number) return;
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/mano-obra/${job.quote_number}`);
+      const response = await api.get(apiConfig.endpoints.manoObra.fetch(job.quote_number));
       const data = response.data;
 
       if (data.length > 0) {
@@ -50,7 +50,7 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/tipo-pago');
+        const response = await api.get(apiConfig.endpoints.tipoPago);
         setTiposPago(response.data);
         if (response.data.length > 0) {
           setFormData(prev => ({
@@ -113,7 +113,7 @@ const ManoObra = ({ job, setManoObra, subtotal }) => {
         medio_pago: tipoPago?.nombre_pago || 'No especificado'
       };
 
-      await axios.post('http://localhost:5000/api/mano-obra', nuevoAbono);
+      await api.post(apiConfig.endpoints.manoObra.base, nuevoAbono);
 
       setFormData({
         monto: '',
