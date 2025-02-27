@@ -3,6 +3,7 @@ import TrabajadorForm from '../components/TrabajadorForm';
 import TrabajadoresList from '../components/TrabajadorList';
 import Breadcrumb from '../../general/Breadcrumb';
 import axios from 'axios';
+import { api, apiConfig } from '../../config/api';
 
 const Trabajadores = () => {
   const [trabajadores, setTrabajadores] = useState([]);
@@ -13,7 +14,7 @@ const Trabajadores = () => {
   const fetchTrabajadores = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/empleados');
+      const response = await  api.get(apiConfig.endpoints.employees.post);
       setTrabajadores(response.data);
     } catch (error) {
       console.error('Error al obtener los trabajadores:', error);
@@ -29,7 +30,7 @@ const Trabajadores = () => {
 
   const handleDeleteTrabajador = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/empleados/${id}`);
+      await api.delete(apiConfig.endpoints.employees.delete(id));
       fetchTrabajadores();
     } catch (error) {
       console.error('Error al eliminar el trabajador:', error);

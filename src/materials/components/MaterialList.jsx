@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { api, apiConfig } from '../../config/api';
 
 const MaterialList = ({ materials, onMaterialUpdated }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -13,7 +14,7 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
       const numericValue = parseInt(newValue.replace(/[^0-9]/g, ''), 10);
       if (!isNaN(numericValue)) {
         try {
-          await axios.put(`http://localhost:5000/api/materials/${materialId}`, {
+          await api.put(apiConfig.endpoints.materials.put(materialId), {
             new_value: numericValue
           });
           onMaterialUpdated();
@@ -27,7 +28,7 @@ const MaterialList = ({ materials, onMaterialUpdated }) => {
   const handleDeleteMaterial = async (materialId) => {
     if (window.confirm('¿Está seguro de que desea eliminar este material?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/materials/${materialId}`);
+        await api.delete(apiConfig.endpoints.materials.put(materialId));
         onMaterialUpdated();
       } catch (error) {
         console.error('Error deleting material:', error);

@@ -40,6 +40,24 @@ export const apiConfig = {
          archives: {
             get:(projectId) => `/api/archives/${projectId}`,
          },
+         employees:{
+            post: '/api/empleados',
+            delete:  (id)=> `/api/empleados/${id}`,
+            payEmployee: (employee_id) => `/api/empleados/${employee_id}/payments`,
+            paymentsByDate: (employee_id,fechaPago) => `/api/empleados/${employee_id}/payments/${fechaPago}`
+           
+         },
+         bank: '/api/banco',
+         tipoCuenta: '/api/tipocuenta',
+         materials:{
+            post:'/api/materials',
+            put: (materialId) => `/api/materials/${materialId}`,
+         },
+         task:{
+            get: '/api/tasks',
+            putStatus: (taskId) => `/api/tasks/${taskId}/status`,
+            delete: (taskId) => `/api/tasks/${taskId}`,
+         }
 
      }
 };

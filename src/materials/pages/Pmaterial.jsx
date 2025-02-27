@@ -3,6 +3,7 @@
   import Breadcrumb from '../../general/Breadcrumb';
   import NewMaterial from '../components/NewMaterial';
   import MaterialList from '../components/MaterialList';
+import { api, apiConfig } from '../../config/api';
 
   const Pmaterial = () => {
     const [materials, setMaterials] = useState([]);

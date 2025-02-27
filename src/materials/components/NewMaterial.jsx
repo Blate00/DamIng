@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { api, apiConfig } from '../../config/api';
 
 const NewMaterial = ({ onMaterialAdded, isOpen, onClose }) => {
   const [material, setMaterial] = useState({ category: '', description: '', current_value: '' });
@@ -19,7 +20,7 @@ const NewMaterial = ({ onMaterialAdded, isOpen, onClose }) => {
     if (material.category.trim() && material.description.trim() && material.current_value.trim()) {
       try {
         const numericValue = parseInt(material.current_value, 10);
-        const response = await axios.post('http://localhost:5000/api/materials', {
+        const response = await api.post(apiConfig.endpoints.materials.post, {
           ...material,
           current_value: numericValue,
         });

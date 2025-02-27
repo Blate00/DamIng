@@ -3,6 +3,7 @@ import axios from 'axios'; // Importa Axios
 import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import Breadcrumb from '../general/Breadcrumb';
+import { api, apiConfig } from '../config/api';
 
 const Ptasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,7 +14,7 @@ const Ptasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks'); 
+      const response = await api.get(apiConfig.endpoints.task.get); 
       setTasks(response.data);
     } catch (error) {
       console.error('Error al obtener las tareas:', error);
@@ -23,7 +24,7 @@ const Ptasks = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/empleados'); 
+      const response = await api.get(apiConfig.endpoints.employees.post); 
       setEmployees(response.data);
     } catch (error) {
       console.error('Error al obtener los empleados:', error);
@@ -43,7 +44,7 @@ const Ptasks = () => {
 
   const addTask = async (taskData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/tasks', taskData); 
+      const response = await api.post(apiConfig.endpoints.task.get, taskData); 
       setTasks((prevTasks) => [...prevTasks, response.data]); 
       setIsModalOpen(false); 
     } catch (error) {
@@ -54,7 +55,7 @@ const Ptasks = () => {
 
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${taskId}/status`, { status: newStatus });
+      await api.put(apiConfig.endpoints.task.putStatus(taskId), { status: newStatus });
       await fetchTasks(); 
     } catch (error) {
       console.error('Error al actualizar el estado de la tarea:', error);
@@ -64,7 +65,7 @@ const Ptasks = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`); 
+      await api.delete(apiConfig.endpoints.task.delete(taskId)); 
       await fetchTasks(); 
     } catch (error) {
       console.error('Error al eliminar la tarea:', error);

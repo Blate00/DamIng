@@ -1,9 +1,8 @@
-// components/Liquidaciones.jsx  
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Breadcrumb from '../../general/Breadcrumb';
-import { DocumentTextIcon, UserIcon, MailIcon, PhoneIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, UserIcon, MailIcon,ExclamationIcon, PhoneIcon } from '@heroicons/react/outline';
+import { api, apiConfig } from '../../config/api';
 
 const Liquidaciones = () => {
   const location = useLocation();
@@ -29,7 +28,7 @@ const Liquidaciones = () => {
 
       try {
         console.log('Fetching payments for employee:', employee_id);
-        const response = await axios.get(`http://localhost:5000/api/empleados/${employee_id}/payments`);
+        const response = await api.get(apiConfig.endpoints.employees.payEmployee(employee_id));
         console.log('Payments response:', response.data);
         setPaymentsByDate(response.data);
       } catch (error) {
@@ -59,10 +58,8 @@ const Liquidaciones = () => {
   const handleFechaPagoClick = async (fechaPago, pagosPreview) => {
     try {
       // Obtener los pagos detallados para esta fecha específica  
-      const response = await axios.get(
-        `http://localhost:5000/api/empleados/${employee_id}/payments/${fechaPago}`
-      );
 
+      const response = await api.get(apiConfig.endpoints.employees.paymentsByDate(employee_id, fechaPago));
       // Navegar al detalle con todos los datos necesarios  
       navigate('/empresa/liquidaciones/detalle', {
         state: {

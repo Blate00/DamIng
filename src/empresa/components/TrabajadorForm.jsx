@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api, apiConfig } from '../../config/api';
 
 const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
 
   const fetchBancos = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/banco'); 
+      const response = await api.get(apiConfig.endpoints.bank); 
       setBancos(response.data);
     } catch (error) {
       console.error('Error fetching bancos:', error);
@@ -31,7 +31,7 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
 
   const fetchTiposCuenta = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tipocuenta');
+      const response = await api.get(apiConfig.endpoints.tipoCuenta);
       setTiposCuenta(response.data);
     } catch (error) {
       console.error('Error fetching tipos de cuenta:', error);
@@ -47,7 +47,7 @@ const TrabajadorForm = ({ onTrabajadorAdded, isOpen, onClose }) => {
     e.preventDefault();
     if (formData.name.trim()) {
       try {
-        const response = await axios.post('http://localhost:5000/api/empleados', formData);
+        const response = await api.post(apiConfig.endpoints.employees.post, formData);
         console.log('Trabajador añadido:', response.data);
         onTrabajadorAdded();
         setFormData({
