@@ -25,7 +25,7 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
   // Función para cargar empleados
 const fetchEmpleados = async () => {
     try {
-      const response = await api.get(apiConfig.endpoints.employees);
+      const response = await api.get(apiConfig.endpoints.employeesFlujo);
       setEmpleados(response.data || []);
     } catch (error) {
       console.error('Error al cargar empleados:', error);

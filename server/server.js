@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Importa las rutas
 const taskRoutes = require('./routes/taskRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const empleadoRoutes = require('./routes/empleadoRoutes');

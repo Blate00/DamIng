@@ -8,7 +8,7 @@ export const apiConfig = {
         projects: '/api/projects',
         clients: '/api/clients',
         clientDelete:(clientId)=>`/api/clients/${clientId}` ,
-        employees: '/api/flujo/employees',
+        employeesFlujo: '/api/flujo/employees',
         projectPayments: (projectId) => `/api/flujo/payments/project/${projectId}`,
         payments: '/api/flujo/payments',
         materialLists: {
