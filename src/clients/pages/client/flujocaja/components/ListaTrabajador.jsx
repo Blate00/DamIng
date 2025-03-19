@@ -1,5 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { api, apiConfig } from '../../../../../config/api';
+
+
 const formatCLP = (value) => {
   if (!value) return '';
   return new Intl.NumberFormat('es-CL', {
@@ -22,7 +24,6 @@ const ListaTrabajador = forwardRef(({ projectId, quoteNumber, onUpdateTotal }, r
   const [error, setError] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // Función para cargar empleados
 const fetchEmpleados = async () => {
     try {
       const response = await api.get(apiConfig.endpoints.employeesFlujo);
@@ -35,7 +36,6 @@ const fetchEmpleados = async () => {
     }
   };
 
-  // Función para cargar pagos del proyecto
   const fetchProjectPayments = async () => {
     try {
       const response = await api.get(apiConfig.endpoints.projectPayments(projectId));
@@ -61,7 +61,7 @@ const fetchEmpleados = async () => {
     }
   };
 
-  // Efectos
+  
   useEffect(() => {
     fetchEmpleados();
   }, []);
