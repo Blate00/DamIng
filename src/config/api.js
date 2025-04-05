@@ -67,36 +67,35 @@ export const api = axios.create({
    },
    withCredentials: true
 });
-
 // Mejora el manejo de errores en los interceptores
 api.interceptors.request.use(
-   config => {
-       // Puedes agregar headers adicionales aquí si es necesario
-       return config;
-   },
-   error => {
-       console.error('Request Error:', error);
-       return Promise.reject(error);
-   }
+    config => {
+        // Puedes agregar headers adicionales aquí si es necesario
+        return config;
+    },
+    error => {
+        console.error('Request Error:', error);
+        return Promise.reject(error);
+    }
 );
 
 api.interceptors.response.use(
-   response => response,
-   error => {
-       if (error.response) {
-           // El servidor respondió con un código de estado fuera del rango 2xx
-           console.error('Response Error:', {
-               status: error.response.status,
-               data: error.response.data,
-               headers: error.response.headers
-           });
-       } else if (error.request) {
-           // La petición fue hecha pero no se recibió respuesta
-           console.error('No response received:', error.request);
-       } else {
-           // Algo sucedió en la configuración de la petición
-           console.error('Error setting up request:', error.message);
-       }
-       return Promise.reject(error);
-   }
+    response => response,
+    error => {
+        if (error.response) {
+            // El servidor respondió con un código de estado fuera del rango 2xx
+            console.error('Response Error:', {
+                status: error.response.status,
+                data: error.response.data,
+                headers: error.response.headers
+            });
+        } else if (error.request) {
+            // La petición fue hecha pero no se recibió respuesta
+            console.error('No response received:', error.request);
+        } else {
+            // Algo sucedió en la configuración de la petición
+            console.error('Error setting up request:', error.message);
+        }
+        return Promise.reject(error);
+    }
 );
