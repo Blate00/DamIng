@@ -14,7 +14,17 @@ const Pclient = () => {
   const [selectedFilter, setSelectedFilter] = useState('Mes');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-
+  useEffect(() => {
+    const testConnection = async () => {
+        try {
+            const response = await api.get('/api/health');
+            console.log('API Connection test:', response.data);
+        } catch (error) {
+            console.error('API Connection test failed:', error);
+        }
+    };
+    testConnection();
+}, []);
   useEffect(() => {
     fetchClients();
   }, []);

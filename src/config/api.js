@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export const apiConfig = {
     baseURL: API_URL,
     endpoints: {
@@ -61,14 +60,43 @@ export const apiConfig = {
 
      }
 };
-
 export const api = axios.create({
-  baseURL: API_URL,
+   baseURL: API_URL,
+   headers: {
+       'Content-Type': 'application/json'
+   },
+   withCredentials: true
 });
+
+// Mejora el manejo de errores en los interceptores
+api.interceptors.request.use(
+   config => {
+       // Puedes agregar headers adicionales aquí si es necesario
+       return config;
+   },
+   error => {
+       console.error('Request Error:', error);
+       return Promise.reject(error);
+   }
+);
+
 api.interceptors.response.use(
    response => response,
    error => {
-       console.error('API Error:', error);
+       if (error.response) {
+           // El servidor respondió con un código de estado fuera del rango 2xx
+           console.error('Response Error:', {
+               status: error.response.status,
+               data: error.response.data,
+               headers: error.response.headers
+           });
+       } else if (error.request) {
+           // La petición fue hecha pero no se recibió respuesta
+           console.error('No response received:', error.request);
+       } else {
+           // Algo sucedió en la configuración de la petición
+           console.error('Error setting up request:', error.message);
+       }
        return Promise.reject(error);
    }
 );
